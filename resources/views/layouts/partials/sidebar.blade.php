@@ -22,5 +22,11 @@
             </a>
         </li>
         @endcan
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('students.index') }}" @can('user-list') style="display: block;" @endcan>
+                <i class="mdi mdi-account-multiple menu-icon"></i>
+                <span class="menu-title">Students</span>
+            </a>
+        </li>
     </ul>
 </nav>
