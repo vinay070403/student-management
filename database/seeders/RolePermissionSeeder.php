@@ -115,5 +115,18 @@ class RolePermissionSeeder extends Seeder
             ]
         );
         $superAdmin->assignRole('Super Admin');
+
+        // Assign specific permissions to Admin role
+        $adminRole = Role::where('name', 'Admin')->first();
+        if ($adminRole) {
+            $adminPermissions = [
+                'user-list',
+                'user-create',
+                'user-edit',
+                'user-delete',
+                // Add more as needed (e.g., 'school-list')
+            ];
+            $adminRole->syncPermissions($adminPermissions);
+        }
     }
 }
