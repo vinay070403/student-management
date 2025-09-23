@@ -50,7 +50,7 @@ class StudentController extends Controller
 
     public function update(Request $request, User $student)
     {
-        $request->validate([
+        $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $student->id,
@@ -61,14 +61,22 @@ class StudentController extends Controller
             'password' => 'nullable|min:8',
         ]);
 
-        $data = $request->all();
+        //$data = $request->all();
         if ($request->hasFile('avatar')) {
-            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+            //$data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+            $validated['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+        // if ($request->filled('password')) {
+        //     $data['password'] = Hash::make($request->password);
+        // }
+
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']); // ✅ remove so it won't overwrite with NULL
         }
-        $student->update($data);
+
+        $student->update($validated);
 
         return redirect()->route('students.index')->with('success', 'Student updated!');
     }
