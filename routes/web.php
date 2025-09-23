@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\StudentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,6 +31,15 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update')->middleware('permission:user-list');
     Route::get('/admin/schools', [AdminController::class, 'schools'])->name('admin.schools')->middleware('permission:school-list');
     // Add more admin routes here if needed
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/students', [StudentController::class, 'index'])->name('students.index')->middleware('permission:user-list');
+    Route::get('/admin/students/create', [StudentController::class, 'create'])->name('students.create')->middleware('permission:user-list');
+    Route::post('/admin/students', [StudentController::class, 'store'])->name('students.store')->middleware('permission:user-list');
+    Route::get('/admin/students/{student}/edit', [StudentController::class, 'edit'])->name('students.edit')->middleware('permission:user-list');
+    Route::put('/admin/students/{student}', [StudentController::class, 'update'])->name('students.update')->middleware('permission:user-list');
+    Route::delete('/admin/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy')->middleware('permission:user-list');
 });
 
 // });
