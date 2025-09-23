@@ -14,7 +14,7 @@ class AdminController extends Controller
     public function users()
     {
         $users = User::all();
-        return view('admin.users', compact('users'));
+        return view('admin.users.index', compact('users'));
     }
 
     public function create()
@@ -109,9 +109,9 @@ class AdminController extends Controller
         return redirect()->route('admin.users')->with('success', 'User updated successfully!');
     }
 
-    public function schools()
-    {
-        $schools = School::all();
-        return view('admin.schools', compact('schools'));
-    }
+    // public function schools()
+    // {
+    //     $schools = School::all();
+    //     return view('admin.schools', compact('schools'));
+    // }
 }
