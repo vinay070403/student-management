@@ -6,6 +6,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\StateController;
+use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\ClassController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy')->middleware('permission:user-list');
     Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit')->middleware('permission:user-list');
     Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update')->middleware('permission:user-list');
-    Route::get('/admin/schools', [AdminController::class, 'schools'])->name('admin.schools')->middleware('permission:school-list');
+    // Route::get('/admin/schools', [AdminController::class, 'schools'])->name('admin.schools')->middleware('permission:school-list');
     // Add more admin routes here if needed
 });
 
@@ -61,4 +63,23 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/states/{state}', [StateController::class, 'update'])->name('states.update')->middleware('permission:state-list');
     Route::delete('/admin/states/{state}', [StateController::class, 'destroy'])->name('states.destroy')->middleware('permission:state-list');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/schools', [SchoolController::class, 'index'])->name('schools.index')->middleware('permission:school-list');
+    Route::get('/admin/schools/create', [SchoolController::class, 'create'])->name('schools.create')->middleware('permission:school-list');
+    Route::post('/admin/schools', [SchoolController::class, 'store'])->name('schools.store')->middleware('permission:school-list');
+    Route::get('/admin/schools/{school}/edit', [SchoolController::class, 'edit'])->name('schools.edit')->middleware('permission:school-list');
+    Route::put('/admin/schools/{school}', [SchoolController::class, 'update'])->name('schools.update')->middleware('permission:school-list');
+    Route::delete('/admin/schools/{school}', [SchoolController::class, 'destroy'])->name('schools.destroy')->middleware('permission:school-list');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/classes', [ClassController::class, 'index'])->name('classes.index')->middleware('permission:class-list');
+    Route::get('/admin/classes/create', [ClassController::class, 'create'])->name('classes.create')->middleware('permission:class-list');
+    Route::post('/admin/classes', [ClassController::class, 'store'])->name('classes.store')->middleware('permission:class-list');
+    Route::get('/admin/classes/{class}/edit', [ClassController::class, 'edit'])->name('classes.edit')->middleware('permission:class-list');
+    Route::put('/admin/classes/{class}', [ClassController::class, 'update'])->name('classes.update')->middleware('permission:class-list');
+    Route::delete('/admin/classes/{class}', [ClassController::class, 'destroy'])->name('classes.destroy')->middleware('permission:class-list');
+});
+
 // });
