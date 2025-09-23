@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\CountryController;
+use App\Http\Controllers\StateController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -42,4 +44,21 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy')->middleware('permission:user-list');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/countries', [CountryController::class, 'index'])->name('countries.index')->middleware('permission:country-list');
+    Route::get('/admin/countries/create', [CountryController::class, 'create'])->name('countries.create')->middleware('permission:country-list');
+    Route::post('/admin/countries', [CountryController::class, 'store'])->name('countries.store')->middleware('permission:country-list');
+    Route::get('/admin/countries/{country}/edit', [CountryController::class, 'edit'])->name('countries.edit')->middleware('permission:country-list');
+    Route::put('/admin/countries/{country}', [CountryController::class, 'update'])->name('countries.update')->middleware('permission:country-list');
+    Route::delete('/admin/countries/{country}', [CountryController::class, 'destroy'])->name('countries.destroy')->middleware('permission:country-list');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/states', [StateController::class, 'index'])->name('states.index')->middleware('permission:state-list');
+    Route::get('/admin/states/create', [StateController::class, 'create'])->name('states.create')->middleware('permission:state-list');
+    Route::post('/admin/states', [StateController::class, 'store'])->name('states.store')->middleware('permission:state-list');
+    Route::get('/admin/states/{state}/edit', [StateController::class, 'edit'])->name('states.edit')->middleware('permission:state-list');
+    Route::put('/admin/states/{state}', [StateController::class, 'update'])->name('states.update')->middleware('permission:state-list');
+    Route::delete('/admin/states/{state}', [StateController::class, 'destroy'])->name('states.destroy')->middleware('permission:state-list');
+});
 // });
