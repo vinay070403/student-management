@@ -22,6 +22,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Phone</th>
+                                <th>Role</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -32,7 +33,7 @@
                                 <td>{{ $user->first_name }} {{ $user->last_name }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->phone ?? 'N/A' }}</td>
-                                <!-- <td>{{ $user->getRoleNames()->join(', ') }}</td> -->
+                                <td>{{ $user->getRoleNames()->join(', ') }}</td>
                                 <td>
                                     <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline;" onclick="event.stopPropagation();">
                                         @csrf
