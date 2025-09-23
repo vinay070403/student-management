@@ -15,8 +15,9 @@
         </li>
         @endcan
         @can('school-list')
-        <li class="nav-item {{ request()->routeIs('admin.schools') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ route('admin.schools') }}">
+        <li class="nav-item {{ request()->routeIs('schools.index') ? 'active' : '' }}">
+            <!-- <a class="nav-link" href="{{ route('schools.index') }}"> -->
+            <a class="nav-link" href="{{ route('schools.index') }}">
                 <i class="mdi mdi-school menu-icon"></i>
                 <span class="menu-title">Schools</span>
             </a>
@@ -50,7 +51,16 @@
                 <i class="mdi mdi-map-marker menu-icon"></i>
                 <span class="menu-title">States</span>
             </a>
-            @endcan
+        </li>
+        @endcan
+        @can('class-list')
+        <li class="nav-item {{ request()->routeIs('classes.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('classes.index') }}">
+                <i class="mdi mdi-book-open-page-variant menu-icon"></i>
+                <span class="menu-title">Classes</span>
+            </a>
+        </li>
+        @endcan
         </li>
     </ul>
 </nav>
