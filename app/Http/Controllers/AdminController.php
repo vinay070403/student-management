@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+// use App\Http\Controllers\Storage;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -30,10 +32,10 @@ class AdminController extends Controller
             'dob' => 'nullable|date',
             'avatar' => 'nullable|string',
             'address' => 'nullable|string',
-            //'student_id' => 'nullable|string|unique:users,student_id',
-            //'country_id' => 'nullable|exists:countries,id',
-            //'state_id' => 'nullable|exists:states,id',
-            //'zipcode' => 'nullable|string|max:20',
+            'student_id' => 'nullable|string|unique:users,student_id',
+            'country_id' => 'nullable|exists:countries,id',
+            'state_id' => 'nullable|exists:states,id',
+            'zipcode' => 'nullable|string|max:20',
             'password' => 'required|string|min:8',
         ]);
 
@@ -45,10 +47,10 @@ class AdminController extends Controller
             'dob' => $request->dob,
             'avatar' => $request->avatar,
             'address' => $request->address,
-            //'student_id' => $request->student_id,
-            //'country_id' => $request->country_id,
-            //'state_id' => $request->state_id,
-            //'zipcode' => $request->zipcode,
+            'student_id' => $request->student_id,
+            'country_id' => $request->country_id,
+            'state_id' => $request->state_id,
+            'zipcode' => $request->zipcode,
             'password' => Hash::make($request->password),
         ]);
 
@@ -59,6 +61,48 @@ class AdminController extends Controller
     {
         $user->delete();
         return redirect()->route('admin.users')->with('success', 'User deleted successfully!');
+    }
+
+    public function edit(User $user)
+    {
+        return view('admin.users.edit', compact('user'));
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string',
+            'dob' => 'nullable|date',
+            'avatar' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048', // File upload validation
+            'address' => 'nullable|string',
+            // 'student_id' => 'nullable|string|unique:users,student_id,' . $user->id,
+            // 'country_id' => 'nullable|exists:countries,id',
+            // 'state_id' => 'nullable|exists:states,id',
+            // 'zipcode' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:8',
+        ]);
+
+        $data = $request->all();
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if exists
+            if ($user->avatar && Storage::exists('public/avatars/' . $user->avatar)) {
+                Storage::delete('public/avatars/' . $user->avatar);
+            }
+            // Upload new
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar'] = basename($avatarPath);
+        }
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        } else {
+            unset($data['password']);
+        }
+
+        $user->update($data);
+        return redirect()->route('admin.users')->with('success', 'User updated successfully!');
     }
 
     public function schools()
