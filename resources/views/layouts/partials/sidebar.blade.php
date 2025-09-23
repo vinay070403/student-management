@@ -22,11 +22,35 @@
             </a>
         </li>
         @endcan
-        <li class="nav-item">
+        @can('user-list') {{-- Students view ke liye bhi yahi permission use ho rahi hai --}}
+        <li class="nav-item {{ request()->routeIs('students.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('students.index') }}">
+                <i class="mdi mdi-account-multiple menu-icon"></i>
+                <span class="menu-title">Students</span>
+            </a>
+        </li>
+        @endcan
+        <!-- <li class="nav-item">
             <a class="nav-link" href="{{ route('students.index') }}" @can('user-list') style="display: block;" @endcan>
                 <i class="mdi mdi-account-multiple menu-icon"></i>
                 <span class="menu-title">Students</span>
             </a>
+        </li> -->
+        @can('country-list')
+        <li class="nav-item {{ request()->routeIs('countries.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('countries.index') }}">
+                <i class="mdi mdi-earth menu-icon"></i>
+                <span class="menu-title">Countries</span>
+            </a>
+        </li>
+        @endcan
+        @can('state-list')
+        <li class="nav-item {{ request()->routeIs('states.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('states.index') }}">
+                <i class="mdi mdi-map-marker menu-icon"></i>
+                <span class="menu-title">States</span>
+            </a>
+            @endcan
         </li>
     </ul>
 </nav>
