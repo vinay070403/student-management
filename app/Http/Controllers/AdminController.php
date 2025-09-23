@@ -32,10 +32,10 @@ class AdminController extends Controller
             'dob' => 'nullable|date',
             'avatar' => 'nullable|string',
             'address' => 'nullable|string',
-            'student_id' => 'nullable|string|unique:users,student_id',
-            'country_id' => 'nullable|exists:countries,id',
-            'state_id' => 'nullable|exists:states,id',
-            'zipcode' => 'nullable|string|max:20',
+            // 'student_id' => 'nullable|string|unique:users,student_id',
+            // 'country_id' => 'nullable|exists:countries,id',
+            // 'state_id' => 'nullable|exists:states,id',
+            // 'zipcode' => 'nullable|string|max:20',
             'password' => 'required|string|min:8',
         ]);
 
@@ -47,12 +47,16 @@ class AdminController extends Controller
             'dob' => $request->dob,
             'avatar' => $request->avatar,
             'address' => $request->address,
-            'student_id' => $request->student_id,
-            'country_id' => $request->country_id,
-            'state_id' => $request->state_id,
-            'zipcode' => $request->zipcode,
+            // 'student_id' => $request->student_id,
+            // 'country_id' => $request->country_id,
+            // 'state_id' => $request->state_id,
+            // 'zipcode' => $request->zipcode,
             'password' => Hash::make($request->password),
         ]);
+
+        // Role assign karna (e.g., Admin ya Super Admin)
+        $user->assignRole('Admin'); // Ya 'Super Admin' agar chahiye
+        $user->givePermissionTo(['user-list', 'create-user', 'school-list']); // Example permissions for Admin
 
         return redirect()->route('admin.users')->with('success', 'User created successfully!');
     }
