@@ -7,7 +7,9 @@ use App\Http\Controllers\AdminController;
 Route::get('/', function () {
     return view('welcome');
 });
+
 // Route::middleware(['web', 'redirect.if.authenticated'])->group(function () {
+
 Route::prefix('auth')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -24,7 +26,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users/create', [AdminController::class, 'create'])->name('admin.users.create')->middleware('permission:user-list');
     Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.users.store')->middleware('permission:user-list');
     Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy')->middleware('permission:user-list');
+    Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit')->middleware('permission:user-list');
+    Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update')->middleware('permission:user-list');
     Route::get('/admin/schools', [AdminController::class, 'schools'])->name('admin.schools')->middleware('permission:school-list');
     // Add more admin routes here if needed
 });
+
 // });
