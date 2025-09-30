@@ -6,6 +6,7 @@
         <div class="card shadow-sm mb-4">
             <div class="card-body p-3">
                 <h4 class="card-title mb-3">Add New School</h4>
+                <!-- <form action="{{ route('schools.store') }}" method="POST"> -->
                 <form action="{{ route('schools.store') }}" method="POST">
                     @csrf
                     <div class="row g-2">

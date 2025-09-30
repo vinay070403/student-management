@@ -17,8 +17,26 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
+                    <!-- <tbody>
+                        @foreach ($schools as $school)
+                        <tr @if(isset($school->id)) onclick="window.location.href='{{ route('schools.edit', $school->id) }}'" @endif style="cursor: pointer;">
+                            <td>{{ $school->name }}</td>
+                            <td>{{ $school->state->name ?? 'N/A' }}</td>
+                            <td>{{ $school->address }}</td>
+                            <td>{{ $school->zipcode }}</td>
+                            <td>
+                                <form action="{{ route('schools.destroy', $school->id) }}" method="POST" style="display:inline;" onclick="event.stopPropagation();">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody> -->
                     <tbody>
                         @foreach ($schools as $school)
+                        <!-- <tr onclick="window.location.href='{{ route('schools.edit', $school->id) }}'" style="cursor: pointer;"> -->
                         <tr @if(isset($school->id)) onclick="window.location.href='{{ route('schools.edit', $school->id) }}'" @endif style="cursor: pointer;">
                             <td>{{ $school->name }}</td>
                             <td>{{ $school->state->name ?? 'N/A' }}</td>
