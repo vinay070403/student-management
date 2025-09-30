@@ -15,18 +15,18 @@
                                 <input type="text" name="name" class="form-control form-control-sm" required>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <div class="form-group">
                                 <label for="code">Code</label>
                                 <input type="text" name="code" class="form-control form-control-sm">
                             </div>
-                        </div>
+                        </div> -->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="country_id">Country</label>
                                 <select name="country_id" class="form-control form-control-sm" required>
                                     @foreach ($countries as $country)
-                                        <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                    <option value="{{ $country->id }}">{{ $country->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

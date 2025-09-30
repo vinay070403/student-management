@@ -8,6 +8,7 @@ use App\Http\Controllers\CountryController;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\ClassController;
+use App\Http\Controllers\SubjectController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -71,6 +72,23 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/schools/{school}/edit', [SchoolController::class, 'edit'])->name('schools.edit')->middleware('permission:school-list');
     Route::put('/admin/schools/{school}', [SchoolController::class, 'update'])->name('schools.update')->middleware('permission:school-list');
     Route::delete('/admin/schools/{school}', [SchoolController::class, 'destroy'])->name('schools.destroy')->middleware('permission:school-list');
+    // Existing school index...
+    Route::get('/admin/schools/{school}/edit', [SchoolController::class, 'edit'])->name('schools.edit')->middleware('permission:school-list');
+    // Scoped Classes and Subjects (no global routes)
+    // Classes
+    Route::get('/admin/schools/{school}/classes', [ClassController::class, 'index'])->name('schools.classes.index')->middleware('permission:class-list');
+    Route::get('/admin/schools/{school}/classes/create', [ClassController::class, 'create'])->name('schools.classes.create')->middleware('permission:class-list');
+    Route::post('/admin/schools/{school}/classes', [ClassController::class, 'store'])->name('schools.classes.store')->middleware('permission:class-list');
+    Route::get('/admin/schools/{school}/classes/{class}/edit', [ClassController::class, 'edit'])->name('schools.classes.edit')->middleware('permission:class-list');
+    Route::put('/admin/schools/{school}/classes/{class}', [ClassController::class, 'update'])->name('schools.classes.update')->middleware('permission:class-list');
+    Route::delete('/admin/schools/{school}/classes/{class}', [ClassController::class, 'destroy'])->name('schools.classes.destroy')->middleware('permission:class-list');
+    // Subjects (similar)
+    Route::get('/admin/schools/{school}/subjects', [SubjectController::class, 'index'])->name('schools.subjects.index')->middleware('permission:subject-list');
+    Route::get('/admin/schools/{school}/subjects/create', [SubjectController::class, 'create'])->name('schools.subjects.create')->middleware('permission:subject-list');
+    Route::post('/admin/schools/{school}/subjects', [SubjectController::class, 'store'])->name('schools.subjects.store')->middleware('permission:subject-list');
+    Route::get('/admin/schools/{school}/subjects/{subject}/edit', [SubjectController::class, 'edit'])->name('schools.subjects.edit')->middleware('permission:subject-list');
+    Route::put('/admin/schools/{school}/subjects/{subject}', [SubjectController::class, 'update'])->name('schools.subjects.update')->middleware('permission:subject-list');
+    Route::delete('/admin/schools/{school}/subjects/{subject}', [SubjectController::class, 'destroy'])->name('schools.subjects.destroy')->middleware('permission:subject-list');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -80,6 +98,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/classes/{class}/edit', [ClassController::class, 'edit'])->name('classes.edit')->middleware('permission:class-list');
     Route::put('/admin/classes/{class}', [ClassController::class, 'update'])->name('classes.update')->middleware('permission:class-list');
     Route::delete('/admin/classes/{class}', [ClassController::class, 'destroy'])->name('classes.destroy')->middleware('permission:class-list');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/subjects', [SubjectController::class, 'index'])->name('subjects.index')->middleware('permission:subject-list');
+    Route::get('/admin/subjects/create', [SubjectController::class, 'create'])->name('subjects.create')->middleware('permission:subject-list');
+    Route::post('/admin/subjects', [SubjectController::class, 'store'])->name('subjects.store')->middleware('permission:subject-list');
+    Route::get('/admin/subjects/{subject}/edit', [SubjectController::class, 'edit'])->name('subjects.edit')->middleware('permission:subject-list');
+    Route::put('/admin/subjects/{subject}', [SubjectController::class, 'update'])->name('subjects.update')->middleware('permission:subject-list');
+    Route::delete('/admin/subjects/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy')->middleware('permission:subject-list');
 });
 
 // });
