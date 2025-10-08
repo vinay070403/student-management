@@ -16,12 +16,12 @@
                                 <input type="text" name="name" class="form-control form-control-sm" required value="{{ $state->name }}">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <div class="form-group">
                                 <label for="code">Code</label>
                                 <input type="text" name="code" class="form-control form-control-sm" value="{{ $state->code }}">
                             </div>
-                        </div>
+                        </div> -->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="country_id">Country</label>
@@ -34,16 +34,16 @@
                         </div>
                     </div>
                     <div class="text-end mt-3">
-                        <button type="submit" class="btn btn-primary btn-sm">Update State</button>
+                        <button type="submit" class="btn btn-dark btn-sm-2">Update State</button>
                     </div>
                 </form>
                 <hr>
                 <form action="{{ route('states.destroy', $state->id) }}" method="POST">
                     @csrf
                     @method('DELETE')
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete State</button>
-                    </div>
+                    <!-- <div class="text-end">
+                        <button type="submit" class="btn btn-danger btn-sm-2" onclick="return confirm('Are you sure?')">Delete State</button>
+                    </div> -->
                 </form>
             </div>
         </div>
