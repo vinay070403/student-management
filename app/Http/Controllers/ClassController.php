@@ -8,49 +8,49 @@ use Illuminate\Http\Request;
 
 class ClassController extends Controller
 {
-    public function index()
+
+    public function index(School $school)
     {
-        $classes = ClassModel::with('school')->get();
-        return view('admin.classes.index', compact('classes'));
+        $classes = $school->classes()->get(); // Use relationship
+        return view('admin.schools.classes.index', compact('school', 'classes'));
     }
 
-    public function create()
+    public function create(School $school)
     {
-        $schools = School::all();
-        return view('admin.classes.create', compact('schools'));
+        // $schools = School::all();
+        return view('admin.schools.classes.create', compact('school'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, School $school)
     {
         $request->validate([
-            'school_id' => 'required|exists:schools,id',
             'name' => 'required|string|max:255',
         ]);
 
-        ClassModel::create($request->all());
-        return redirect()->route('classes.index')->with('success', 'Class added!');
+        $school->classes()->create($request->all());
+        return redirect()->route('schools.classes.index', $school)->with('success', 'Class added!');
     }
 
-    public function edit(ClassModel $class)
+    public function edit(School $school, ClassModel $class)
     {
-        $schools = School::all();
-        return view('admin.classes.edit', compact('class', 'schools'));
+        return view('admin.schools.classes.edit', compact('school', 'class'));
+        // $schools = School::all();
+        // return view('admin.schools.classes.edit', compact('school', 'class', 'schools'));
     }
 
-    public function update(Request $request, ClassModel $class)
+    public function update(Request $request, School $school, ClassModel $class)
     {
         $request->validate([
-            'school_id' => 'required|exists:schools,id',
             'name' => 'required|string|max:255',
         ]);
 
         $class->update($request->all());
-        return redirect()->route('classes.index')->with('success', 'Class updated!');
+        return redirect()->route('schools.classes.index', $school)->with('success', 'Class updated!');
     }
 
-    public function destroy(ClassModel $class)
+    public function destroy(School $school, ClassModel $class)
     {
         $class->delete();
-        return redirect()->route('classes.index')->with('success', 'Class deleted!');
+        return redirect()->route('schools.classes.index', $school)->with('success', 'Class deleted!');
     }
 }

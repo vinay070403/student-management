@@ -24,7 +24,7 @@ class StateController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:10',
+            // 'code' => 'nullable|string|max:10',
             'country_id' => 'required|exists:countries,id',
         ]);
 
@@ -42,7 +42,7 @@ class StateController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:10',
+            // 'code' => 'nullable|string|max:10',
             'country_id' => 'required|exists:countries,id',
         ]);
 

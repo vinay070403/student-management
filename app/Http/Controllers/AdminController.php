@@ -13,7 +13,8 @@ class AdminController extends Controller
 {
     public function users()
     {
-        $users = User::all();
+        // $users = User::all();
+        $users = User::paginate(10);
         return view('admin.users.index', compact('users'));
     }
 
@@ -56,7 +57,7 @@ class AdminController extends Controller
 
         // Role assign karna (e.g., Admin ya Super Admin)
         $user->assignRole('Admin'); // Ya 'Super Admin' agar chahiye
-        $user->givePermissionTo(['user-list', 'create-user', 'school-list']); // Example permissions for Admin
+        $user->givePermissionTo(['user-list', 'user-create', 'school-list']); // Example permissions for Admin
 
         return redirect()->route('admin.users')->with('success', 'User created successfully!');
     }
@@ -66,6 +67,23 @@ class AdminController extends Controller
         $user->delete();
         return redirect()->route('admin.users')->with('success', 'User deleted successfully!');
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:users,id',
+        ]);
+
+        User::whereIn('id', $request->ids)->delete();
+
+        // Return proper JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'Selected users deleted successfully'
+        ], 200);
+    }
+
 
     public function edit(User $user)
     {

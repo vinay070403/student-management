@@ -14,13 +14,18 @@ class SchoolController extends Controller
         return view('admin.schools.index', compact('schools'));
     }
 
+    // public function show(School $school)
+    // {
+    //     return view('admin.schools.show', compact('school'));
+    // }
+
     public function create()
     {
         $states = State::all();
         return view('admin.schools.create', compact('states'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, School $school)
     {
         $request->validate([
             'name' => 'required|string|max:255',

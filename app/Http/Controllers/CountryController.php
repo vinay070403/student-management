@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Country;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CountryController extends Controller
 {
@@ -22,10 +23,9 @@ class CountryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            //'code' => 'nullable|string|max:10',
         ]);
 
-        Country::create($request->all());
+        Country::create($request->only('name'));
         return redirect()->route('countries.index')->with('success', 'Country added!');
     }
 
@@ -38,16 +38,40 @@ class CountryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            //'code' => 'nullable|string|max:10',
         ]);
 
-        $country->update($request->all());
+        $country->update($request->only('name'));
         return redirect()->route('countries.index')->with('success', 'Country updated!');
     }
 
+    /**
+     * Cascade delete Country → States → Schools
+     * Handles both normal and AJAX requests
+     */
     public function destroy(Country $country)
     {
-        $country->delete();
-        return redirect()->route('countries.index')->with('success', 'Country deleted!');
+        try {
+            // load relations
+            $country->load('states.school');
+
+            // delete schools then states then country
+            foreach ($country->states as $state) {
+                $state->school()->delete();
+            }
+            $country->states()->delete();
+            $country->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Country and related states & schools deleted successfully.'
+            ], 200);
+        } catch (\Throwable $e) {
+            Log::error('Country destroy error: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error while deleting country.'
+            ], 500);
+        }
     }
 }
