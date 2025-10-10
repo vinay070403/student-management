@@ -2,196 +2,158 @@
 
 @section('title', 'Dashboard')
 
-@section('content')
-<div class="page-loader" aria-hidden="true" role="status" id="pageLoader" aria-label="Loading" style="display: none;">
-    <div class="spinner" aria-hidden="true"></div>
-</div>
-
-<div class="container-fluid py-4">
-    <!-- Welcome Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm-0 mb-0">
-                <div class="card-body py-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h2 class="mb-1 fw-bold text-gradient-primary">Welcome, {{ auth()->user()->first_name ?? 'User' }} {{ auth()->user()->last_name ?? '' }}!</h2>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <i class="mdi mdi-weather-sunny me-2 text-warning" style="font-size: 24px;"></i>
-                            <span class="text-muted">All systems running smoothly</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stats Cards (Larger, Colorful, Interactive) -->
-    <div class="row g-4">
-        @can('user-list')
-        <div class="col-xl-4 col-lg-4 col-md-6">
-            <a href="{{ route('admin.users') }}" class="text-decoration-none">
-                <div class="card dashboard-card h-100 border-0 shadow-sm overflow-hidden" style="transition: all 0.3s ease; transform: translateY(0);">
-                    <div class="card-body py-4 px-3">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="text-muted text-uppercase mb-2">Users</h6>
-                                <h3 class="fw-bold text-primary mb-0">{{ \App\Models\User::count() }}</h3>
-                                <p class="text-muted small mb-0">Total registered</p>
-                            </div>
-                            <div class="bg-gradient-primary rounded-circle p-3 ms-3" style="min-width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-                                <i class="mdi mdi-account-multiple text-white" style="font-size: 20px;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endcan
-
-        @can('school-list')
-        <div class="col-xl-4 col-lg-4 col-md-6">
-            <a href="{{ route('schools.index') }}" class="text-decoration-none">
-                <div class="card dashboard-card h-100 border-0 shadow-sm overflow-hidden" style="transition: all 0.3s ease; transform: translateY(0);">
-                    <div class="card-body py-4 px-3">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="text-muted text-uppercase mb-2">Schools</h6>
-                                <h3 class="fw-bold text-success mb-0">{{ \App\Models\School::count() }}</h3>
-                                <p class="text-muted small mb-0">Active schools</p>
-                            </div>
-                            <div class="bg-gradient-success rounded-circle p-3 ms-3" style="min-width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-                                <i class="mdi mdi-school text-white" style="font-size: 20px;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endcan
-
-        @can('student-list')
-        <div class="col-xl-3 col-lg-4 col-md-6">
-            <a href="{{ route('students.index') }}" class="text-decoration-none">
-                <div class="card dashboard-card h-100 border-0 shadow-sm overflow-hidden" style="transition: all 0.3s ease; transform: translateY(0);">
-                    <div class="card-body py-4 px-3">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="text-muted text-uppercase mb-2">Students</h6>
-                                <h3 class="fw-bold text-warning mb-0">{{ \App\Models\User::role('Student')->count() }}</h3>
-                                <p class="text-muted small mb-0">Enrolled students</p>
-                            </div>
-                            <div class="bg-gradient-warning rounded-circle p-3 ms-3" style="min-width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-                                <i class="mdi mdi-account-group text-white" style="font-size: 20px;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endcan
-
-        @can('country-list')
-        <div class="col-xl-3 col-lg-4 col-md-6">
-            <a href="{{ route('countries.index') }}" class="text-decoration-none">
-                <div class="card dashboard-card h-100 border-0 shadow-sm overflow-hidden" style="transition: all 0.3s ease; transform: translateY(0);">
-                    <div class="card-body py-4 px-3">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="text-muted text-uppercase mb-2">Countries</h6>
-                                <h3 class="fw-bold text-info mb-0">{{ \App\Models\Country::count() }}</h3>
-                                <p class="text-muted small mb-0">Total countries</p>
-                            </div>
-                            <div class="bg-gradient-info rounded-circle p-3 ms-3" style="min-width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-                                <i class="mdi mdi-earth text-white" style="font-size: 20px;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endcan
-
-        @can('state-list')
-        <div class="col-xl-3 col-lg-4 col-md-6">
-            <a href="{{ route('states.index') }}" class="text-decoration-none">
-                <div class="card dashboard-card h-100 border-0 shadow-sm overflow-hidden" style="transition: all 0.3s ease; transform: translateY(0);">
-                    <div class="card-body py-4 px-3">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="text-muted text-uppercase mb-2">States</h6>
-                                <h3 class="fw-bold text-danger mb-0">{{ \App\Models\State::count() }}</h3>
-                                <p class="text-muted small mb-0">Total states</p>
-                            </div>
-                            <div class="bg-gradient-danger rounded-circle p-3 ms-3" style="min-width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-                                <i class="mdi mdi-map-marker text-white" style="font-size: 20px;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endcan
-    </div>
-
-
-</div>
-@endsection
-
 @section('styles')
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Oswald:300,400,500,700|Open+Sans:300,400,600,700,800&display=swap" rel="stylesheet">
+
 <style>
-    /* Dashboard Enhancements */
-    .dashboard-card {
-        border-radius: 20px;
-        overflow: hidden;
-        background: linear-gradient(145deg, #ffffff 0%, #f8faff 100%);
-        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
-        min-height: 180px;
-        /* Bigger card */
+    /* General Setup */
+    * {
+        transition: .5s;
+        box-sizing: border-box;
     }
 
-    .dashboard-card:hover {
-        transform: translateY(-10px) scale(1.03);
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+    body {
+        font-family: 'Open Sans', sans-serif;
+        background: #f5f7fb;
     }
 
-    .dashboard-card .card-body {
-        padding: 2rem;
-        /* Bigger padding */
+    .h-100 {
+        height: 100vh !important;
     }
 
-    .dashboard-card h3 {
-        font-size: 2rem;
+    .align-middle {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
     }
 
-    .dashboard-card h6 {
-        font-size: 0.95rem;
+    .column {
+        margin-top: 3rem;
+        padding-left: 3rem;
     }
 
-    .card-icon {
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .column:hover {
+        padding-left: 0;
+    }
+
+    .column:hover .card .txt {
         margin-left: 1rem;
-        transition: all 0.4s ease;
     }
 
-    .dashboard-card:hover .card-icon {
-        transform: scale(1.2) rotate(10deg);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    .column:hover .card .txt h1,
+    .column:hover .card .txt p {
+        color: rgba(255, 255, 255, 1);
+        opacity: 1;
     }
 
-    /* Loader Animation */
+    .column:hover .card a {
+        color: rgba(255, 255, 255, 1);
+    }
+
+    .column:hover .card a::after {
+        width: 10%;
+    }
+
+    /* Card Design */
+    .card {
+        position: relative;
+        min-height: 200px;
+        margin: 0;
+        padding: 2rem 1.2rem;
+        border: none;
+        border-radius: 10px;
+        color: rgba(255, 255, 255, 1);
+        letter-spacing: .05rem;
+        box-shadow: 0 0 21px rgba(0, 0, 0, .2);
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .card .txt {
+        margin-left: -2rem;
+        z-index: 1;
+    }
+
+    .card .txt h1 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin-bottom: .5rem;
+    }
+
+    .card .txt p {
+        font-size: .8rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .card a {
+        z-index: 3;
+        font-size: .8rem;
+        color: rgba(255, 255, 255, .9);
+        margin-left: 1rem;
+        position: relative;
+        bottom: -.5rem;
+        text-transform: uppercase;
+        text-decoration: none;
+    }
+
+    .card a::after {
+        content: "";
+        display: inline-block;
+        height: 0.5em;
+        width: 0;
+        margin-right: -100%;
+        margin-left: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 1);
+        transition: .5s;
+    }
+
+    .card .ico-card {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
+    }
+
+    .card i {
+        position: absolute;
+        right: -40%;
+        top: 50%;
+        font-size: 10rem;
+        line-height: 0;
+        opacity: .2;
+        color: rgba(255, 255, 255, 1);
+        transform: translateY(-50%);
+    }
+
+    /* Gradient Backgrounds */
+    .gr-1 {
+        background: linear-gradient(170deg, #01E4F8 0%, #1D3EDE 100%);
+    }
+
+    .gr-2 {
+        background: linear-gradient(170deg, #B4EC51 0%, #429321 100%);
+    }
+
+    .gr-3 {
+        background: linear-gradient(170deg, #C86DD7 0%, #3023AE 100%);
+    }
+
+    .gr-4 {
+        background: linear-gradient(170deg, #FFB75E 0%, #ED8F03 100%);
+    }
+
+    /* Loader */
     .page-loader {
         position: fixed;
         inset: 0;
         z-index: 9999;
-        display: flex;
+        display: none;
         align-items: center;
         justify-content: center;
         background: rgba(255, 255, 255, 0.9);
@@ -208,55 +170,96 @@
     }
 
     @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
+        to {
             transform: rotate(360deg);
         }
-    }
-
-    /* Gradient Texts */
-    .text-gradient-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
     }
 </style>
 @endsection
 
+
+@section('content')
+
+<!-- Loader -->
+<div class="page-loader" id="pageLoader">
+    <div class="spinner"></div>
+</div>
+
+<div class="container h-100">
+    <div class="row align-middle">
+
+        @can('user-list')
+        <div class="col-md-6 col-lg-3 column">
+            <a href="{{ route('admin.users') }}" class="dashboard-link text-decoration-none">
+                <div class="card gr-1">
+                    <div class="txt">
+                        <h1>Users</h1>
+                        <p>Total Registered: {{ \App\Models\User::count() }}</p>
+                    </div>
+                    <a href="#">More</a>
+                    <div class="ico-card"><i class="fa fa-users"></i></div>
+                </div>
+            </a>
+        </div>
+        @endcan
+
+        @can('school-list')
+        <div class="col-md-6 col-lg-3 column">
+            <a href="{{ route('schools.index') }}" class="dashboard-link text-decoration-none">
+                <div class="card gr-2">
+                    <div class="txt">
+                        <h1>Schools</h1>
+                        <p>Active Schools: {{ \App\Models\School::count() }}</p>
+                    </div>
+                    <a href="#">More</a>
+                    <div class="ico-card"><i class="fa fa-school"></i></div>
+                </div>
+            </a>
+        </div>
+        @endcan
+
+        @can('country-list')
+        <div class="col-md-6 col-lg-3 column">
+            <a href="{{ route('countries.index') }}" class="dashboard-link text-decoration-none">
+                <div class="card gr-3">
+                    <div class="txt">
+                        <h1>Countries</h1>
+                        <p>Total Countries: {{ \App\Models\Country::count() }}</p>
+                    </div>
+                    <a href="#">More</a>
+                    <div class="ico-card"><i class="fa fa-globe"></i></div>
+                </div>
+            </a>
+        </div>
+        @endcan
+
+        @can('state-list')
+        <div class="col-md-6 col-lg-3 column">
+            <a href="{{ route('states.index') }}" class="dashboard-link text-decoration-none">
+                <div class="card gr-4">
+                    <div class="txt">
+                        <h1>States</h1>
+                        <p>Total States: {{ \App\Models\State::count() }}</p>
+                    </div>
+                    <a href="#">More</a>
+                    <div class="ico-card"><i class="fa fa-map"></i></div>
+                </div>
+            </a>
+        </div>
+        @endcan
+
+    </div>
+</div>
+@endsection
+
+
 @push('scripts')
 <script>
-    // Card Hover Effects (smooth)
-    document.querySelectorAll('.dashboard-card').forEach(card => {
-        card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-10px) scale(1.03)');
-        card.addEventListener('mouseleave', () => card.style.transform = 'translateY(0) scale(1)');
-        card.addEventListener('touchstart', () => card.style.transform = 'translateY(-10px) scale(1.03)', {
-            passive: true
-        });
-        card.addEventListener('touchend', () => card.style.transform = 'translateY(0) scale(1)', {
-            passive: true
-        });
-    });
-
-    // Loader on Navigation
     document.querySelectorAll('.dashboard-link').forEach(link => {
-        link.addEventListener('click', (e) => {
+        link.addEventListener('click', () => {
             const loader = document.getElementById('pageLoader');
             loader.style.display = 'flex';
-            setTimeout(() => loader.style.display = 'none', 1500); // Hide after 1.5s
-        });
-    });
-
-    // Optional: Add subtle hover effect on icon inside card
-    document.querySelectorAll('.card-icon').forEach(icon => {
-        icon.addEventListener('mouseenter', () => {
-            icon.style.transform = 'scale(1.2) rotate(10deg)';
-        });
-        icon.addEventListener('mouseleave', () => {
-            icon.style.transform = 'scale(1) rotate(0deg)';
+            setTimeout(() => loader.style.display = 'none', 1500);
         });
     });
 </script>

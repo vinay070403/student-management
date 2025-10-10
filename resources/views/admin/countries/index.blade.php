@@ -11,7 +11,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="fw-semibold mb-0 text-dark">Countries</h4>
                 <a href="{{ route('countries.create') }}"
-                    class="btn btn-dark px-4 py-2 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                     <i class="mdi mdi-plus"></i> Add Country
                 </a>
             </div>

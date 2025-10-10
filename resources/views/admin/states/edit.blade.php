@@ -56,15 +56,15 @@
 
                     <!-- Update & Delete Buttons side by side -->
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button type="submit" class="btn btn-dark px-4 py-2 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                        <button type="submit" class="btn btn-dark px-3 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                             Update State
                         </button>
 
                         <!-- Delete Button triggers dialog -->
-                        <button type="button" class="btn btn-danger px-4 py-2 d-flex align-items-center gap-2 rounded-3 btn-lg"
+                        <!-- <button type="button" class="btn btn-danger px-4 py-2 d-flex align-items-center gap-2 rounded-3 btn-lg"
                             onclick="document.getElementById('delete-state-dialog-{{ $state->id }}').showModal()">
                             Delete State
-                        </button>
+                        </button> -->
                     </div>
                 </form>
 

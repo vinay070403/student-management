@@ -4,10 +4,16 @@
 
 @section('content')
 <div class="row">
-    <div class="col-6"> <!-- Full width, no centering -->
-        <div class="card shadow-sm mb-4" style="max-width: 950px; margin: auto;">
-            <div class="card-body p-3">
-                <h4 class="card-title mb-3">Add New Students</h4>
+    <div class="col-12">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="card-title mb-0">Add New Student</h4>
+                    <a href="{{ route('students.index') }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                        <i class="mdi mdi-arrow-left me-2"></i> Back
+                    </a>
+                </div>
+
                 @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul class="mb-0">
@@ -17,95 +23,84 @@
                     </ul>
                 </div>
                 @endif
+
                 @if (session('success'))
                 <div class="alert alert-success">
                     {{ session('success') }}
                 </div>
                 @endif
+
                 <form action="{{ route('students.store') }}" method="POST" class="needs-validation" novalidate>
                     @csrf
-                    <div class="row g-2">
+                    <div class="row g-3">
+                        <!-- First Name -->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="first_name" class="form-label">First Name</label>
-                                <input type="text" name="first_name" class="form-control form-control-sm" required>
+                                <input type="text" name="first_name" class="form-control form-control-lg" required pattern="[A-Za-z]+" placeholder="John">
                             </div>
                         </div>
+                        <!-- Last Name -->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="last_name" class="form-label">Last Name</label>
-                                <input type="text" name="last_name" class="form-control form-control-sm" required>
+                                <input type="text" name="last_name" class="form-control form-control-lg" required pattern="[A-Za-z]+" placeholder="Doe">
                             </div>
                         </div>
+                        <!-- Email -->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control form-control-sm" required>
+                                <input type="email" name="email" class="form-control form-control-lg" required placeholder="example@mail.com">
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <!-- Phone -->
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="phone" class="form-label">Phone</label>
-                                <div class="input-group input-group-sm">
-                                    <select name="phone_code" class="form-select form-select-sm" style="max-width: 80px;">
-                                        <option value="+91">+ 91</option>
-                                        <!-- Add more codes if needed, e.g., +1, +44 -->
+                                <div class="input-group">
+                                    <select name="phone_code" class="form-select form-select-lg" style="max-width: 90px;">
+                                        <option value="+91">+91</option>
+                                        <!-- Add more if needed -->
                                     </select>
-                                    <input type="text" name="phone" class="form-control form-control-sm" placeholder="1234567890">
+                                    <input type="text" name="phone" class="form-control form-control-lg" required pattern="\d{10}" placeholder="1234567890" maxlength="10">
                                 </div>
                             </div>
                         </div>
+                        <!-- DOB -->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="dob" class="form-label">Date of Birth</label>
-                                <input type="date" name="dob" class="form-control form-control-sm">
+                                <input type="date" name="dob" class="form-control form-control-lg">
                             </div>
                         </div>
+                        <!-- Avatar -->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="avatar" class="form-label">Avatar URL</label>
-                                <input type="text" name="avatar" class="form-control form-control-sm" placeholder="https://example.com/avatar.jpg">
+                                <input type="url" name="avatar" class="form-control form-control-lg" placeholder="https://example.com/avatar.jpg">
                             </div>
                         </div>
+                        <!-- Address -->
                         <div class="col-6">
                             <div class="form-group">
                                 <label for="address" class="form-label">Address</label>
-                                <input type="text" name="address" class="form-control form-control-sm">
+                                <input type="text" name="address" class="form-control form-control-lg" placeholder="123 Main St">
                             </div>
                         </div>
-                        <!-- <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="student_id" class="form-label">Student ID</label>
-                                <input type="text" name="student_id" class="form-control form-control-sm">
-                            </div>
-                        </div> -->
-                        <!-- <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="country_id" class="form-label">Country</label>
-                                <input type="number" name="country_id" class="form-control form-control-sm">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="state_id" class="form-label">State</label>
-                                <input type="number" name="state_id" class="form-control form-control-sm">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="zipcode" class="form-label">Zipcode</label>
-                                <input type="text" name="zipcode" class="form-control form-control-sm">
-                            </div> 
-                         </div>  -->
+                        <!-- Password -->
                         <div class="col-6">
                             <div class="form-group">
                                 <label for="password" class="form-label">Password</label>
-                                <input type="password" name="password" class="form-control form-control-sm" required>
+                                <input type="password" name="password" class="form-control form-control-lg" required placeholder="********">
                             </div>
                         </div>
                     </div>
-                    <div class="text-end mt-3">
-                        <button type="submit" class="btn btn-primary btn-sm">Add Student</button>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                            <i class="mdi mdi-plus"></i> Add Student
+                        </button>
                     </div>
                 </form>
             </div>
@@ -113,3 +108,40 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<style>
+    .form-label {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .form-control-lg {
+        height: 48px;
+        font-size: 1rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+    }
+
+    .btn-dark:hover {
+        background-color: #343a40;
+        transform: scale(1.05);
+        transition: all 0.2s ease;
+    }
+
+    .btn:active {
+        transform: scale(0.97);
+        transition: transform 0.1s ease;
+    }
+
+    .input-group .form-select {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    .input-group .form-control {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+</style>
+@endpush

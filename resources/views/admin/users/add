@@ -7,7 +7,8 @@
                 <div>
                     <h4
                         class="fw-semibold mb-1 text-dark"
-                        style="font-family: 'Inter', sans-serif">
+                        style="font-family: 'Inter', sans-serif"
+                    >
                         Users
                     </h4>
                     <p class="text-muted small mb-0">
@@ -17,7 +18,8 @@
                 </div>
                 <button
                     id="bulkActionBtn"
-                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
+                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm"
+                >
                     <i class="mdi mdi-plus"></i> Add User
                 </button>
             </div>
@@ -43,7 +45,8 @@
                                 <input
                                     type="checkbox"
                                     class="select-user"
-                                    data-id="{{ $user->id }}" />
+                                    data-id="{{ $user->id }}"
+                                />
                             </td>
                             <td class="d-flex align-items-center gap-3">
                                 <img
@@ -51,7 +54,8 @@
                                     alt="{{ $user->first_name }}"
                                     class="rounded-circle shadow-sm"
                                     width="42"
-                                    height="42" />
+                                    height="42"
+                                />
                                 <div>
                                     <div class="fw-semibold text-dark">
                                         {{ ucfirst($user->first_name) }}
@@ -61,7 +65,8 @@
                             </td>
                             <td>
                                 <span
-                                    class="badge bg-light text-dark border border-secondary-subtle px-3 py-2 rounded-pill">
+                                    class="badge bg-light text-dark border border-secondary-subtle px-3 py-2 rounded-pill"
+                                >
                                     {{ $user->getRoleNames()->join(', ') }}
                                 </span>
                             </td>
@@ -70,18 +75,21 @@
                             </td>
                             <td class="text-end">
                                 <div
-                                    class="d-inline-flex justify-content-end gap-2">
+                                    class="d-inline-flex justify-content-end gap-2"
+                                >
                                     <a
                                         href="{{ route('admin.users.edit', $user->id) }}"
                                         class="btn btn-sm custom-edit-btn"
-                                        title="Edit">
+                                        title="Edit"
+                                    >
                                         <i class="mdi mdi-pencil"></i>
                                     </a>
                                     <button
                                         class="delete-user-btn custom-delete-btn"
                                         data-id="{{ $user->id }}"
                                         title="Delete"
-                                        type="button">
+                                        type="button"
+                                    >
                                         <i class="mdi mdi-delete"></i>
                                     </button>
                                 </div>
@@ -105,7 +113,8 @@
     class="modal fade"
     id="deleteConfirmModal"
     tabindex="-1"
-    aria-hidden="true">
+    aria-hidden="true"
+>
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4">
             <div class="modal-header border-0">
@@ -113,7 +122,8 @@
                 <button
                     type="button"
                     class="btn-close"
-                    data-bs-dismiss="modal"></button>
+                    data-bs-dismiss="modal"
+                ></button>
             </div>
             <div class="modal-body">
                 <p class="text-muted mb-4">
@@ -124,13 +134,15 @@
                 <button
                     type="button"
                     class="btn btn-secondary"
-                    data-bs-dismiss="modal">
+                    data-bs-dismiss="modal"
+                >
                     Cancel
                 </button>
                 <button
                     id="confirmDeleteBtn"
                     type="button"
-                    class="btn btn-danger">
+                    class="btn btn-danger"
+                >
                     Delete
                 </button>
             </div>
@@ -222,10 +234,10 @@
         text-transform: capitalize;
     }
 </style>
-@endsection
+@endsection  
 @push('scripts')
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         let userId = null;
         const deleteModal = new bootstrap.Modal(
             document.getElementById("deleteConfirmModal")
@@ -238,7 +250,7 @@
 
         // Individual Delete
         document.querySelectorAll(".delete-user-btn").forEach((button) => {
-            button.addEventListener("click", function() {
+            button.addEventListener("click", function () {
                 userId = this.dataset.id;
                 modalBody.textContent =
                     "Are you sure you want to delete this user?";
@@ -248,7 +260,7 @@
 
         // Handle Confirm Delete
         // Handle Confirm Delete
-        confirmDeleteBtn.addEventListener("click", async function() {
+        confirmDeleteBtn.addEventListener("click", async function () {
             if (userId) {
                 try {
                     const response = await fetch(`/admin/users/${userId}`, {
@@ -335,7 +347,7 @@
         });
 
         // Bulk button click - show modal for bulk delete
-        bulkActionBtn.addEventListener("click", function() {
+        bulkActionBtn.addEventListener("click", function () {
             const selectedIds = [
                 ...document.querySelectorAll(".select-user:checked"),
             ].map((cb) => cb.dataset.id);
@@ -369,7 +381,7 @@
             }
         }
 
-        selectAllCheckbox.addEventListener("change", function() {
+        selectAllCheckbox.addEventListener("change", function () {
             userCheckboxes.forEach((cb) => (cb.checked = this.checked));
             updateBulkButton();
         });

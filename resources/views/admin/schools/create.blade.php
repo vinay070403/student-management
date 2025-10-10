@@ -9,7 +9,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="card-title mb-0">Add New School</h4>
                     <a href="{{ route('schools.index') }}"
-                        class="btn btn-light border px-4 py-2 d-flex align-items-center gap-2 rounded-3">
+                        class="btn btn-light border px-3 py-3 d-flex align-items-center gap-2 rounded-3">
                         <i class="mdi mdi-arrow-left"></i> Back
                     </a>
                 </div>
@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="text-end mt-4">
-                        <button type="submit" class="btn btn-dark btn-lg px-4 py-2 rounded-3">
+                        <button type="submit" class="btn btn-dark btn-lg px-3 py-3 rounded-3">
                             Add School
                         </button>
                     </div>
@@ -80,8 +80,9 @@
     /* Card styling */
     .card {
         border-radius: 20px !important;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
+
     .card-body {
         padding: 2.5rem !important;
     }
@@ -91,6 +92,7 @@
         font-size: 1.2rem;
         font-weight: 500;
     }
+
     .form-control-lg {
         font-size: 1.1rem;
         height: 50px;
@@ -104,10 +106,12 @@
         padding: 0.8rem 1.5rem;
         border-radius: 10px;
     }
+
     .btn-lg:hover {
         transform: scale(1.05);
         transition: all 0.2s ease-in-out;
     }
+
     .btn-lg:active {
         transform: scale(0.97);
         transition: transform 0.1s ease;
@@ -120,6 +124,7 @@
         border-radius: 10px;
         transition: all 0.2s ease-in-out;
     }
+
     .btn-light:hover {
         background-color: #f0f0f0;
         transform: scale(1.03);

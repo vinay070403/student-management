@@ -9,7 +9,7 @@
             <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="fw-semibold mb-0 text-dark">States</h4>
-                <a href="{{ route('states.create') }}" class="btn btn-dark px-4 py-2 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                <a href="{{ route('states.create') }}" class="btn btn-dark px-3 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                     <i class="mdi mdi-map-marker-plus"></i> Add State
                 </a>
             </div>

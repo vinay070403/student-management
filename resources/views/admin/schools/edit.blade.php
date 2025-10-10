@@ -74,7 +74,8 @@
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th>#</th>
+                                    <!-- <th>#</th> -->
+                                    <th>School</th>
                                     <th>Class Name</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
@@ -82,7 +83,8 @@
                             <tbody>
                                 @forelse ($school->classes as $class)
                                 <tr>
-                                    <td>{{ $class->id }}</td>
+                                    <!-- <td>{{ $class->id }}</td> -->
+                                    <td>{{ $class->school->name ?? 'N/A' }}</td>
                                     <td>{{ $class->name }}</td>
                                     <td class="text-end">
                                         <a href="{{ route('schools.classes.edit', [$school->id, $class->id]) }}" class="btn btn-sm btn-outline-secondary me-2">Edit</a>

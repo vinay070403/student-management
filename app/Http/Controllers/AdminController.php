@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 // use App\Http\Controllers\Storage;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -64,9 +65,23 @@ class AdminController extends Controller
 
     public function destroy(User $user)
     {
-        $user->delete();
-        return redirect()->route('admin.users')->with('success', 'User deleted successfully!');
+        try {
+            $user->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('User deletion failed: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong while deleting the user.'
+            ], 500);
+        }
     }
+
 
     public function bulkDelete(Request $request)
     {

@@ -45,12 +45,12 @@
 
                     <!-- Buttons Section -->
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button type="submit" class="btn btn-dark px-4 py-2 d-flex align-items-center gap-2 rounded-3 btn-lg">Update Country</button>
+                        <button type="submit" class="btn btn-dark px-3 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">Update Country</button>
                         <form action="{{ route('countries.update', $country->id) }}" method="POST" style="margin:0;">
                             <!-- Delete Button triggers dialog -->
-                            <button type="button" class="btn btn-danger  px-4 py-2 d-flex align-items-center gap-2 rounded-3 btn-lg" onclick="document.getElementById('delete-country-dialog-{{ $country->id }}').showModal()">
+                            <!-- <button type="button" class="btn btn-danger  px-4 py-2 d-flex align-items-center gap-2 rounded-3 btn-lg" onclick="document.getElementById('delete-country-dialog-{{ $country->id }}').showModal()">
                                 Delete Country
-                            </button>
+                            </button> -->
                         </form>
                         <!-- Delete Confirmation Dialog -->
                         <dialog id="delete-country-dialog-{{ $country->id }}" style="border:none; border-radius:12px; padding:25px; max-width:400px; width:90%;">

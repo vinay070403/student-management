@@ -10,7 +10,7 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="card-title mb-0">Students</h4>
-                    <a href="{{ route('students.create') }}" class="btn btn-dark px-4 py-2 d-flex align-items-center gap-2 rounded-3">
+                    <a href="{{ route('students.create') }}" class="btn btn-dark px-3 py-3 d-flex align-items-center gap-2 rounded-3">
                         <i class="mdi mdi-account-plus"></i> + Add Student
                     </a>
                 </div>
@@ -25,7 +25,7 @@
                 <div class="table-responsive">
                     <table class="table table-hover align-middle students-table">
                         <thead class="table-light">
-                            <tr>
+                            <tr class="text-uppercase-gap-2">
                                 <th class="text-center">#</th>
                                 <th>Name</th>
                                 <th>Email</th>
@@ -40,7 +40,7 @@
                                 <td>{{ $student->first_name }} {{ $student->last_name }}</td>
                                 <td>{{ $student->email }}</td>
                                 <td>{{ $student->phone ?? 'N/A' }}</td>
-                                <td class="text-center">
+                                <td class="text-end">
                                     <div class="btn-group" role="group">
                                         <a href="{{ route('students.edit', $student->id) }}" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
                                             <i class="mdi mdi-pencil"></i> Edit

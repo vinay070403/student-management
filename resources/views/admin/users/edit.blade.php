@@ -9,7 +9,7 @@
             <div class="card-body p-6">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="card-title mb-0">Edit User Details</h2>
-                    <a href="{{ route('admin.users') }}" class="btn btn-dark py-2 px-4 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                    <a href="{{ route('admin.users') }}" class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                         <i class="mdi mdi-arrow-left me-2"></i> Back
                     </a>
                 </div>
@@ -89,7 +89,7 @@
 
                     <!-- Update & Delete Buttons side by side -->
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button type="submit" class="btn btn-dark py-2 px-4 d-flex align-items-center gap-2 rounded-3 btn-lg">Update User</button>
+                        <button type="submit" class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg">Update User</button>
                         <form action="{{ route('admin.users.update', $user->id) }}" method="POST" style="margin:0;">
 
                             <!-- Delete Button triggers dialog -->

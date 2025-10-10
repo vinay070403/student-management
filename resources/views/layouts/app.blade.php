@@ -5,11 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SkyDash Admin') - Admin Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- SkyDash CSS with fallbacks -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}" onerror="this.href='https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.1/iconfont/material-icons.css'">
     <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}" onerror="this.href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css'">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" onerror="this.href='https://demo.bootstrapdash.com/skydash-free/css/style.css'">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" onerror="this.href='https://demo.bootstrapdash.com/skydash-free/images/favicon.png'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    @yield('styles')
     <style>
         /* Reset & Base */
         html,
@@ -57,7 +63,7 @@
         .footer {
             position: fixed;
             bottom: 0;
-            left: 230px;
+            left: 250px;
             right: 0;
             height: 50px;
             background: #fff;
@@ -119,12 +125,14 @@
     <!-- Footer -->
     @include('layouts.partials.footer')
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <!-- Scripts -->
     <!-- Common Scripts with fallbacks -->
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'"></script>
     <script src="{{ asset('assets/js/off-canvas.js') }}" onerror="this.src='https://demo.bootstrapdash.com/skydash-free/js/off-canvas.js'"></script>
-    <script src="{{ asset('assets/js/hoverable-collapse.js') }}" onerror="this.src='https://demo.bootstrapdash.com/skydash-free/js/hoverable-collapse.js'"></script>
-    <script src="{{ asset('assets/js/misc.js') }}" onerror="this.src='https://demo.bootstrapdash.com/skydash-free/js/misc.js'"></script>
+    <!-- <script src="{{ asset('assets/js/hoverable-collapse.js') }}" onerror="this.src='https://demo.bootstrapdash.com/skydash-free/js/hoverable-collapse.js'"></script>
+    <script src="{{ asset('assets/js/misc.js') }}" onerror="this.src='https://demo.bootstrapdash.com/skydash-free/js/misc.js'"></script> -->
     @stack('scripts')
 </body>
 
