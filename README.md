@@ -239,3 +239,206 @@ public function update(Request $request, User $user)
     return redirect()->back()->with('success', 'User updated successfully!');
 }
 
+
+
+
+
+now for edit file 
+
+@extends('layouts.app')
+
+@section('title', 'Edit User')
+
+@section('content')
+<div class="row">
+    <div class="col-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body p-3">
+                <h4 class="card-title mb-3">Edit User Details</h4>
+
+                {{-- Error messages --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                {{-- Success message --}}
+                @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <form action="{{ route('admin.users.update', $user->id) }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    @csrf
+                    @method('PUT')
+
+                    <div class="row g-2">
+                        {{-- FIRST NAME --}}
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" name="first_name" class="form-control form-control-sm" 
+                                       required value="{{ old('first_name', $user->first_name) }}">
+                            </div>
+                        </div>
+
+                        {{-- LAST NAME --}}
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" name="last_name" class="form-control form-control-sm" 
+                                       required value="{{ old('last_name', $user->last_name) }}">
+                            </div>
+                        </div>
+
+                        {{-- EMAIL --}}
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control form-control-sm" 
+                                       required value="{{ old('email', $user->email) }}">
+                            </div>
+                        </div>
+
+                        {{-- PHONE --}}
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="text" name="phone" class="form-control form-control-sm" 
+                                       required value="{{ old('phone', $user->phone) }}">
+                            </div>
+                        </div>
+
+                        {{-- DOB --}}
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="dob" class="form-label">Date of Birth</label>
+                                <input type="date" name="dob" class="form-control form-control-sm"
+                                       required value="{{ old('dob', $user->dob) }}">
+                            </div>
+                        </div>
+
+                        {{-- ADDRESS --}}
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="address" class="form-label">Address</label>
+                                <input type="text" name="address" class="form-control form-control-sm"
+                                       required value="{{ old('address', $user->address) }}">
+                            </div>
+                        </div>
+
+                        {{-- AVATAR --}}
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="avatar" class="form-label">Avatar (optional)</label>
+                                <input type="file" name="avatar" class="form-control form-control-sm" accept="image/*">
+
+                                @if ($user->avatar_url)
+                                    <div class="mt-2">
+                                        <img src="{{ $user->avatar_url }}" alt="Avatar" class="img-thumbnail" style="max-width: 100px;">
+                                        <div class="form-check mt-2">
+                                            <input type="checkbox" name="remove_avatar" value="1" id="remove_avatar" class="form-check-input">
+                                            <label for="remove_avatar" class="form-check-label">Remove current avatar</label>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- PASSWORD UPDATE --}}
+                        <div class="col-md-12 mt-3">
+                            <h6 class="fw-bold">Change Password (optional)</h6>
+                            <p class="text-muted" style="font-size: 13px;">Leave blank if you don't want to change the password.</p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="password" class="form-label">New Password</label>
+                                <input type="password" name="password" class="form-control form-control-sm" placeholder="Enter new password">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="password_confirmation" class="form-label">Confirm New Password</label>
+                                <input type="password" name="password_confirmation" class="form-control form-control-sm" placeholder="Confirm new password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <button type="submit" class="btn btn-primary btn-sm">Update User</button>
+                    </div>
+                </form>
+
+                <hr>
+
+                {{-- DELETE USER --}}
+                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?')">
+                            Delete User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+
+
+
+   public function update(Request $request, User $user)
+{
+    $validated = $request->validate([
+        'first_name' => 'required|string|min:2|max:50',
+        'last_name'  => 'required|string|min:2|max:50',
+        'email'      => 'required|email|unique:users,email,' . $user->id,
+        'phone'      => 'required|digits_between:7,15',
+        'dob'        => 'required|date|before:today',
+        'address'    => 'required|string|max:255',
+        'avatar'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'password'   => 'nullable|string|min:8|confirmed', // ✅ password_confirmation handled automatically
+    ]);
+
+    // ✅ Remove avatar if requested
+    if ($request->has('remove_avatar') && $request->remove_avatar == 1) {
+        if ($user->avatar_url && file_exists(public_path($user->avatar_url))) {
+            unlink(public_path($user->avatar_url));
+        }
+        $validated['avatar_url'] = null;
+    }
+
+    // ✅ If a new avatar is uploaded
+    if ($request->hasFile('avatar')) {
+        if ($user->avatar_url && file_exists(public_path($user->avatar_url))) {
+            unlink(public_path($user->avatar_url));
+        }
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $validated['avatar_url'] = '/storage/' . $path;
+    }
+
+    // ✅ If password field is filled, hash it
+    if (!empty($request->password)) {
+        $validated['password'] = bcrypt($request->password);
+    } else {
+        unset($validated['password']); // keep existing password
+    }
+
+    $user->update($validated);
+
+    return redirect()->back()->with('success', 'User updated successfully!');
+}
+
+
