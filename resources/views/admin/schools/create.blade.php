@@ -49,18 +49,18 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <div class="form-group">
                                 <label for="address" class="form-label">Address</label>
-                                <input type="text" name="address" class="form-control form-control-lg" required>
+                                <input type="text" name="address" class="form-control form-control-lg">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="zipcode" class="form-label">Zipcode</label>
-                                <input type="text" name="zipcode" class="form-control form-control-lg" required>
+                                <input type="text" name="zipcode" class="form-control form-control-lg">
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="text-end mt-4">

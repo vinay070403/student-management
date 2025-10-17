@@ -43,27 +43,33 @@ class CountryController extends Controller
         $country->update($request->only('name'));
         return redirect()->route('countries.index')->with('success', 'Country updated!');
     }
-
     /**
-     * Cascade delete Country → States → Schools
+     * Cascade delete Country → States → Schools → Classes → Subjects
      * Handles both normal and AJAX requests
      */
     public function destroy(Country $country)
     {
         try {
-            // load relations
-            $country->load('states.school');
+            $country->load('states.school.classes', 'states.school.subjects');
 
-            // delete schools then states then country
             foreach ($country->states as $state) {
-                $state->school()->delete();
+                foreach ($state->school as $school) {
+
+                    if ($school->classes()->exists()) {
+                        $school->classes()->delete();
+                    }
+                    if ($school->subjects()->exists()) {
+                        $school->subjects()->delete();
+                    }
+                    $school->delete();
+                }
+                $state->delete();
             }
-            $country->states()->delete();
             $country->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Country and related states & schools deleted successfully.'
+                'message' => 'Country and all related states, schools, classes, and subjects deleted successfully.'
             ], 200);
         } catch (\Throwable $e) {
             Log::error('Country destroy error: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());

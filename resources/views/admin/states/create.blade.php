@@ -10,8 +10,8 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="card-title mb-0">Add New State</h4>
                     <a href="{{ route('states.index') }}"
-                        class="btn text-dark px-4 py-2 d-inline-flex align-items-center justify-content-center"
-                        style="background-color: #e5e5e5; border: 1px solid #ccc; border-radius: 6px;">
+                        class="btn text-dark px-4 py-3 d-inline-flex align-items-center justify-content-center"
+                        style="background-color: dark; border: 1px solid #ccc; border-radius: 6px;">
                         <i class="mdi mdi-arrow-left me-1"></i> Back
                     </a>
                 </div>

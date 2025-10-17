@@ -10,16 +10,27 @@
         </div>
 
         <div class="card-body">
-            <!-- Tabs -->
-            <ul class="nav nav-tabs mb-3" id="schoolTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">School Info</button>
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs mb-3">
+                <li class="nav-item">
+                    <a href="{{ route('schools.edit', $school->id) }}"
+                        class="nav-link {{ request()->routeIs('schools.edit') ? 'active' : '' }}">
+                        School Info
+                    </a>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="classes-tab" data-bs-toggle="tab" data-bs-target="#classes" type="button" role="tab">Classes</button>
+
+                <li class="nav-item">
+                    <a href="{{ route('schools.classes.index', $school->id) }}"
+                        class="nav-link {{ request()->routeIs('schools.classes.*') ? 'active' : '' }}">
+                        Classes
+                    </a>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="subjects-tab" data-bs-toggle="tab" data-bs-target="#subjects" type="button" role="tab">Subjects</button>
+
+                <li class="nav-item">
+                    <a href="{{ route('schools.subjects.index', $school->id) }}"
+                        class="nav-link {{ request()->routeIs('schools.subjects.*') ? 'active' : '' }}">
+                        Subjects
+                    </a>
                 </li>
             </ul>
 
@@ -47,15 +58,15 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <label for="address" class="form-label">Address</label>
-                            <input type="text" name="address" class="form-control" value="{{ $school->address }}" required>
+                            <input type="text" name="address" class="form-control" value="{{ $school->address }}">
                         </div>
 
                         <div class="col-md-6">
                             <label for="zipcode" class="form-label">Zipcode</label>
-                            <input type="text" name="zipcode" class="form-control" value="{{ $school->zipcode }}" required>
-                        </div>
+                            <input type="text" name="zipcode" class="form-control" value="{{ $school->zipcode }}">
+                        </div> -->
 
                         <div class="col-12 text-end">
                             <button type="submit" class="btn btn-dark px-4 py-3 gap-2 rounded-3 btn-lg">Save Changes</button>

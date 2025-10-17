@@ -8,8 +8,8 @@
         </li>
 
         @can('user-list')
-        <li class="nav-item {{ Str::startsWith(request()->route()->getName(), 'admin.users') ? 'active' : '' }}">
-            <a class="nav-link d-flex align-items-center" href="{{ route('admin.users') }}">
+        <li class="nav-item {{ Str::startsWith(request()->route()->getName(), 'users') ? 'active' : '' }}">
+            <a class="nav-link d-flex align-items-center" href="{{ route('users.index') }}">
                 <i class="mdi mdi-account menu-icon me-2"></i>
                 <span class="menu-title">Users</span>
             </a>

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="row">
-    <div class="col-8">
+    <div class="col-12">
         <div class="card shadow-sm mb-6">
             <div class="card-body p-6">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -68,9 +68,9 @@
                             <div class="form-group">
                                 <label for="avatar" class="form-label">Avatar</label>
                                 <input type="file" name="avatar" class="form-control form-control-lg">
-                                @if ($student->avatar_url)
+                                <!-- @if ($student->avatar_url)
                                 <img src="{{ $student->avatar_url }}" alt="Avatar" class="img-thumbnail mt-2" style="max-width: 100px;">
-                                @endif
+                                @endif -->
                             </div>
                         </div>
                         <div class="col-6">

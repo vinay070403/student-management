@@ -2,7 +2,7 @@
     <div class="navbar-brand-wrapper d-flex align-items-center">
         <a class="navbar-brand brand-logo" href="{{ route('dashboard') }}">
             <img src="{{ asset('assets/images/logo1.svg') }}" alt="logo" class="h-8"
-                onerror="this.src='https://demo.bootstrapdash.com/skydash-free/images/logo.svg'">
+                onerror="this.src='https://demo.bootstrapdash.com/skydash-free/images/logo1.svg'">
         </a>
     </div>
 
@@ -33,10 +33,11 @@
                 <i class="mdi mdi-chevron-down ms-1 text-muted"></i>
             </a>
 
-            <ul class="dropdown-menu dropdown-menu-end mt-2 border-0 shadow-sm rounded-3 p-2"
+            <ul class="dropdown-menu dropdown-menu-end mt-2 border-2 shadow-sm rounded-3 p-4"
                 aria-labelledby="profileDropdown">
                 <li class="px-3 py-2 border-bottom">
-                    <div class="fw-semibold">{{ $user->first_name }} {{ $user->last_name }}</div>
+                    <!-- <div class="fw-semibold">{{ $user->first_name }} {{ $user->last_name }}</div> -->
+                    <div class="fw-semibold">{{ $user->getRoleNames()->join(', ') }}</div>
                     <small class="text-muted">{{ $user->email }}</small>
                 </li>
                 <li>

@@ -51,7 +51,7 @@
         /* Main Panel (scrollable area) */
         .main-panel {
             margin-left: 230px;
-            margin-top: 70px;
+            margin-top: 60px;
             margin-bottom: 50px;
             height: calc(100vh - 120px);
             overflow-y: auto;
@@ -106,6 +106,8 @@
             }
         }
     </style>
+
+
 </head>
 
 <body>
@@ -131,8 +133,6 @@
     <!-- Common Scripts with fallbacks -->
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'"></script>
     <script src="{{ asset('assets/js/off-canvas.js') }}" onerror="this.src='https://demo.bootstrapdash.com/skydash-free/js/off-canvas.js'"></script>
-    <!-- <script src="{{ asset('assets/js/hoverable-collapse.js') }}" onerror="this.src='https://demo.bootstrapdash.com/skydash-free/js/hoverable-collapse.js'"></script>
-    <script src="{{ asset('assets/js/misc.js') }}" onerror="this.src='https://demo.bootstrapdash.com/skydash-free/js/misc.js'"></script> -->
     @stack('scripts')
 </body>
 

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="row">
-    <div class="col-8">
+    <div class="col-12">
         <div class="card shadow-sm mb-6">
             <div class="card-body p-6">
                 <div class="d-flex justify-content-between align-items-center mb-3">

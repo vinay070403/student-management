@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
-use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cookie;
 
 
 
@@ -18,32 +19,43 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
 
-        if (Auth::attempt($credentials)) {
-            // Redirect to admin/dashboard after login
+        // Check if email exists
+        if (!$user) {
+            return back()
+                ->withErrors(['email' => 'This email ID does not exist.'])
+                ->withInput($request->only('email'));
+        }
+
+        // Check if password matches
+        if (!\Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password)) {
+            return back()
+                ->withErrors(['password' => 'Your password is incorrect. Please try again.'])
+                ->withInput($request->only('email'));
+        }
+
+        // Attempt login (if all ok)
+        if (\Illuminate\Support\Facades\Auth::attempt($credentials)) {
             return redirect()->intended(route('dashboard'));
         }
 
-        return back()->withErrors([
-            'email' => 'Invalid credentials',
-        ]);
+        // Fallback
+        return back()->withErrors(['credential' => 'Invalid credentials.'])->withInput($request->only('email'));
     }
+
 
     public function showForgotPasswordForm()
     {
         return view('auth.forgot-password');
     }
 
-    public function sendResetLinkEmail(Request $request)
+    public function sendResetLinkEmail(ForgotPasswordRequest $request)
     {
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $status = Password::sendResetLink($request->only('email'));
 
         return $status === Password::RESET_LINK_SENT
             ? back()->with('status', __($status))
@@ -55,14 +67,8 @@ class AuthController extends Controller
         return view('auth.reset-password')->with(['token' => $token]);
     }
 
-    public function reset(Request $request)
+    public function reset(ResetPasswordRequest $request)
     {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|confirmed|min:8',
-        ]);
-
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
@@ -78,7 +84,14 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-        return redirect()->route('login');
+
+        $request->session()->invalidate(); // Invalidate old session
+        $request->session()->regenerateToken(); // Prevent CSRF reuse
+
+        // Remove Laravel session cookie explicitly
+        $cookie = Cookie::forget('laravel_session');
+
+        return redirect()->route('login')->withCookie($cookie);
     }
 
     public function dashboard()

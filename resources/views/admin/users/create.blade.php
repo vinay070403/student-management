@@ -1,13 +1,14 @@
 @extends('layouts.app')
 @section('title', 'Add User')
-@section('content') <div class="row">
+@section('content')
+<div class="row">
     <div class="col-12">
         <!-- Full width -->
         <div class="card shadow-sm mb-4">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="card-title mb-0">Add New User</h4>
-                    <a href="{{ route('admin.users') }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                    <a href="{{ route('users.index') }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                         <i class="mdi mdi-arrow-left me-2"></i> Back </a>
                 </div>
                 @if ($errors->any())
@@ -21,7 +22,8 @@
                 @endif @if (session('success'))
                 <div class="alert alert-success"> {{ session('success') }} </div>
                 @endif
-                <form action="{{ route('admin.users.store') }}" method="POST" class="needs-validation" novalidate>
+                <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+
                     @csrf
                     <div class="row g-3">
                         <!-- First Name -->
@@ -52,10 +54,22 @@
                             </div>
                         </div>
                         <!-- Avatar URL -->
+                        {{-- ✅ Updated Avatar Section --}}
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="avatar" class="form-label">Avatar URL</label>
-                                <input type="url" name="avatar" class="form-control form-control-lg" placeholder="https://example.com/avatar.jpg">
+                                <label for="avatar" class="form-label">Avatar (optional)</label>
+                                <input type="file" name="avatar" class="form-control form-control-lg" accept="image/*">
+
+                                {{-- If user already has an avatar, show it --}}
+                                @isset($user->avatar_url)
+                                <div class="mt-2">
+                                    <img src="{{ $user->avatar_url }}" alt="Avatar" class="img-thumbnail" style="max-width: 100px;">
+                                    <div class="form-check mt-2">
+                                        <input type="checkbox" name="remove_avatar" value="1" id="remove_avatar" class="form-check-input">
+                                        <label for="remove_avatar" class="form-check-label">Remove current avatar</label>
+                                    </div>
+                                </div>
+                                @endisset
                             </div>
                         </div>
                         <!-- Address -->
@@ -69,7 +83,13 @@
                         <div class="col-6">
                             <div class="form-group">
                                 <label for="password" class="form-label">Password</label>
-                                <input type="password" name="password" class="form-control form-control-lg" required placeholder="********">
+                                <input type="password" name="password" class="form-control form-control-lg" placeholder="create your password">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="password_confirmation" class="form-label">Confirm Password</label>
+                                <input type="password" name="password_confirmation" class="form-control form-control-lg">
                             </div>
                         </div>
                     </div>
@@ -81,41 +101,25 @@
         </div>
     </div>
 </div>
-@endsection @push('styles') <
-    <style>
-    /* Form labels and inputs */
+@endsection @push('styles')
+<style>
+    /* Custom styles for better spacing and alignment */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
     .form-label {
-    font-size: 1.1rem;
-    font-weight: 500;
+        font-weight: 600;
     }
 
-    .form-control-lg {
-    height: 48px;
-    font-size: 1rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 8px;
-    }
-
-    /* Buttons hover effect */
-    .btn-primary:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-    transition: all 0.2s ease;
-    }
-
-    .btn:active {
-    transform: scale(0.97);
-    transition: transform 0.1s ease;
-    }
-
-    /* Input group spacing */
     .input-group .form-select {
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
     }
 
     .input-group .form-control {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
     }
-    </style> @endpush
+</style>
+@endpush

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Class\StoreClassRequest;
+use App\Http\Requests\Class\UpdateClassRequest;
 use App\Models\ClassModel;
 use App\Models\School;
 use Illuminate\Http\Request;
@@ -21,14 +23,13 @@ class ClassController extends Controller
         return view('admin.schools.classes.create', compact('school'));
     }
 
-    public function store(Request $request, School $school)
+    public function store(StoreClassRequest $request, School $school)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        $school->classes()->create($request->validated());
 
-        $school->classes()->create($request->all());
-        return redirect()->route('schools.classes.index', $school)->with('success', 'Class added!');
+        return redirect()
+            ->route('schools.classes.index', $school)
+            ->with('success', 'Class added!');
     }
 
     public function edit(School $school, ClassModel $class)
@@ -38,19 +39,20 @@ class ClassController extends Controller
         // return view('admin.schools.classes.edit', compact('school', 'class', 'schools'));
     }
 
-    public function update(Request $request, School $school, ClassModel $class)
+    public function update(UpdateClassRequest $request, School $school, ClassModel $class)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        $class->update($request->validated());
 
-        $class->update($request->all());
-        return redirect()->route('schools.classes.index', $school)->with('success', 'Class updated!');
+        return redirect()
+            ->route('schools.classes.index', $school)
+            ->with('success', 'Class updated!');
     }
 
     public function destroy(School $school, ClassModel $class)
     {
         $class->delete();
-        return redirect()->route('schools.classes.index', $school)->with('success', 'Class deleted!');
+        return redirect()
+            ->route('schools.classes.index', $school)
+            ->with('success', 'Class deleted!');
     }
 }

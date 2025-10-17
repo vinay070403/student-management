@@ -1,4 +1,6 @@
-@extends('layouts.app') @section('title', 'Users') @section('content')
+@extends('layouts.app') 
+@section('title', 'Users') 
+@section('content')
 <div class="container-fluid">
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-4">

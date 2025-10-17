@@ -1,19 +1,21 @@
-@extends('layouts.app') @section('title', 'Users') @section('content')
+@extends('layouts.app')
+@section('title', 'Users')
+@section('content')
 <div class="container-fluid">
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-4">
             <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h4
+                    <h3
                         class="fw-semibold mb-1 text-dark"
                         style="font-family: 'Inter', sans-serif">
                         Users
-                    </h4>
-                    <p class="text-muted small mb-0">
+                    </h3>
+                    <!-- <p class="text-muted small mb-0">
                         A list of all users in your account, including their
                         name, role, and creation date.
-                    </p>
+                    </p> -->
                 </div>
                 <button
                     id="bulkActionBtn"
@@ -23,78 +25,8 @@
             </div>
 
             <!-- Table -->
-            <div class="table-grid table-responsive">
-                <table class="table align-middle mb-3 table-hover user-table">
-                    <thead class="bg-light">
-                        <tr>
-                            <th>
-                                <input type="checkbox" id="selectAllUsers" />
-                            </th>
-                            <th>USER</th>
-                            <th>ROLE</th>
-                            <th>CREATED AT</th>
-                            <th class="text-center">ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($users as $user)
-                        <tr id="user-row-{{ $user->id }}" class="user-row">
-                            <td>
-                                <input
-                                    type="checkbox"
-                                    class="select-user"
-                                    data-id="{{ $user->id }}" />
-                            </td>
-                            <td class="d-flex align-items-center gap-3">
-                                <img
-                                    src="{{ $user->avatar ? asset('storage/avatars/'.$user->avatar) : asset('assets/images/default-avatar.png') }}"
-                                    alt="{{ $user->first_name }}"
-                                    class="rounded-circle shadow-sm"
-                                    width="42"
-                                    height="42" />
-                                <div>
-                                    <div class="fw-semibold text-dark">
-                                        {{ ucfirst($user->first_name) }}
-                                        {{ ucfirst($user->last_name) }}
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span
-                                    class="badge bg-light text-dark border border-secondary-subtle px-3 py-2 rounded-pill">
-                                    {{ $user->getRoleNames()->join(', ') }}
-                                </span>
-                            </td>
-                            <td class="text-muted">
-                                {{ $user->created_at->format('d M Y, h:i A') }}
-                            </td>
-                            <td class="text-end">
-                                <div
-                                    class="d-inline-flex justify-content-end gap-2">
-                                    <a
-                                        href="{{ route('admin.users.edit', $user->id) }}"
-                                        class="btn btn-sm custom-edit-btn"
-                                        title="Edit">
-                                        <i class="mdi mdi-pencil"></i>
-                                    </a>
-                                    <button
-                                        class="delete-user-btn custom-delete-btn"
-                                        data-id="{{ $user->id }}"
-                                        title="Delete"
-                                        type="button">
-                                        <i class="mdi mdi-delete"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="mt-4 d-flex justify-content-end">
-                {{ $users->links('pagination::bootstrap-5') }}
+            <div id="usersTableContainer">
+                @include('admin.users.partials.users_table')
             </div>
         </div>
     </div>
@@ -346,7 +278,7 @@
                 deleteModal.show();
             } else {
                 // Redirect to Add User page if no selection
-                window.location.href = "{{ route('admin.users.create') }}";
+                window.location.href = "{{ route('users.create') }}";
             }
         });
 
@@ -378,5 +310,24 @@
             cb.addEventListener("change", updateBulkButton);
         });
     });
+
+    // AJAX Pagination
+    $(document).on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        let page = $(this).attr('href').split('page=')[1];
+        fetchUsers(page);
+    });
+
+    function fetchUsers(page) {
+        $.ajax({
+            url: "{{ route('users.index') }}?page=" + page,
+            success: function(data) {
+                $('#usersTableContainer').html(data);
+            },
+            error: function() {
+                alert('Failed to load users. Please try again.');
+            }
+        });
+    }
 </script>
 @endpush

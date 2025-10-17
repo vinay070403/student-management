@@ -4,46 +4,52 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-sm rounded-3">
         <div class="card-body p-4">
 
             <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-semibold mb-0 text-dark">Countries</h4>
+                <div>
+                    <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
+                        Countries
+                    </h3>
+                    <p class="text-muted small mb-0">
+                        A list of all countries available in your system.
+                    </p>
+                </div>
                 <a href="{{ route('countries.create') }}"
-                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
                     <i class="mdi mdi-plus"></i> Add Country
                 </a>
             </div>
-
             <!-- Alert Box -->
             <div id="alert-box" class="alert d-none" role="alert"></div>
 
             <!-- Table -->
             <div class="table-responsive">
                 <table class="table align-middle mb-3 table-hover country-table">
-                    <thead class="bg-light">
+                    <thead class="table-light">
                         <tr>
-                            <th>#</th>
+                            <th style="width: 60px;">#</th>
                             <th>COUNTRY NAME</th>
                             <th>CREATED AT</th>
-                            <th class="text-center">ACTIONS</th>
+                            <th class="text-center" style="width: 120px;">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($countries as $country)
                         <tr id="country-row-{{ $country->id }}">
-                            <td class="fw-bold">{{ $country->id }}</td>
-                            <td>{{ ucfirst($country->name) }}</td>
-                            <td>{{ $country->created_at->format('d M Y, h:i A') }}</td>
+                            <td class="fw-bold text-secondary">{{ $country->id }}</td>
+                            <td class="fw-semibold">{{ ucfirst($country->name) }}</td>
+                            <td class="text-muted small">{{ $country->created_at->format('d M Y, h:i A') }}</td>
                             <td class="text-center">
-                                <div class="d-inline-flex gap-3">
+                                <div class="d-inline-flex gap-2">
                                     <a href="{{ route('countries.edit', $country->id) }}"
-                                        class="btn btn-sm btn-outline-secondary rounded-3 position-relative"
-                                        title="Edit">
+                                        class="btn btn-sm custom-edit-btn" title="Edit">
                                         <i class="mdi mdi-pencil"></i>
                                     </a>
-                                    <button class="btn btn-sm btn-outline-danger rounded-3 delete-country-btn position-relative"
+                                    <button type="button"
+                                        class="btn btn-sm custom-delete-btn delete-country-btn"
                                         data-id="{{ $country->id }}" title="Delete">
                                         <i class="mdi mdi-delete"></i>
                                     </button>
@@ -84,30 +90,62 @@
 
 @push('styles')
 <style>
-    /* Smooth fade out on delete */
-    .fade-out {
-        opacity: 0;
-        transition: opacity 0.4s ease-out;
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+    body {
+        font-family: "Inter", sans-serif !important;
     }
 
-    .btn-outline-danger:hover {
-        background-color: #fee2e2;
-        color: #b91c1c;
-        transform: translateY(-1px);
+    .country-table thead th {
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #6c757d;
+        border-bottom: 2px solid #dee2e6;
     }
 
-    /* Table hover */
     .country-table tbody tr {
         border-bottom: 1px solid #e5e7eb;
         transition: background-color 0.2s ease-in-out;
     }
 
     .country-table tbody tr:hover {
-        background-color: #f9fafb;
-        box-shadow: inset 3px 0 0 #2563eb;
+        background-color: #f8fafc;
     }
 
-    /* Alert styles */
+    /* ✅ Edit Button (Clean Blue) */
+    .custom-edit-btn {
+        border: 1.8px solid #0d6efd;
+        color: #0d6efd;
+        background-color: #fff;
+        padding: 6px 10px !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .custom-edit-btn:hover {
+        background-color: #0d6efd;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    /* ✅ Delete Button (Clean Red) */
+    .custom-delete-btn {
+        border: 1.8px solid #dc3545;
+        color: #dc3545;
+        background-color: #fff;
+        padding: 6px 10px !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .custom-delete-btn:hover {
+        background-color: #dc3545;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    /* ✅ Alert Styling */
     #alert-box {
         border-radius: 10px;
         font-weight: 500;
@@ -126,122 +164,78 @@
         color: #991b1b;
         border: 1px solid #ef4444;
     }
+
+    /* ✅ Fade Out Animation */
+    .fade-out {
+        opacity: 0;
+        transition: opacity 0.4s ease-out;
+    }
 </style>
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const baseUrl = "{{ url('admin/countries') }}"; // ensures correct prefix
+        const baseUrl = "{{ url('admin/countries') }}"; // Dynamic base URL
         let currentId = null;
         let lastActiveElement = null;
 
-        // Bootstrap modal element & buttons
         const modalEl = document.getElementById('deleteCountryModal');
         const deleteModal = new bootstrap.Modal(modalEl, {
-            backdrop: true,
-            keyboard: true
+            backdrop: true
         });
         const confirmBtn = document.getElementById('confirmCountryDeleteBtn');
-        const alertBox = document.getElementById('alert-box'); // optional alert box you may have
+        const alertBox = document.getElementById('alert-box');
 
-        // Helper: show alerts (if you have an alert element), otherwise falls back to alert()
         function showToast(type, msg) {
-            if (alertBox) {
-                alertBox.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger');
-                alertBox.textContent = msg;
-                alertBox.classList.remove('d-none');
-                setTimeout(() => alertBox.classList.add('d-none'), 3500);
-            } else {
-                // fallback
-                if (type === 'success') console.log(msg);
-                else console.error(msg);
-            }
+            alertBox.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger');
+            alertBox.textContent = msg;
+            alertBox.classList.remove('d-none');
+            setTimeout(() => alertBox.classList.add('d-none'), 3500);
         }
 
-        // Open modal — capture the triggering element so we can restore focus later
-        document.querySelectorAll('.delete-country-btn').forEach(button => {
-            button.addEventListener('click', function() {
+        // Open modal
+        document.querySelectorAll('.delete-country-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
                 currentId = this.dataset.id;
-                lastActiveElement = this; // save trigger
+                lastActiveElement = this;
                 deleteModal.show();
             });
         });
 
-        // Restore focus when modal fully hidden (fixes aria-hidden/focus issue)
+        // Reset state when modal closes
         modalEl.addEventListener('hidden.bs.modal', () => {
-            if (lastActiveElement && typeof lastActiveElement.focus === 'function') {
-                lastActiveElement.focus();
-            }
+            if (lastActiveElement) lastActiveElement.focus();
             currentId = null;
-        });
-
-        // Also move focus into modal when shown (a11y nicety)
-        modalEl.addEventListener('shown.bs.modal', () => {
-            // try to focus the modal's close button if present
-            const closeBtn = modalEl.querySelector('.btn-close');
-            if (closeBtn) closeBtn.focus();
         });
 
         // Confirm delete
         confirmBtn.addEventListener('click', function() {
             if (!currentId) return;
+            confirmBtn.disabled = true;
 
-            confirmBtn.disabled = true; // prevent double clicks
-            const url = `${baseUrl}/${currentId}`;
-
-            fetch(url, {
-                    method: 'DELETE',
+            axios.post(`${baseUrl}/${currentId}`, {
+                    _method: 'DELETE' // Laravel method spoofing
+                }, {
                     headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     }
                 })
-                .then(async res => {
-                    confirmBtn.disabled = false;
-
-                    // quick status-based handling
-                    if (res.status === 404) {
-                        throw new Error('Not found (404). Check the request URL or route.');
+                .then(response => {
+                    const row = document.getElementById(`country-row-${currentId}`);
+                    if (row) {
+                        row.classList.add('fade-out');
+                        setTimeout(() => row.remove(), 350);
                     }
-                    if (res.status === 405) {
-                        throw new Error('Method Not Allowed (405). Route may not accept DELETE.');
-                    }
-                    if (res.status >= 500) {
-                        // try to read server message, but keep a generic fallback
-                        let txt = 'Server error';
-                        try {
-                            const j = await res.json();
-                            if (j && j.message) txt = j.message;
-                        } catch (e) {}
-                        throw new Error('Server error: ' + txt);
-                    }
-
-                    // ok parse json
-                    return res.json();
+                    deleteModal.hide();
+                    showToast('success', response.data.message || 'Deleted successfully.');
                 })
-                .then(data => {
-                    if (data && data.success) {
-                        // nicely remove row with fade
-                        const row = document.getElementById(`country-row-${currentId}`);
-                        if (row) {
-                            row.classList.add('fade-out');
-                            setTimeout(() => row.remove(), 350);
-                        }
-                        deleteModal.hide();
-                        showToast('success', data.message || 'Deleted successfully.');
-                    } else {
-                        // server responded but success=false
-                        const msg = (data && data.message) ? data.message : 'Could not delete.';
-                        showToast('danger', msg);
-                    }
+                .catch(error => {
+                    console.error(error);
+                    showToast('danger', error.response?.data?.message || 'Delete failed.');
                 })
-                .catch(err => {
-                    // network or handled error
-                    console.error('Delete error:', err);
-                    showToast('danger', err.message || 'Failed to delete country.');
-                });
+                .finally(() => confirmBtn.disabled = false);
         });
     });
 </script>

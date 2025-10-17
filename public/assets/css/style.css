@@ -27840,7 +27840,7 @@ table.dataTable tbody td.select-checkbox:after {
 }
 
 .sidebar .nav .nav-item .nav-link i.menu-icon {
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   line-height: 1;
   margin-right: 1rem;
   color: darkblue;
@@ -27852,7 +27852,7 @@ table.dataTable tbody td.select-checkbox:after {
 }
 
 .sidebar .nav .nav-item .nav-link i.menu-icon:before {
-  vertical-align: middle;
+  vertical-align: absolute;
 }
 
 .sidebar .nav .nav-item .nav-link i.menu-arrow {
@@ -27912,14 +27912,14 @@ table.dataTable tbody td.select-checkbox:after {
 }
 
 .sidebar .nav .nav-item.active>.nav-link {
-  background: black;
+  background: linear-gradient(145deg, skyblue 0%, #e0ebff 100%);
   position: relative;
 }
 
 .sidebar .nav .nav-item.active>.nav-link i,
 .sidebar .nav .nav-item.active>.nav-link .menu-title,
 .sidebar .nav .nav-item.active>.nav-link .menu-arrow {
-  color: #fff;
+  color: navy;
 }
 
 .sidebar .nav .nav-item.active>.nav-link i.menu-arrow::before {
@@ -27944,7 +27944,7 @@ table.dataTable tbody td.select-checkbox:after {
 
 .sidebar .nav:not(.sub-menu)>.nav-item:hover>.nav-link,
 .sidebar .nav:not(.sub-menu)>.nav-item:hover[aria-expanded=true] {
-  background: #4B49AC;
+  background: navy;
   color: #fff;
 }
 

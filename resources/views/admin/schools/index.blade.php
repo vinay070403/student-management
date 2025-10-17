@@ -4,71 +4,79 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-sm rounded-3">
         <div class="card-body p-4">
+
             <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-semibold mb-0 text-dark">Schools</h4>
+                <div>
+                    <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
+                        Schools
+                    </h3>
+                    <p class="text-muted small mb-0">
+                        A list of all schools available in your system.
+                    </p>
+                </div>
                 <a href="{{ route('schools.create') }}"
-                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
-                    <i class="mdi mdi-school"></i> + Add School
+                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
+                    <i class="mdi mdi-school"></i> Add School
                 </a>
             </div>
 
+            <!-- Alert Box -->
+            <div id="alert-box" class="alert d-none" role="alert"></div>
+
             <!-- Table -->
             <div class="table-responsive">
-                <table class="table align-middle mb-3 table-hover schools-table">
-                    <thead class="bg-light">
+                <table class="table align-middle mb-3 table-hover school-table">
+                    <thead class="table-light">
                         <tr>
-                            <th class="text-center">#</th>
-                            <th>NAME</th>
+                            <th style="width: 60px;">#</th>
+                            <th>SCHOOL NAME</th>
                             <th>STATE</th>
-                            <th>ADDRESS</th>
+                            <!-- <th>ADDRESS</th> -->
                             <th>ZIPCODE</th>
-                            <th class="text-center">ACTIONS</th>
+                            <th class="text-center" style="width: 120px;">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($schools as $school)
                         <tr id="school-row-{{ $school->id }}">
-                            <td class="text-center fw-bold">{{ $school->id }}</td>
-                            <td>{{ $school->name }}</td>
-                            <td>{{ $school->state->name ?? 'N/A' }}</td>
-                            <td>{{ $school->address ?? 'N/A' }}</td>
-                            <td>{{ $school->zipcode ?? 'N/A' }}</td>
-                            <td class="text-center">
-                                <div class="d-inline-flex gap-3">
-                                    <a href="{{ route('schools.edit', $school->id) }}"
-                                        class="btn btn-sm btn-outline-secondary rounded-3 position-relative"
-                                        title="Edit">
-                                        <i class="mdi mdi-pencil"></i>
-                                    </a>
-                                    <button class="btn btn-sm btn-outline-danger rounded-3 delete-school-btn position-relative"
-                                        data-id="{{ $school->id }}" title="Delete">
-                                        <i class="mdi mdi-delete"></i>
-                                    </button>
-                                </div>
-                            </td>
+                            <td class="fw-bold text-secondary">{{ $school->id }}</td>
+                            <td class="fw-semibold">{{ ucfirst($school->name) }}</td>
+                            <td class="text-muted small">{{ $school->state->name ?? 'N/A' }}</td>
+                            <div>
+                                <!-- <td class="text-muted small">
+                                    {{ \Illuminate\Support\Str::words($school->address ?? 'N/A', 55, '.......') }}
+                                </td> -->
+                                <td class="text-muted small">{{ $school->zipcode ?? 'N/A' }}</td>
+                                <td class="text-center">
+                                    <div class="d-inline-flex gap-2">
+                                        <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-sm custom-edit-btn" title="Edit">
+                                            <i class="mdi mdi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm custom-delete-btn delete-school-btn" data-id="{{ $school->id }}" title="Delete">
+                                            <i class="mdi mdi-delete"></i>
+                                        </button>
+                                    </div>
+                                </td>
                         </tr>
                         @endforeach
                         @if ($schools->isEmpty())
                         <tr>
-                            <td colspan="6" class="text-center">No schools found.</td>
+                            <td colspan="6" class="text-center text-muted py-4">No schools found.</td>
                         </tr>
                         @endif
                     </tbody>
                 </table>
             </div>
 
-            <!-- Pagination -->
-
-
         </div>
     </div>
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="deleteSchoolModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4">
             <div class="modal-header border-0">
@@ -77,16 +85,13 @@
             </div>
             <div class="modal-body">
                 <p class="text-muted mb-4">
-                    <b>Are you sure you want to delete this school?</b>
+                    <b>Are you sure you want to delete this school?</b><br>
+                    <small>This will permanently remove its data from the system.</small>
                 </p>
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form id="deleteSchoolForm" method="POST" style="margin:0;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
+                <button id="confirmSchoolDeleteBtn" type="button" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
@@ -95,81 +100,152 @@
 
 @push('styles')
 <style>
-    /* Table row hover + border */
-    .schools-table tbody tr {
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+    body {
+        font-family: "Inter", sans-serif !important;
+    }
+
+    .school-table thead th {
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #6c757d;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .school-table tbody tr {
         border-bottom: 1px solid #e5e7eb;
         transition: background-color 0.2s ease-in-out;
     }
 
-    .schools-table tbody tr:hover {
-        background-color: #f9fafb;
-        box-shadow: inset 3px 0 0 #2563eb;
+    .school-table tbody tr:hover {
+        background-color: #f8fafc;
     }
 
-    .table thead th {
-        border-bottom: 2px solid #e5e7eb;
-    }
-
-    /* Modal styling */
-    .modal-content {
-        border-radius: 14px;
-        overflow: hidden;
-    }
-
-    /* Delete button hover */
-    .btn-outline-danger:hover {
-        background-color: #fee2e2;
-        color: #b91c1c;
-        transform: translateY(-1px);
-    }
-
-    /* Tooltip for action buttons */
-    .btn[title]:hover::after {
-        content: attr(title);
-        position: absolute;
-        bottom: -28px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #111827;
-        color: #fff;
-        font-size: 12px;
-        padding: 4px 8px;
-        border-radius: 6px;
-        white-space: nowrap;
-        opacity: 0.9;
-        pointer-events: none;
-    }
-
-    /* Pagination styling */
-    .pagination {
-        margin-bottom: 0;
-    }
-
-    .page-link {
+    /* ✅ Edit Button */
+    .custom-edit-btn {
+        border: 1px solid #0d6efd;
+        color: #0d6efd;
+        background-color: #fff;
+        padding: 6px 10px !important;
         border-radius: 8px !important;
+        transition: all 0.2s ease-in-out;
     }
 
-    .page-item.active .page-link {
-        background-color: #2563eb;
-        border-color: #2563eb;
+    .custom-edit-btn:hover {
+        background-color: #0d6efd;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    /* ✅ Delete Button */
+    .custom-delete-btn {
+        border: 1.8px solid #dc3545;
+        color: #dc3545;
+        background-color: #fff;
+        padding: 6px 10px !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .custom-delete-btn:hover {
+        background-color: #dc3545;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    /* ✅ Alert Styling */
+    #alert-box {
+        border-radius: 10px;
+        font-weight: 500;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+    }
+
+    #alert-box.alert-success {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #10b981;
+    }
+
+    #alert-box.alert-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #ef4444;
+    }
+
+    .fade-out {
+        opacity: 0;
+        transition: opacity 0.4s ease-out;
     }
 </style>
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        let schoolId = null;
-        const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-        const confirmDeleteForm = document.getElementById('deleteSchoolForm');
+        const baseUrl = "{{ url('admin/schools') }}";
+        let currentId = null;
+        let lastActiveElement = null;
 
-        // Open modal
+        const modalEl = document.getElementById('deleteSchoolModal');
+        const deleteModal = new bootstrap.Modal(modalEl, {
+            backdrop: true
+        });
+        const confirmBtn = document.getElementById('confirmSchoolDeleteBtn');
+        const alertBox = document.getElementById('alert-box');
+
+        // Show alert function
+        function showToast(type, msg) {
+            alertBox.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger');
+            alertBox.textContent = msg;
+            alertBox.classList.remove('d-none');
+            setTimeout(() => alertBox.classList.add('d-none'), 3500);
+        }
+
+        // Open modal on delete button click
         document.querySelectorAll('.delete-school-btn').forEach(button => {
             button.addEventListener('click', function() {
-                schoolId = this.dataset.id;
-                confirmDeleteForm.action = `/schools/${schoolId}`;
+                currentId = this.dataset.id;
+                lastActiveElement = this;
                 deleteModal.show();
             });
+        });
+
+        // Reset modal state on close
+        modalEl.addEventListener('hidden.bs.modal', () => {
+            if (lastActiveElement) lastActiveElement.focus();
+            currentId = null;
+        });
+
+        // Confirm delete
+        confirmBtn.addEventListener('click', function() {
+            if (!currentId) return;
+            confirmBtn.disabled = true;
+
+            axios.post(`${baseUrl}/${currentId}`, {
+                    _method: 'DELETE'
+                }, {
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => {
+                    const row = document.getElementById(`school-row-${currentId}`);
+                    if (row) {
+                        row.classList.add('fade-out');
+                        setTimeout(() => row.remove(), 350);
+                    }
+                    deleteModal.hide();
+                    showToast('success', response.data.message || 'Deleted successfully.');
+                })
+                .catch(error => {
+                    console.error('Delete error:', error);
+                    showToast('danger', error.response?.data?.message || 'Failed to delete school.');
+                })
+                .finally(() => confirmBtn.disabled = false);
         });
     });
 </script>

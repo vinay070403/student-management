@@ -9,16 +9,7 @@
                 <form action="{{ route('schools.classes.store', $school) }}" method="POST">
                     @csrf
                     <div class="row g-2">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="school_id">School</label>
-                                <select name="school_id" class="form-control form-control-sm" required>
-                                    @foreach ($school as $schools)
-                                    <option value="{{ $school->id }}">{{ $school->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="name">Name</label>

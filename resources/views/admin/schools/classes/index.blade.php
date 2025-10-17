@@ -7,6 +7,7 @@
             <div class="card-body p-3">
                 <h4 class="card-title mb-3">Class List</h4>
                 <a href="{{ route('schools.classes.create', $school->id) }}" class="btn btn-primary mb-3">Add Class</a>
+                <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-sm custom-edit-btn" title="Edit">back</a>
                 <table class="table table-striped">
                     <thead>
                         <tr>

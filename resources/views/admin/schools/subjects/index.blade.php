@@ -13,6 +13,7 @@
                     <a href="{{ route('schools.subjects.create', $school) }}" class="btn btn-primary mb-4">
                         + Add Subject
                     </a>
+                    <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-sm custom-edit-btn" title="Edit">back</a>
                 </div>
 
                 @if (session('success'))
