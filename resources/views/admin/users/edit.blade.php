@@ -92,20 +92,13 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label for="address" class="form-label">Address</label>
                                 <input type="text" name="address" class="form-control form-control-lg" value="{{ $user->address }}">
                             </div>
                         </div>
 
-                        <!-- 🧩 Current Password -->
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label for="current_password" class="form-label">Current Password</label>
-                                <input type="password" name="current_password" class="form-control form-control-lg" placeholder="Enter your current password">
-                            </div>
-                        </div>
 
                         <!-- 🆕 New Password -->
                         <div class="col-6">

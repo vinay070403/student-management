@@ -9,15 +9,12 @@ use App\Http\Controllers\StateController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\ProfileController;
 
-// -----------------------------
-// Public Routes
-// -----------------------------
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', fn() => redirect()->route('login'));
 
+// ------------------------
+// Auth Routes
+// ------------------------
 Route::prefix('auth')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -29,38 +26,50 @@ Route::prefix('auth')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update');
 
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
-
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
+// ------------------------
+// Admin Routes
+// ------------------------
 Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
-    // Users (with extra bulk delete route)
+    // Profile
+    Route::get('/profile/edit', [AdminController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [AdminController::class, 'update'])->name('profile.update');
+
+    // Users
     Route::resource('users', AdminController::class);
     Route::post('/users/bulk-delete', [AdminController::class, 'bulkDelete'])->name('users.bulkDelete');
-    Route::post('/admin/users/{user}/remove-avatar', [AdminController::class, 'removeAvatar'])->name('users.removeAvatar');
+    Route::post('/users/{user}/remove-avatar', [AdminController::class, 'removeAvatar'])->name('users.removeAvatar');
 
-
-
+    // ------------------------
     // Students
+    // ------------------------
     Route::resource('students', StudentController::class);
 
-    // Countries
+    // Assign school
+    Route::post('/students/{student}/assign-school', [StudentController::class, 'assignSchool'])->name('students.assignSchool');
+
+    // Grades - AJAX
+    Route::get('/students/{student}/grades-sections/{school}', [StudentController::class, 'gradesSections'])->name('students.gradesSections');
+    Route::post('/students/{student}/storegrades', [StudentController::class, 'storeGrade'])->name('students.storeGrade');
+    Route::get('/students/{student}/load-grades', [StudentController::class, 'loadGrades'])->name('students.loadGrades');
+    Route::put('/students/{student}/updategrades', [StudentController::class, 'updateGrades']);
+    Route::post('/students/{student}/updategrades', [StudentController::class, 'updateGradesInline'])->name('students.updateGradesInline');
+    Route::delete('/students/{student}/grades/{grade}', [StudentController::class, 'destroyGrade'])->name('students.destroyGrade');
+
+    // ------------------------
+    // Locations (Country / State / School)
+    // ------------------------
+    Route::get('/countries/{country}/states', [StateController::class, 'getByCountry'])->name('countries.states');
+    Route::get('/states/{state}/schools', [SchoolController::class, 'getByState'])->name('states.schools');
+
     Route::resource('countries', CountryController::class);
-
-    // States
     Route::resource('states', StateController::class);
-
-    // Schools
     Route::resource('schools', SchoolController::class);
-
-    // Nested: Classes inside Schools
     Route::resource('schools.classes', ClassController::class);
-
-    // Nested: Subjects inside Schools
     Route::resource('schools.subjects', SubjectController::class);
 });

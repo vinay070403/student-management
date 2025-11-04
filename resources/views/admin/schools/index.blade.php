@@ -3,76 +3,78 @@
 @section('title', 'Schools')
 
 @section('content')
-<div class="container-fluid">
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-body p-4">
+<!-- <div class="container-fluid"> -->
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-4">
 
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
-                        Schools
-                    </h3>
-                    <p class="text-muted small mb-0">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
+                    Schools
+                </h3>
+                <!-- <p class="text-muted small mb-0">
                         A list of all schools available in your system.
-                    </p>
-                </div>
-                <a href="{{ route('schools.create') }}"
-                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
-                    <i class="mdi mdi-school"></i> Add School
-                </a>
+                    </p> -->
             </div>
+            <a href="{{ route('schools.create') }}"
+                class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
+                <i class="mdi mdi-school"></i> Add School
+            </a>
+        </div>
 
-            <!-- Alert Box -->
-            <div id="alert-box" class="alert d-none" role="alert"></div>
+        <!-- Alert Box -->
+        <div id="alert-box" class="alert d-none" role="alert"></div>
 
-            <!-- Table -->
-            <div class="table-responsive">
-                <table class="table align-middle mb-3 table-hover school-table">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width: 60px;">#</th>
-                            <th>SCHOOL NAME</th>
-                            <th>STATE</th>
-                            <!-- <th>ADDRESS</th> -->
-                            <th>ZIPCODE</th>
-                            <th class="text-center" style="width: 120px;">ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($schools as $school)
-                        <tr id="school-row-{{ $school->id }}">
-                            <td class="fw-bold text-secondary">{{ $school->id }}</td>
-                            <td class="fw-semibold">{{ ucfirst($school->name) }}</td>
-                            <td class="text-muted small">{{ $school->state->name ?? 'N/A' }}</td>
-                            <div>
-                                <!-- <td class="text-muted small">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table align-middle mb-3 table-hover school-table">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 60px;">#</th>
+                        <th>SCHOOL NAME</th>
+                        <th>STATE</th>
+                        <!-- <th>ADDRESS</th> -->
+                        <!-- <th>ZIPCODE</th> -->
+                        <th class="text-center" style="width: 120px;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($schools as $school)
+                    <tr id="school-row-{{ $school->id }}">
+                        <td class="fw-bold text-secondary">{{ $school->id }}</td>
+                        <td class="fw-semibold">{{ ucfirst($school->name) }}</td>
+                        <td class="text-muted small">{{ $school->state->name ?? 'N/A' }}</td>
+                        <div>
+                            <!-- <td class="text-muted small">
                                     {{ \Illuminate\Support\Str::words($school->address ?? 'N/A', 55, '.......') }}
                                 </td> -->
-                                <td class="text-muted small">{{ $school->zipcode ?? 'N/A' }}</td>
-                                <td class="text-center">
-                                    <div class="d-inline-flex gap-2">
-                                        <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-sm custom-edit-btn" title="Edit">
-                                            <i class="mdi mdi-pencil"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm custom-delete-btn delete-school-btn" data-id="{{ $school->id }}" title="Delete">
-                                            <i class="mdi mdi-delete"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                        </tr>
-                        @endforeach
-                        @if ($schools->isEmpty())
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-4">No schools found.</td>
-                        </tr>
-                        @endif
-                    </tbody>
-                </table>
-            </div>
+                            <!-- <td class="text-muted small">{{ $school->zipcode ?? 'N/A' }}</td> -->
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-sm custom-edit-btn" title="Edit">
+                                        <i class="mdi mdi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm custom-delete-btn delete-school-btn" data-id="{{ $school->id }}" title="Delete">
+                                        <i class="mdi mdi-delete"></i>
+                                    </button>
+                                </div>
+                        </div>
 
+                        </td>
+                    </tr>
+                    @endforeach
+                    @if ($schools->isEmpty())
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No schools found.</td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
         </div>
+
     </div>
+</div>
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -86,7 +88,7 @@
             <div class="modal-body">
                 <p class="text-muted mb-4">
                     <b>Are you sure you want to delete this school?</b><br>
-                    <small>This will permanently remove its data from the system.</small>
+                    <small>This will permanently remove its grade-scale data from the system.</small>
                 </p>
             </div>
             <div class="modal-footer border-0">
@@ -225,13 +227,11 @@
             if (!currentId) return;
             confirmBtn.disabled = true;
 
-            axios.post(`${baseUrl}/${currentId}`, {
-                    _method: 'DELETE'
-                }, {
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
+            const formData = new FormData();
+            formData.append('_method', 'DELETE');
+            formData.append('_token', '{{ csrf_token() }}');
+
+            axios.post(`${baseUrl}/${currentId}`, formData)
                 .then(response => {
                     const row = document.getElementById(`school-row-${currentId}`);
                     if (row) {
@@ -247,6 +247,7 @@
                 })
                 .finally(() => confirmBtn.disabled = false);
         });
+
     });
 </script>
 @endpush

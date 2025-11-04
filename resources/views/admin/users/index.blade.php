@@ -2,7 +2,7 @@
 @section('title', 'Users')
 @section('content')
 <div class="container-fluid">
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-sm rounded-3">
         <div class="card-body p-4">
             <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -35,17 +35,13 @@
 <!-- Delete Confirmation Modal -->
 <div
     class="modal fade"
-    id="deleteConfirmModal"
-    tabindex="-1"
-    aria-hidden="true">
+    id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-semibold">Confirm Deletion</h5>
                 <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"></button>
+                    type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <p class="text-muted mb-4">
@@ -53,23 +49,18 @@
                 </p>
             </div>
             <div class="modal-footer border-0">
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
-                    Cancel
-                </button>
-                <button
-                    id="confirmDeleteBtn"
-                    type="button"
-                    class="btn btn-danger">
-                    Delete
-                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="confirmDeleteBtn" type="button" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
 </div>
-@endsection @push('styles') @section('styles')
+
+@endsection
+
+@push('styles')
+
+@section('styles')
 <style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
@@ -79,7 +70,7 @@
 
     .user-row:hover {
         background-color: #f8fafc !important;
-        transition: background-color 0.25s ease;
+        transition: background-color 0.5s ease;
     }
 
     /* ✅ Delete Button — white icon, red hover */
@@ -155,6 +146,7 @@
     }
 </style>
 @endsection
+
 @push('scripts')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -330,4 +322,65 @@
         });
     }
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Delegate click event for all delete buttons
+        $(document).on('click', '.delete-user', function(e) {
+            e.preventDefault();
+            const userId = $(this).data('id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This user will be permanently deleted!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/users/${userId}`,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+
+                                // Remove row smoothly
+                                $(`#user-row-${userId}`).fadeOut(500, function() {
+                                    $(this).remove();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: response.message,
+                                    icon: 'error'
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Failed to delete user. Check console for details.',
+                                icon: 'error'
+                            });
+                            console.error(xhr.responseText);
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+
 @endpush

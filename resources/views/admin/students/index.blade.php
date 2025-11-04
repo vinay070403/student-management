@@ -3,7 +3,7 @@
 @section('title', 'Students')
 
 @section('content')
-<div class="container-fluid">
+<div class="app-wrapper flex-column flex-row-fluid">
     <div class="card border-0 shadow-sm rounded-3">
         <div class="card-body p-4">
 
@@ -13,9 +13,6 @@
                     <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
                         Students
                     </h3>
-                    <p class="text-muted small mb-0">
-                        A list of all students currently in the system.
-                    </p>
                 </div>
                 <a href="{{ route('students.create') }}"
                     class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
@@ -23,18 +20,12 @@
                 </a>
             </div>
 
-            <!-- Alert Box -->
-            <div id="alert-box" class="alert d-none" role="alert"></div>
-
             <!-- Table -->
             <div class="table-responsive">
                 <table class="table align-middle mb-3 table-hover student-table">
                     <thead class="table-light">
                         <tr>
                             <th>USER</th>
-                            <!-- <th style="width: 60px;">#</th> -->
-                            <!-- <th>NAME</th> -->
-                            <!-- <th>EMAIL</th> -->
                             <th>PHONE</th>
                             <th class="text-center" style="width: 120px;">ACTIONS</th>
                         </tr>
@@ -44,14 +35,13 @@
                         <tr id="student-row-{{ $student->id }}">
 
                             <td class="d-flex align-items-center gap-3">
-                                <img src="{{ $student->avatar ? asset('storage/avatars/'.$student->avatar) : asset('assets/images/default-avatar.png') }}"
+                                <img src="{{ $student->avatar ? asset('storage/'.$student->avatar) : asset('assets/images/default-avatar.png') }}"
                                     alt="{{ $student->first_name }}" class="rounded-circle shadow-sm" width="42" height="42" />
-
-                                <!-- <td class="fw-bold text-secondary">{{ $student->id }}</td> -->
                                 <div>
                                     <div class="fw-semibold">{{ $student->first_name }} {{ $student->last_name }}</div>
                                     <div class="fw-semibold text-gray">{{ $student->email }}</div>
                                 </div>
+                            </td>
 
                             <td class="text-muted small">{{ $student->phone ?? 'N/A' }}</td>
                             <td class="text-center">
@@ -67,7 +57,6 @@
                                         <i class="mdi mdi-delete"></i>
                                     </button>
                                 </div>
-                            </td>
                             </td>
                         </tr>
                         @endforeach
@@ -132,7 +121,6 @@
         background-color: #f8fafc;
     }
 
-    /* ✅ Edit Button */
     .custom-edit-btn {
         border: 1px solid #0d6efd;
         color: #0d6efd;
@@ -148,7 +136,6 @@
         transform: translateY(-2px);
     }
 
-    /* ✅ Delete Button */
     .custom-delete-btn {
         border: 1.8px solid #dc3545;
         color: #dc3545;
@@ -164,26 +151,6 @@
         transform: translateY(-2px);
     }
 
-    /* ✅ Alert Styling */
-    #alert-box {
-        border-radius: 10px;
-        font-weight: 500;
-        padding: 10px 15px;
-        margin-bottom: 15px;
-    }
-
-    #alert-box.alert-success {
-        background-color: #d1fae5;
-        color: #065f46;
-        border: 1px solid #10b981;
-    }
-
-    #alert-box.alert-danger {
-        background-color: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #ef4444;
-    }
-
     .fade-out {
         opacity: 0;
         transition: opacity 0.4s ease-out;
@@ -193,6 +160,7 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const baseUrl = "{{ url('admin/students') }}";
@@ -205,16 +173,7 @@
             backdrop: true
         });
         const confirmBtn = document.getElementById('confirmStudentDeleteBtn');
-        const alertBox = document.getElementById('alert-box');
         const studentNameEl = document.getElementById('studentName');
-
-        // Show toast/alert
-        function showToast(type, msg) {
-            alertBox.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger');
-            alertBox.textContent = msg;
-            alertBox.classList.remove('d-none');
-            setTimeout(() => alertBox.classList.add('d-none'), 3500);
-        }
 
         // Open modal when delete button clicked
         document.querySelectorAll('.delete-student-btn').forEach(button => {
@@ -252,11 +211,24 @@
                         setTimeout(() => row.remove(), 350);
                     }
                     deleteModal.hide();
-                    showToast('success', response.data.message || 'Student deleted successfully.');
+
+                    // SweetAlert2 popup
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: response.data.message || `${studentName} has been deleted.`,
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
                 })
                 .catch(error => {
                     console.error('Delete error:', error);
-                    showToast('danger', error.response?.data?.message || 'Failed to delete student.');
+                    deleteModal.hide();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: error.response?.data?.message || 'Failed to delete student.',
+                    });
                 })
                 .finally(() => confirmBtn.disabled = false);
         });

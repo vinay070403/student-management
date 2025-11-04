@@ -3,67 +3,67 @@
 @section('title', 'States')
 
 @section('content')
-<div class="container-fluid">
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-body p-4">
+<!-- <div class="container-fluid"> -->
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-4">
 
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
-                        States
-                    </h3>
-                    <p class="text-muted small mb-0">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
+                    States
+                </h3>
+                <!-- <p class="text-muted small mb-0">
                         A list of all states available in your system.
-                    </p>
-                </div>
-                <a href="{{ route('states.create') }}"
-                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
-                    <i class="mdi mdi-map-marker-plus"></i> Add State
-                </a>
+                    </p> -->
             </div>
-
-            <!-- Alert Box -->
-            <div id="alert-box" class="alert d-none" role="alert"></div>
-
-            <!-- Table -->
-            <div class="table-responsive">
-                <table class="table align-middle mb-3 table-hover state-table">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width: 60px;">#</th>
-                            <th>STATE NAME</th>
-                            <th>COUNTRY</th>
-                            <th class="text-center" style="width: 120px;">ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($states as $state)
-                        <tr id="state-row-{{ $state->id }}">
-                            <td class="fw-bold text-secondary">{{ $state->id }}</td>
-                            <td class="fw-semibold">{{ ucfirst($state->name) }}</td>
-                            <td class="text-muted small">{{ $state->country->name ?? 'N/A' }}</td>
-                            <td class="text-center">
-                                <div class="d-inline-flex gap-2">
-                                    <a href="{{ route('states.edit', $state->id) }}"
-                                        class="btn btn-sm custom-edit-btn" title="Edit">
-                                        <i class="mdi mdi-pencil"></i>
-                                    </a>
-                                    <button type="button"
-                                        class="btn btn-sm custom-delete-btn delete-state-btn"
-                                        data-id="{{ $state->id }}" title="Delete">
-                                        <i class="mdi mdi-delete"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
+            <a href="{{ route('states.create') }}"
+                class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
+                <i class="mdi mdi-map-marker-plus"></i> Add State
+            </a>
         </div>
+
+        <!-- Alert Box -->
+        <div id="alert-box" class="alert d-none" role="alert"></div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table align-middle mb-3 table-hover state-table">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 60px;">#</th>
+                        <th>STATE NAME</th>
+                        <th>COUNTRY</th>
+                        <th class="text-center" style="width: 120px;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($states as $state)
+                    <tr id="state-row-{{ $state->id }}">
+                        <td class="fw-bold text-secondary">{{ $state->id }}</td>
+                        <td class="fw-semibold">{{ ucfirst($state->name) }}</td>
+                        <td class="text-muted small">{{ $state->country->name ?? 'N/A' }}</td>
+                        <td class="text-center">
+                            <div class="d-inline-flex gap-2">
+                                <a href="{{ route('states.edit', $state->id) }}"
+                                    class="btn btn-sm custom-edit-btn" title="Edit">
+                                    <i class="mdi mdi-pencil"></i>
+                                </a>
+                                <button type="button"
+                                    class="btn btn-sm custom-delete-btn delete-state-btn"
+                                    data-id="{{ $state->id }}" title="Delete">
+                                    <i class="mdi mdi-delete"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
     </div>
+</div>
 </div>
 
 <!-- Delete Confirmation Modal -->

@@ -3,66 +3,66 @@
 @section('title', 'Countries')
 
 @section('content')
-<div class="container-fluid">
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-body p-4">
+<!-- <div class="container-fluid"> -->
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-4">
 
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
-                        Countries
-                    </h3>
-                    <p class="text-muted small mb-0">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
+                    Countries
+                </h3>
+                <!-- <p class="text-muted small mb-0">
                         A list of all countries available in your system.
-                    </p>
-                </div>
-                <a href="{{ route('countries.create') }}"
-                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
-                    <i class="mdi mdi-plus"></i> Add Country
-                </a>
+                    </p> -->
             </div>
-            <!-- Alert Box -->
-            <div id="alert-box" class="alert d-none" role="alert"></div>
-
-            <!-- Table -->
-            <div class="table-responsive">
-                <table class="table align-middle mb-3 table-hover country-table">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width: 60px;">#</th>
-                            <th>COUNTRY NAME</th>
-                            <th>CREATED AT</th>
-                            <th class="text-center" style="width: 120px;">ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($countries as $country)
-                        <tr id="country-row-{{ $country->id }}">
-                            <td class="fw-bold text-secondary">{{ $country->id }}</td>
-                            <td class="fw-semibold">{{ ucfirst($country->name) }}</td>
-                            <td class="text-muted small">{{ $country->created_at->format('d M Y, h:i A') }}</td>
-                            <td class="text-center">
-                                <div class="d-inline-flex gap-2">
-                                    <a href="{{ route('countries.edit', $country->id) }}"
-                                        class="btn btn-sm custom-edit-btn" title="Edit">
-                                        <i class="mdi mdi-pencil"></i>
-                                    </a>
-                                    <button type="button"
-                                        class="btn btn-sm custom-delete-btn delete-country-btn"
-                                        data-id="{{ $country->id }}" title="Delete">
-                                        <i class="mdi mdi-delete"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
+            <a href="{{ route('countries.create') }}"
+                class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
+                <i class="mdi mdi-plus"></i> Add Country
+            </a>
         </div>
+        <!-- Alert Box -->
+        <div id="alert-box" class="alert d-none" role="alert"></div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table align-middle mb-3 table-hover country-table">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 60px;">#</th>
+                        <th>COUNTRY NAME</th>
+                        <th>CREATED AT</th>
+                        <th class="text-center" style="width: 120px;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($countries as $country)
+                    <tr id="country-row-{{ $country->id }}">
+                        <td class="fw-bold text-secondary">{{ $country->id }}</td>
+                        <td class="fw-semibold">{{ ucfirst($country->name) }}</td>
+                        <td class="text-muted small">{{ $country->created_at->format('d M Y, h:i A') }}</td>
+                        <td class="text-center">
+                            <div class="d-inline-flex gap-2">
+                                <a href="{{ route('countries.edit', $country->id) }}"
+                                    class="btn btn-sm custom-edit-btn" title="Edit">
+                                    <i class="mdi mdi-pencil"></i>
+                                </a>
+                                <button type="button"
+                                    class="btn btn-sm custom-delete-btn delete-country-btn"
+                                    data-id="{{ $country->id }}" title="Delete">
+                                    <i class="mdi mdi-delete"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
     </div>
+</div>
 </div>
 
 <!-- Delete Confirmation Modal -->

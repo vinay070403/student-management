@@ -14,6 +14,10 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" onerror="this.href='https://demo.bootstrapdash.com/skydash-free/css/style.css'">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" onerror="this.href='https://demo.bootstrapdash.com/skydash-free/images/favicon.png'">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
 
     @yield('styles')
     <style>
@@ -22,7 +26,7 @@
         body {
             height: 100%;
             overflow: hidden;
-            background: #f8f9fa;
+            background: #bdd6f1ff;
         }
 
         /* Header */
@@ -119,7 +123,7 @@
 
     <!-- Main Panel -->
     <div class="main-panel">
-        <div class="content-wrapper">
+        <div class="content-wrapper width:100%;">
             @yield('content')
         </div>
     </div>
@@ -133,7 +137,12 @@
     <!-- Common Scripts with fallbacks -->
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}" onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'"></script>
     <script src="{{ asset('assets/js/off-canvas.js') }}" onerror="this.src='https://demo.bootstrapdash.com/skydash-free/js/off-canvas.js'"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @stack('scripts')
+    @include('sweetalert2::index')
+
 </body>
 
 </html>

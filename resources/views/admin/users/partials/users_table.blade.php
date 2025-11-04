@@ -15,7 +15,7 @@
                 <td><input type="checkbox" class="select-user" data-id="{{ $user->id }}" /></td>
 
                 <td class="d-flex align-items-center gap-3">
-                    <img src="{{ $user->avatar ? asset('storage/avatars/'.$user->avatar) : asset('assets/images/default-avatar.png') }}"
+                    <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : asset('assets/images/default-avatar1.jpg') }}"
                         alt="{{ $user->first_name }}" class="rounded-circle shadow-sm" width="42" height="42" />
 
                     <div>
@@ -49,9 +49,41 @@
             @endforeach
         </tbody>
     </table>
+    </table>
+</div>
+<!-- Custom Pagination -->
+<div class="dt-paging">
+    <nav aria-label="pagination">
+        <ul class="pagination">
+            <li class="dt-paging-button page-item {{ $users->onFirstPage() ? 'disabled' : '' }}">
+                <a class="page-link first" href="{{ $users->url(1) }}" aria-label="First">
+                    <i class="icon-base bx bx-chevrons-left scaleX-n1-rtl icon-18px"></i>
+                </a>
+            </li>
+            <li class="dt-paging-button page-item {{ $users->onFirstPage() ? 'disabled' : '' }}">
+                <a class="page-link previous" href="{{ $users->previousPageUrl() }}" aria-label="Previous">
+                    <i class="icon-base bx bx-chevron-left scaleX-n1-rtl icon-18px"></i>
+                </a>
+            </li>
+
+            @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
+            <li class="dt-paging-button page-item {{ $page == $users->currentPage() ? 'active' : '' }}">
+                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+            </li>
+            @endforeach
+
+            <li class="dt-paging-button page-item {{ $users->currentPage() == $users->lastPage() ? 'disabled' : '' }}">
+                <a class="page-link next" href="{{ $users->nextPageUrl() }}" aria-label="Next">
+                    <i class="icon-base bx bx-chevron-right scaleX-n1-rtl icon-18px"></i>
+                </a>
+            </li>
+            <li class="dt-paging-button page-item {{ $users->currentPage() == $users->lastPage() ? 'disabled' : '' }}">
+                <a class="page-link last" href="{{ $users->url($users->lastPage()) }}" aria-label="Last">
+                    <i class="icon-base bx bx-chevrons-right scaleX-n1-rtl icon-18px"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
 </div>
 
-<!-- Pagination -->
-<div class="d-flex justify-content-end">
-    {!! $users->links() !!}
 </div>
