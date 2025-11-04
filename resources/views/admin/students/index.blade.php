@@ -1,43 +1,265 @@
 @extends('layouts.app')
+
 @section('title', 'Students')
+
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body p-3">
-                <h4 class="card-title mb-3">Student List</h4>
-                <a href="{{ route('students.create') }}" class="btn btn-primary btn-sm mb-3">Add Student</a>
-                <table class="table table-striped">
-                    <thead>
+<div class="container-fluid">
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
+                        Students
+                    </h3>
+                    <p class="text-muted small mb-0">
+                        A list of all students currently in the system.
+                    </p>
+                </div>
+                <a href="{{ route('students.create') }}"
+                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
+                    <i class="mdi mdi-account-plus"></i> Add Student
+                </a>
+            </div>
+
+            <!-- Alert Box -->
+            <div id="alert-box" class="alert d-none" role="alert"></div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table align-middle mb-3 table-hover student-table">
+                    <thead class="table-light">
                         <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Actions</th>
+                            <th>USER</th>
+                            <!-- <th style="width: 60px;">#</th> -->
+                            <!-- <th>NAME</th> -->
+                            <!-- <th>EMAIL</th> -->
+                            <th>PHONE</th>
+                            <th class="text-center" style="width: 120px;">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($students as $student)
-                        <!-- <tr onclick="window.location.href='{{ route('students.edit', $student->id) }}'" style="cursor: pointer;"> -->
-                        <tr @if($student->id) onclick="window.location.href='{{ route('students.edit', $student->id) }}'" @endif style="cursor: pointer;">
-                            <td>{{ $student->id }}</td>
-                            <td>{{ $student->first_name }} {{ $student->last_name }}</td>
-                            <td>{{ $student->email }}</td>
-                            <td>{{ $student->phone ?? 'N/A' }}</td>
-                            <td>
-                                <form action="{{ route('students.destroy', $student->id) }}" method="POST" style="display:inline;" onclick="event.stopPropagation();">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                                </form>
+                        <tr id="student-row-{{ $student->id }}">
+
+                            <td class="d-flex align-items-center gap-3">
+                                <img src="{{ $student->avatar ? asset('storage/avatars/'.$student->avatar) : asset('assets/images/default-avatar.png') }}"
+                                    alt="{{ $student->first_name }}" class="rounded-circle shadow-sm" width="42" height="42" />
+
+                                <!-- <td class="fw-bold text-secondary">{{ $student->id }}</td> -->
+                                <div>
+                                    <div class="fw-semibold">{{ $student->first_name }} {{ $student->last_name }}</div>
+                                    <div class="fw-semibold text-gray">{{ $student->email }}</div>
+                                </div>
+
+                            <td class="text-muted small">{{ $student->phone ?? 'N/A' }}</td>
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{{ route('students.edit', $student->id) }}"
+                                        class="btn btn-sm custom-edit-btn" title="Edit">
+                                        <i class="mdi mdi-pencil"></i>
+                                    </a>
+                                    <button type="button"
+                                        class="btn btn-sm custom-delete-btn delete-student-btn"
+                                        data-id="{{ $student->id }}" data-name="{{ $student->first_name }} {{ $student->last_name }}"
+                                        title="Delete">
+                                        <i class="mdi mdi-delete"></i>
+                                    </button>
+                                </div>
+                            </td>
                             </td>
                         </tr>
                         @endforeach
+                        @if ($students->isEmpty())
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">No students found.</td>
+                        </tr>
+                        @endif
                     </tbody>
                 </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteStudentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-semibold">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-4">
+                    <b>Are you sure you want to delete <span id="studentName" class="text-danger"></span>?</b><br>
+                    <small>This action cannot be undone.</small>
+                </p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="confirmStudentDeleteBtn" type="button" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
 </div>
 @endsection
+
+@push('styles')
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+    body {
+        font-family: "Inter", sans-serif !important;
+    }
+
+    .student-table thead th {
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #6c757d;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .student-table tbody tr {
+        border-bottom: 1px solid #e5e7eb;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .student-table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    /* ✅ Edit Button */
+    .custom-edit-btn {
+        border: 1px solid #0d6efd;
+        color: #0d6efd;
+        background-color: #fff;
+        padding: 6px 10px !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .custom-edit-btn:hover {
+        background-color: #0d6efd;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    /* ✅ Delete Button */
+    .custom-delete-btn {
+        border: 1.8px solid #dc3545;
+        color: #dc3545;
+        background-color: #fff;
+        padding: 6px 10px !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .custom-delete-btn:hover {
+        background-color: #dc3545;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    /* ✅ Alert Styling */
+    #alert-box {
+        border-radius: 10px;
+        font-weight: 500;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+    }
+
+    #alert-box.alert-success {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #10b981;
+    }
+
+    #alert-box.alert-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #ef4444;
+    }
+
+    .fade-out {
+        opacity: 0;
+        transition: opacity 0.4s ease-out;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const baseUrl = "{{ url('admin/students') }}";
+        let currentId = null;
+        let studentName = '';
+        let lastActiveElement = null;
+
+        const modalEl = document.getElementById('deleteStudentModal');
+        const deleteModal = new bootstrap.Modal(modalEl, {
+            backdrop: true
+        });
+        const confirmBtn = document.getElementById('confirmStudentDeleteBtn');
+        const alertBox = document.getElementById('alert-box');
+        const studentNameEl = document.getElementById('studentName');
+
+        // Show toast/alert
+        function showToast(type, msg) {
+            alertBox.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger');
+            alertBox.textContent = msg;
+            alertBox.classList.remove('d-none');
+            setTimeout(() => alertBox.classList.add('d-none'), 3500);
+        }
+
+        // Open modal when delete button clicked
+        document.querySelectorAll('.delete-student-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                currentId = this.dataset.id;
+                studentName = this.dataset.name;
+                studentNameEl.textContent = studentName;
+                lastActiveElement = this;
+                deleteModal.show();
+            });
+        });
+
+        // Reset modal on close
+        modalEl.addEventListener('hidden.bs.modal', () => {
+            if (lastActiveElement) lastActiveElement.focus();
+            currentId = null;
+        });
+
+        // Confirm delete
+        confirmBtn.addEventListener('click', function() {
+            if (!currentId) return;
+            confirmBtn.disabled = true;
+
+            axios.post(`${baseUrl}/${currentId}`, {
+                    _method: 'DELETE'
+                }, {
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => {
+                    const row = document.getElementById(`student-row-${currentId}`);
+                    if (row) {
+                        row.classList.add('fade-out');
+                        setTimeout(() => row.remove(), 350);
+                    }
+                    deleteModal.hide();
+                    showToast('success', response.data.message || 'Student deleted successfully.');
+                })
+                .catch(error => {
+                    console.error('Delete error:', error);
+                    showToast('danger', error.response?.data?.message || 'Failed to delete student.');
+                })
+                .finally(() => confirmBtn.disabled = false);
+        });
+    });
+</script>
+@endpush

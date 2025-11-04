@@ -1,0 +1,502 @@
+@extends('layouts.app')
+
+@section('title', 'Dashboard')
+
+@section('styles')
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Oswald:300,400,500,700|Open+Sans:300,400,600,700,800&display=swap" rel="stylesheet">
+
+<style>
+    /* General Setup */
+    * {
+        transition: .5s;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Open Sans', sans-serif;
+        background: #f5f7fb;
+    }
+
+    .h-100 {
+        height: 100vh !important;
+    }
+
+    .align-middle {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .column {
+        margin-top: 3rem;
+        padding-left: 3rem;
+    }
+
+    .column:hover {
+        padding-left: 0;
+    }
+
+    .column:hover .card .txt {
+        margin-left: 1rem;
+    }
+
+    .column:hover .card .txt h1,
+    .column:hover .card .txt p {
+        color: rgba(255, 255, 255, 1);
+        opacity: 1;
+    }
+
+    .column:hover .card a {
+        color: rgba(255, 255, 255, 1);
+    }
+
+    .column:hover .card a::after {
+        width: 10%;
+    }
+
+    /* Card Design */
+    .card {
+        position: relative;
+        min-height: 200px;
+        margin: 0;
+        padding: 2rem 1.2rem;
+        border: none;
+        border-radius: 10px;
+        color: rgba(255, 255, 255, 1);
+        letter-spacing: .05rem;
+        box-shadow: 0 0 21px rgba(0, 0, 0, .2);
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .card .txt {
+        margin-left: -2rem;
+        z-index: 1;
+    }
+
+    .card .txt h1 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin-bottom: .5rem;
+    }
+
+    .card .txt p {
+        font-size: .8rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .card a {
+        z-index: 3;
+        font-size: .8rem;
+        color: rgba(255, 255, 255, .9);
+        margin-left: 1rem;
+        position: relative;
+        bottom: -.5rem;
+        text-transform: uppercase;
+        text-decoration: none;
+    }
+
+    .card a::after {
+        content: "";
+        display: inline-block;
+        height: 0.5em;
+        width: 0;
+        margin-right: -100%;
+        margin-left: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 1);
+        transition: .5s;
+    }
+
+    .card .ico-card {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
+    }
+
+    .card i {
+        position: absolute;
+        right: -40%;
+        top: 50%;
+        font-size: 10rem;
+        line-height: 0;
+        opacity: .2;
+        color: rgba(255, 255, 255, 1);
+        transform: translateY(-50%);
+    }
+
+    /* Gradient Backgrounds */
+    .gr-1 {
+        background: linear-gradient(170deg, #01E4F8 0%, #1D3EDE 100%);
+    }
+
+    .gr-2 {
+        background: linear-gradient(170deg, #B4EC51 0%, #429321 100%);
+    }
+
+    .gr-3 {
+        background: linear-gradient(170deg, #C86DD7 0%, #3023AE 100%);
+    }
+
+    .gr-4 {
+        background: linear-gradient(170deg, #FFB75E 0%, #ED8F03 100%);
+    }
+
+    /* Loader */
+    .page-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(4px);
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(78, 115, 223, 0.3);
+        border-top: 3px solid #4e73df;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+@endsection
+
+
+@section('content')
+
+<!-- Loader -->
+<div class="page-loader" id="pageLoader">
+    <div class="spinner"></div>
+</div>
+
+<div class="container h-100">
+    <div class="row align-middle">
+
+        @can('user-list')
+        <div class="col-md-6 col-lg-3 column">
+            <a href="{{ route('admin.users') }}" class="dashboard-link text-decoration-none">
+                <div class="card gr-1">
+                    <div class="txt">
+                        <h1>Users</h1>
+                        <p>Total Registered: {{ \App\Models\User::count() }}</p>
+                    </div>
+                    <a href="#">More</a>
+                    <div class="ico-card"><i class="fa fa-users"></i></div>
+                </div>
+            </a>
+        </div>
+        @endcan
+
+        @can('school-list')
+        <div class="col-md-6 col-lg-3 column">
+            <a href="{{ route('schools.index') }}" class="dashboard-link text-decoration-none">
+                <div class="card gr-2">
+                    <div class="txt">
+                        <h1>Schools</h1>
+                        <p>Active Schools: {{ \App\Models\School::count() }}</p>
+                    </div>
+                    <a href="#">More</a>
+                    <div class="ico-card"><i class="fa fa-school"></i></div>
+                </div>
+            </a>
+        </div>
+        @endcan
+
+        @can('country-list')
+        <div class="col-md-6 col-lg-3 column">
+            <a href="{{ route('countries.index') }}" class="dashboard-link text-decoration-none">
+                <div class="card gr-3">
+                    <div class="txt">
+                        <h1>Countries</h1>
+                        <p>Total Countries: {{ \App\Models\Country::count() }}</p>
+                    </div>
+                    <a href="#">More</a>
+                    <div class="ico-card"><i class="fa fa-globe"></i></div>
+                </div>
+            </a>
+        </div>
+        @endcan
+
+        @can('state-list')
+        <div class="col-md-6 col-lg-3 column">
+            <a href="{{ route('states.index') }}" class="dashboard-link text-decoration-none">
+                <div class="card gr-4">
+                    <div class="txt">
+                        <h1>States</h1>
+                        <p>Total States: {{ \App\Models\State::count() }}</p>
+                    </div>
+                    <a href="#">More</a>
+                    <div class="ico-card"><i class="fa fa-map"></i></div>
+                </div>
+            </a>
+        </div>
+        @endcan
+
+    </div>
+</div>
+@endsection
+
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.dashboard-link').forEach(link => {
+        link.addEventListener('click', () => {
+            const loader = document.getElementById('pageLoader');
+            loader.style.display = 'flex';
+            setTimeout(() => loader.style.display = 'none', 1500);
+        });
+    });
+</script>
+@endpush
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1173d4",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10">
+<div class="text-black dark:text-white flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined text-2xl">menu</span>
+</div>
+<h2 class="text-black dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1">Admin Dashboard</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-transparent text-black dark:text-white gap-2 text-base font-bold leading-normal tracking-[0.015em]">
+<span class="material-symbols-outlined text-2xl">account_circle</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col md:flex-row flex-1">
+<div class="hidden md:flex flex-col w-64 bg-background-light dark:bg-background-dark p-4 border-r border-gray-200 dark:border-gray-800">
+<ul class="flex flex-col gap-4">
+<li class="flex h-12 items-center gap-4 rounded-lg px-4 bg-primary/20">
+<span class="material-symbols-outlined text-primary pr-4">dashboard</span>
+<p class="text-primary text-base font-bold leading-tight truncate">Dashboard</p>
+</li>
+<li class="flex h-12 items-center gap-4 rounded-lg px-4 hover:bg-gray-200 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined text-black dark:text-white pr-4">school</span>
+<p class="text-black dark:text-white text-base font-bold leading-tight truncate">Students</p>
+</li>
+<li class="flex h-12 items-center gap-4 rounded-lg px-4 hover:bg-gray-200 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined text-black dark:text-white pr-4">group</span>
+<p class="text-black dark:text-white text-base font-bold leading-tight truncate">Teachers</p>
+</li>
+<li class="flex h-12 items-center gap-4 rounded-lg px-4 hover:bg-gray-200 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined text-black dark:text-white pr-4">library_books</span>
+<p class="text-black dark:text-white text-base font-bold leading-tight truncate">Courses</p>
+</li>
+</ul>
+</div>
+<main class="flex-1 p-4">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="flex flex-1 flex-col gap-2 rounded-xl p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+<p class="text-black dark:text-white text-base font-medium leading-normal">Student Enrollment</p>
+<p class="text-black dark:text-white tracking-light text-3xl font-bold leading-tight">1,234</p>
+<p class="text-green-500 text-base font-medium leading-normal">+5%</p>
+</div>
+<div class="flex flex-1 flex-col gap-2 rounded-xl p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+<p class="text-black dark:text-white text-base font-medium leading-normal">Teacher Assignments</p>
+<p class="text-black dark:text-white tracking-light text-3xl font-bold leading-tight">78</p>
+<p class="text-green-500 text-base font-medium leading-normal">+2%</p>
+</div>
+<div class="flex flex-1 flex-col gap-2 rounded-xl p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+<p class="text-black dark:text-white text-base font-medium leading-normal">Ongoing Courses</p>
+<p class="text-black dark:text-white tracking-light text-3xl font-bold leading-tight">45</p>
+<p class="text-red-500 text-base font-medium leading-normal">-1%</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-4 mt-6">
+<div class="flex min-w-72 flex-1 flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-800 p-6 bg-white dark:bg-gray-900">
+<div class="flex justify-between items-center">
+<p class="text-black dark:text-white text-base font-medium leading-normal">Teacher Assignments by Department</p>
+<button class="text-primary">View All</button>
+</div>
+<p class="text-black dark:text-white tracking-light text-4xl font-bold leading-tight truncate">78 Teachers</p>
+<div class="flex gap-1">
+<p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">This Month</p>
+<p class="text-green-500 text-base font-medium leading-normal">+2%</p>
+</div>
+<div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3 pt-4">
+<div class="bg-primary/20 w-full rounded-t-md" style="height: 40%;"></div>
+<p class="text-gray-500 dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]">Math</p>
+<div class="bg-primary/20 w-full rounded-t-md" style="height: 90%;"></div>
+<p class="text-gray-500 dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]">Science</p>
+<div class="bg-primary/20 w-full rounded-t-md" style="height: 60%;"></div>
+<p class="text-gray-500 dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]">Arts</p>
+<div class="bg-primary/20 w-full rounded-t-md" style="height: 10%;"></div>
+<p class="text-gray-500 dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]">History</p>
+</div>
+</div>
+<div class="flex min-w-72 flex-1 flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-800 p-6 bg-white dark:bg-gray-900">
+<div class="flex justify-between items-center">
+<p class="text-black dark:text-white text-base font-medium leading-normal">Student Enrollment Trend</p>
+<button class="text-primary">View Report</button>
+</div>
+<p class="text-black dark:text-white tracking-light text-4xl font-bold leading-tight truncate">1,234 Students</p>
+<div class="flex gap-1">
+<p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">This Year</p>
+<p class="text-green-500 text-base font-medium leading-normal">+5%</p>
+</div>
+<div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
+<svg fill="none" height="148" preserveaspectratio="none" viewbox="-3 0 478 150" width="100%" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="paint0_linear_1131_5935_dark" x1="236" x2="236" y1="1" y2="149">
+<stop stop-color="#1173d4" stop-opacity="0.4"></stop>
+<stop offset="1" stop-color="#1173d4" stop-opacity="0"></stop>
+</lineargradient>
+<lineargradient gradientunits="userSpaceOnUse" id="paint0_linear_1131_5935_light" x1="236" x2="236" y1="1" y2="149">
+<stop stop-color="#1173d4" stop-opacity="0.2"></stop>
+<stop offset="1" stop-color="#1173d4" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path class="fill-[url(#paint0_linear_1131_5935_light)] dark:fill-[url(#paint0_linear_1131_5935_dark)]" d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H326.769H0V109Z"></path>
+<path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25" stroke="#1173d4" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="flex justify-around">
+<p class="text-gray-500 dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]">Jan</p>
+<p class="text-gray-500 dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]">Feb</p>
+<p class="text-gray-500 dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]">Mar</p>
+<p class="text-gray-500 dark:text-gray-400 text-[13px] font-bold leading-normal tracking-[0.015em]">Apr</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6">
+<h2 class="text-black dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Ongoing Courses</h2>
+<div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+<div class="flex justify-between items-center p-4">
+<div class="relative w-full max-w-xs">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+<input class="pl-10 w-full rounded-lg border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark focus:ring-primary focus:border-primary" placeholder="Search courses..." type="text"/>
+</div>
+<button class="bg-primary text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                                New Course
+                            </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="text-gray-500 dark:text-gray-400">
+<tr>
+<th class="p-4 font-semibold">Course Name</th>
+<th class="p-4 font-semibold">Teacher</th>
+<th class="p-4 font-semibold">Schedule</th>
+<th class="p-4 font-semibold">Students</th>
+<th class="p-4 font-semibold"></th>
+</tr>
+</thead>
+<tbody class="text-black dark:text-white divide-y divide-gray-200 dark:divide-gray-800">
+<tr>
+<td class="p-4">Introduction to Algebra</td>
+<td class="p-4">Mr. John Doe</td>
+<td class="p-4">Mon, Wed, Fri 10:00 AM</td>
+<td class="p-4">32</td>
+<td class="p-4 text-right"><button class="text-primary">Details</button></td>
+</tr>
+<tr>
+<td class="p-4">World History</td>
+<td class="p-4">Ms. Jane Smith</td>
+<td class="p-4">Tue, Thu 1:00 PM</td>
+<td class="p-4">28</td>
+<td class="p-4 text-right"><button class="text-primary">Details</button></td>
+</tr>
+<tr>
+<td class="p-4">Physics 101</td>
+<td class="p-4">Dr. Emily White</td>
+<td class="p-4">Mon, Wed 2:30 PM</td>
+<td class="p-4">25</td>
+<td class="p-4 text-right"><button class="text-primary">Details</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

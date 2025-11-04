@@ -6,7 +6,8 @@
         <div class="card shadow-sm mb-4">
             <div class="card-body p-3">
                 <h4 class="card-title mb-3">Class List</h4>
-                <a href="{{ route('classes.create') }}" class="btn btn-primary btn-sm mb-3">Add Class</a>
+                <a href="{{ route('schools.classes.create', $school->id) }}" class="btn btn-primary mb-3">Add Class</a>
+                <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-sm custom-edit-btn" title="Edit">back</a>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -17,19 +18,24 @@
                     </thead>
                     <tbody>
                         @foreach ($classes as $class)
-                        <tr @if($class->id) onclick="window.location.href='{{ route('classes.edit', $class->id) }}'" @endif style="cursor: pointer;">
-
+                        <!-- <tr onclick="window.location.href='{{ route('schools.classes.edit', [$school->id, $class->id]) }}'" style="cursor: pointer;"> -->
+                        <tr @if($class->id) onclick="window.location.href='{{ route('schools.classes.edit',[$school->id, $class->id]) }}'" @endif style="cursor: pointer;">
                             <td>{{ $class->name }}</td>
                             <td>{{ $class->school->name ?? 'N/A' }}</td>
                             <td>
-                                <form action="{{ route('classes.destroy', $class->id) }}" method="POST" style="display:inline;" onclick="event.stopPropagation();">
+                                <form action="{{ route('schools.classes.destroy', [$school->id, $class->id]) }}" method="POST" style="display:inline;" onclick="event.stopPropagation();">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                                    <button type="submit" class="btn btn-danger btn-sm-2" onclick="return confirm('Are you sure?')">Delete</button>
                                 </form>
                             </td>
                         </tr>
                         @endforeach
+                        @if ($classes->isEmpty())
+                        <tr>
+                            <td colspan="3" class="text-center">No classes found for this school.</td>
+                        </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
