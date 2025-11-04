@@ -19,13 +19,13 @@ class LoginRequest extends FormRequest
         ];
     }
 
-    // public function messages(): array
-    // {
-    //     return [
-    //         'email.required' => 'Please enter your email address.',
-    //         'email.email' => 'Please enter a valid email address.',
-    //         'password.required' => 'Please enter your password.',
-    //         'password.min' => 'Password must be at least 6 characters long.',
-    //     ];
-    // }
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Please enter your email address.',
+            'email.email' => 'Please enter a valid email address.',
+            'password.required' => 'Please enter your password.',
+            'password.min' => 'Password must be at least 6 characters long.',
+        ];
+    }
 }

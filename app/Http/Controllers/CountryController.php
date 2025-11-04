@@ -19,6 +19,13 @@ class CountryController extends Controller
         return view('admin.countries.create');
     }
 
+    public function states($countryId)
+    {
+        $country = Country::with('states')->findOrFail($countryId);
+        return response()->json(['states' => $country->states]);
+    }
+
+
     public function store(Request $request)
     {
         $request->validate([

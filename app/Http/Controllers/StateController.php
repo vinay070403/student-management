@@ -21,6 +21,14 @@ class StateController extends Controller
         return view('admin.states.create', compact('countries'));
     }
 
+
+    public function schools($stateId)
+    {
+        $state = State::with('schools')->findOrFail($stateId);
+        return response()->json(['schools' => $state->schools]);
+    }
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -86,5 +94,14 @@ class StateController extends Controller
             Log::error('State delete error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
             return redirect()->route('states.index')->with('error', 'Error while deleting state and its related data.');
         }
+    }
+
+    public function getByCountry($countryId)
+    {
+        $states = \App\Models\State::where('country_id', $countryId)
+            ->select('id', 'name')
+            ->get();
+
+        return response()->json(['states' => $states]);
     }
 }

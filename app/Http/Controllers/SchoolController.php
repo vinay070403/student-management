@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\School;
 use App\Models\State;
+use App\Models\GradeScale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class SchoolController extends Controller
 {
@@ -15,33 +17,79 @@ class SchoolController extends Controller
         return view('admin.schools.index', compact('schools'));
     }
 
-    // public function show(School $school)
-    // {
-    //     return view('admin.schools.show', compact('school'));
-    // }
-
     public function create()
     {
         $states = State::all();
         return view('admin.schools.create', compact('states'));
     }
 
-    public function store(Request $request, School $school)
+    public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:25|min:4',
             'state_id' => 'required|exists:states,id',
-            // 'address' => 'required|string|max:55',
-            // 'zipcode' => 'required|string|max:7',
+            'grade.*' => 'nullable|string|max:3|min:1',
+            'min.*' => 'nullable|numeric|min:0',
+            'max.*' => 'nullable|numeric|min:0',
+            'point.*' => 'nullable|numeric|min:0|max:10',
         ]);
 
-        School::create($request->all());
-        return redirect()->route('schools.index')->with('success', 'School added!');
+        DB::beginTransaction();
+        try {
+            // ✅ Create the school
+            $school = School::create([
+                'name' => $request->name,
+                'state_id' => $request->state_id,
+            ]);
+
+            // ✅ Create grade scales if any exist
+            if ($request->filled('grade')) {
+                $ranges = [];
+                foreach ($request->grade as $index => $grade) {
+                    if (!empty($grade)) {
+                        $min = $request->min[$index] ?? 0;
+                        $max = $request->max[$index] ?? 0;
+
+                        // Validate range only if both provided
+                        if ($min && $max && $min >= $max) {
+                            return back()->with('error', "Row " . ($index + 1) . ": Min must be less than Max.")->withInput();
+                        }
+
+                        // Check overlap
+                        foreach ($ranges as $range) {
+                            if ($min <= $range['max'] && $max >= $range['min']) {
+                                return back()->with('error', "Overlap detected between {$min}-{$max} and {$range['min']}-{$range['max']}")->withInput();
+                            }
+                        }
+
+                        $ranges[] = ['min' => $min, 'max' => $max];
+
+                        GradeScale::create([
+                            'school_id'   => $school->id,
+                            'grade'       => $grade,
+                            'min_score'   => $min,
+                            'max_score'   => $max,
+                            'grade_point' => $request->point[$index] ?? 0,
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('admin.schools.edit')->with('success', 'School added successfully!');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Error creating school: ' . $e->getMessage());
+            return back()->with('error', 'Failed to create school.')->withInput();
+        }
     }
 
     public function edit(School $school)
     {
         $states = State::all();
+        // Classes aur Subjects ko load kar lo
+        $school->load(['classes', 'subjects']);
+        $school->load('gradeScales');
         return view('admin.schools.edit', compact('school', 'states'));
     }
 
@@ -50,44 +98,94 @@ class SchoolController extends Controller
         $request->validate([
             'name' => 'required|string|max:25|min:4',
             'state_id' => 'required|exists:states,id',
-            // 'address' => 'required|string|max:55',
-            // 'zipcode' => 'required|string|max:7',
+            'grade.*' => 'nullable|string|max:3|min:1',
+            'min.*' => 'nullable|numeric|min:0',
+            'max.*' => 'nullable|numeric|min:0',
+            'point.*' => 'nullable|numeric|min:0|max:10',
         ]);
 
-        $school->update($request->all());
-        return redirect()->route('schools.index')->with('success', 'School updated!');
+        DB::beginTransaction();
+        try {
+            // ✅ Update school info
+            $school->update([
+                'name' => $request->name,
+                'state_id' => $request->state_id,
+            ]);
+
+            // ✅ Replace grade scales (optional)
+            $school->gradeScales()->delete();
+
+            if ($request->filled('grade')) {
+                $ranges = [];
+                foreach ($request->grade as $index => $grade) {
+                    if (!empty($grade)) {
+                        $min = $request->min[$index] ?? 0;
+                        $max = $request->max[$index] ?? 0;
+
+                        if ($min && $max && $min >= $max) {
+                            return back()->with('error', "Row " . ($index + 1) . ": Min must be less than Max.")->withInput();
+                        }
+
+                        foreach ($ranges as $range) {
+                            if ($min <= $range['max'] && $max >= $range['min']) {
+                                return back()->with('error', "Overlap detected between {$min}-{$max} and {$range['min']}-{$range['max']}")->withInput();
+                            }
+                        }
+
+                        $ranges[] = ['min' => $min, 'max' => $max];
+
+                        GradeScale::create([
+                            'school_id'   => $school->id,
+                            'grade'       => $grade,
+                            'min_score'   => $min,
+                            'max_score'   => $max,
+                            'grade_point' => $request->point[$index] ?? 0,
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('admin.schools.edit')->with('success', 'School updated successfully!');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Error updating school: ' . $e->getMessage());
+            return back()->with('error', 'Failed to update school.')->withInput();
+        }
     }
 
-    /**
-     * Cascade delete School → Classes → Subjects
-     */
     public function destroy(School $school)
     {
         try {
-            // Load related data
-            $school->load('classes', 'subjects');
+            $school->load('classes', 'subjects', 'gradeScales');
 
-            // Delete all classes first
             if ($school->classes()->exists()) {
                 $school->classes()->delete();
             }
 
-            // Delete all subjects next
             if ($school->subjects()->exists()) {
                 $school->subjects()->delete();
             }
 
-            // Finally delete the school itself
+            if ($school->gradeScales()->exists()) {
+                $school->gradeScales()->delete();
+            }
+
             $school->delete();
 
             return redirect()
                 ->route('schools.index')
-                ->with('success', 'School and all related classes and subjects deleted successfully.');
+                ->with('success', 'School and related data deleted successfully.');
         } catch (\Throwable $e) {
-            Log::error('School delete error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+            Log::error('School delete error: ' . $e->getMessage());
             return redirect()
                 ->route('schools.index')
-                ->with('error', 'Error while deleting school and its related data.');
+                ->with('error', 'Error deleting school.');
         }
+    }
+    public function getByState($stateId)
+    {
+        $schools = \App\Models\School::where('state_id', $stateId)->get(['id', 'name']);
+        return response()->json(['schools' => $schools]);
     }
 }
