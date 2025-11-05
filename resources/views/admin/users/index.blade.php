@@ -1,35 +1,35 @@
 @extends('layouts.app')
 @section('title', 'Users')
 @section('content')
-<div class="container-fluid">
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-body p-4">
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h3
-                        class="fw-semibold mb-1 text-dark"
-                        style="font-family: 'Inter', sans-serif">
-                        Users
-                    </h3>
-                    <!-- <p class="text-muted small mb-0">
+<div class="app-wrapper flex-column flex-row-fluid">
+    <!-- <div class="card border-0 shadow-sm rounded-3"> -->
+    <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3
+                    class="fw-semibold mb-1 text-dark"
+                    style="font-family: 'Inter', sans-serif">
+                    Users
+                </h3>
+                <!-- <p class="text-muted small mb-0">
                         A list of all users in your account, including their
                         name, role, and creation date.
                     </p> -->
-                </div>
-                <button
-                    id="bulkActionBtn"
-                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
-                    <i class="mdi mdi-plus"></i> Add User
-                </button>
             </div>
+            <button
+                id="bulkActionBtn"
+                class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
+                <i class="mdi mdi-plus"></i> Add User
+            </button>
+        </div>
 
-            <!-- Table -->
-            <div id="usersTableContainer">
-                @include('admin.users.partials.users_table')
-            </div>
+        <!-- Table -->
+        <div id="usersTableContainer">
+            @include('admin.users.partials.users_table')
         </div>
     </div>
+</div>
 </div>
 
 <!-- Delete Confirmation Modal -->

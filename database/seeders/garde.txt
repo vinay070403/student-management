@@ -1,0 +1,5 @@
+garde 
+min
+max
+grade point
+school_id

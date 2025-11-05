@@ -7,12 +7,12 @@
             <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                 <h4 class="mb-0 fw-semibold text-dark"><i class="bi bi-book me-2"></i>Subjects</h4>
                 <div class="d-flex gap-2">
-                    <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-secondary d-flex align-items-center gap-2 rounded-3 btn-lg">
+                    <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-dark px-5 py-3 rounded-3 fw-bold shadow-sm ">
                         <i class="bi bi-arrow-left"></i> Back
                     </a>
-                    <a href="{{ route('schools.subjects.create', $school) }}" class="btn btn-dark d-flex align-items-center gap-2 rounded-3 btn-lg">
-                        <i class="bi bi-plus-lg"></i> Add Subject
-                    </a>
+                    <!-- <a href="{{ route('schools.subjects.create', $school) }}" class="btn btn-dark d-flex align-items-center gap-2 rounded-3 btn-lg">
+                        <i class="bi bi-plus-lg"></i> Add Subject   btn btn-secondary d-flex align-items-center gap-2 rounded-3 btn-lg
+                    </a> -->
                 </div>
             </div>
 

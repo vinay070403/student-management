@@ -11,6 +11,7 @@ use App\Models\GradeScale;
 use App\Models\StudentGrade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class StudentController extends Controller
 {
@@ -33,8 +34,8 @@ class StudentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'first_name' => 'required|string|max:50|min:2',
-            'last_name'  => 'required|string|max:50|min:2',
+            'first_name' => 'required|string|max:10|min:2',
+            'last_name'  => 'required|string|max:10|min:2',
             'email'      => 'required|email|unique:users,email',
             'phone'      => 'nullable|string',
             'dob'        => 'nullable|date',
@@ -67,8 +68,8 @@ class StudentController extends Controller
     public function update(Request $request, User $student)
     {
         $validated = $request->validate([
-            'first_name' => 'required|string|max:50|min:2',
-            'last_name'  => 'required|string|max:50|min:2',
+            'first_name' => 'required|string|max:10|min:2',
+            'last_name'  => 'required|string|max:10|min:2',
             'email'      => 'required|email|unique:users,email,' . $student->id,
             'phone'      => 'nullable|string',
             'dob'        => 'nullable|date',
@@ -91,21 +92,42 @@ class StudentController extends Controller
         return redirect()->route('students.index')->with('success', 'Student updated!');
     }
 
+    /**
+     * Delete student and their related grades
+     */
     public function destroy(User $student)
     {
-        $student->delete();
-        return redirect()->route('students.index')->with('success', 'Student deleted!');
+        try {
+            // If Student has related grades
+            if ($student->grades()->exists()) {
+                $student->grades()->delete();
+            }
+
+            // Now delete the student
+            $student->delete();
+
+            return redirect()
+                ->route('students.index')
+                ->with('success', 'Student and all related grades deleted successfully!');
+        } catch (\Throwable $e) {
+            Log::error('Student delete error: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
+
+            return redirect()
+                ->route('students.index')
+                ->with('error', 'Server error while deleting student.');
+        }
     }
+
 
     public function updateGrades(Request $request, User $student)
     {
         $request->validate([
             'schools' => 'required|array|min:1',
-            'schools.*.school_name' => 'required|string|max:255',
+            'schools.*.school_name' => 'required|string|max:25',
             'schools.*.classes' => 'required|array|min:1',
-            'schools.*.classes.*.class_name' => 'required|string|max:255',
+            'schools.*.classes.*.class_name' => 'required|string|max:25',
             'schools.*.classes.*.subjects' => 'required|array|min:1',
-            'schools.*.classes.*.subjects.*.subject_id' => 'required|string|max:255',
+            'schools.*.classes.*.subjects.*.subject_id' => 'required|string|max:25',
             'schools.*.classes.*.subjects.*.grade_id' => 'nullable|exists:grade_scales,id',
             'schools.*.classes.*.subjects.*.min_percentage' => 'nullable|numeric',
             'schools.*.classes.*.subjects.*.max_percentage' => 'nullable|numeric',
@@ -190,7 +212,7 @@ class StudentController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function gradesSections($studentId, $schoolId)
+    public function gradesSections(Request $request, $studentId, $schoolId)
     {
         $school = School::with([
             'classes:id,school_id,name',
@@ -198,54 +220,81 @@ class StudentController extends Controller
             'gradeScales:id,school_id,grade,min_score,max_score'
         ])->findOrFail($schoolId);
 
-        // Make grades easy to map for JS
-        $grades = $school->gradeScales->map(function ($g) {
-            return [
-                'id' => $g->id,
-                'grade' => $g->grade,
-                'min_score' => $g->min_score,
-                'max_score' => $g->max_score
+        $grades = $school->gradeScales->map(fn($g) => [
+            'id' => $g->id,
+            'grade' => $g->grade,
+            'min_score' => $g->min_score,
+            'max_score' => $g->max_score,
+        ]);
+
+        // 🟢 Case 1: Only load data for "Add Class" dropdown
+        if (!$request->has('load_existing')) {
+            return response()->json([
+                'classes'  => $school->classes,
+                'subjects' => $school->subjects,
+                'grades'   => $grades,
+            ]);
+        }
+
+        // 🟢 Case 2: Load student's saved grades
+        $studentGrades = \App\Models\StudentGrade::with(['classModel', 'subject', 'gradeScale'])
+            ->where('student_id', $studentId)
+            ->get()
+            ->groupBy('class_id');
+
+        $savedClasses = [];
+
+        foreach ($studentGrades as $classId => $gradesGroup) {
+            $class = $gradesGroup->first()->classModel; // <-- use classModel
+            $savedClasses[] = [
+                'id' => $classId,
+                'name' => $class?->name ?? 'Unknown Class', // fallback
+                'subjects' => $gradesGroup->map(fn($g) => [
+                    'subject_id' => $g->subject_id,
+                    'grade_id' => $g->grade_id,
+                    'min_score' => $g->min_score,
+                    'max_score' => $g->max_score,
+                ])->values(),
             ];
-        });
+        }
 
         return response()->json([
-            'classes'  => $school->classes,
+            'saved_classes' => $savedClasses,
             'subjects' => $school->subjects,
-            'grades'   => $grades,
+            'grades' => $grades,
         ]);
     }
 
     // ------------------------
     // Store Student Grades (AJAX)
     // ------------------------
-    public function storeGrade(Request $request, User $student)
+    public function storeGrades($studentId, Request $request)
     {
-        $request->validate([
-            'grades'               => 'required|array|min:1',
-            'grades.*.class_id'    => 'required|exists:classes,id',
-            'grades.*.subject_id'  => 'required|exists:subjects,id',
-            'grades.*.grade_id'    => 'required|exists:grade_scales,id',
-            'grades.*.min_score'   => 'nullable|numeric',
-            'grades.*.max_score'   => 'nullable|numeric',
+        $validated = $request->validate([
+            'grades' => 'required|array',
+            'grades.*.class_id' => 'required|integer',
+            'grades.*.subject_id' => 'required|integer',
+            'grades.*.grade_id' => 'required|integer',
+            'grades.*.min_score' => 'nullable|numeric',
+            'grades.*.max_score' => 'nullable|numeric',
         ]);
 
-        $savedGrades = [];
-        foreach ($request->grades as $g) {
-            $savedGrades[] = StudentGrade::updateOrCreate(
+        foreach ($validated['grades'] as $data) {
+            StudentGrade::updateOrCreate(
                 [
-                    'student_id' => $student->id,
-                    'class_id'   => $g['class_id'],
-                    'subject_id' => $g['subject_id'],
+                    'student_id' => $studentId,
+                    'class_id' => $data['class_id'],
+                    'subject_id' => $data['subject_id'],
                 ],
                 [
-                    'grade_id'  => $g['grade_id'],
-                    'min_score' => $g['min_score'] ?? null,
-                    'max_score' => $g['max_score'] ?? null,
+                    'grade_id' => $data['grade_id'],
+                    'min_score' => $data['min_score'],
+                    'max_score' => $data['max_score'],
                 ]
             );
         }
 
-        return response()->json(['success' => true, 'saved' => $savedGrades]);
+        return response()->json(['success' => true]);
     }
 
     // ------------------------
@@ -270,9 +319,20 @@ class StudentController extends Controller
         return response()->json(['grades' => $grades]);
     }
 
+    public function deleteSubject($studentId, Request $request)
+    {
+        $request->validate([
+            'class_id' => 'required|integer',
+            'subject_id' => 'required|integer',
+        ]);
 
+        StudentGrade::where('student_id', $studentId)
+            ->where('class_id', $request->class_id)
+            ->where('subject_id', $request->subject_id)
+            ->delete();
 
-
+        return response()->json(['success' => true]);
+    }
 
     // ------------------------
     // Delete Grade (AJAX)

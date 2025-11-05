@@ -4,62 +4,62 @@
 
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="card-title mb-0">Add New State</h4>
-                    <a href="{{ route('states.index') }}"
-                        class="btn text-dark px-4 py-3 d-inline-flex align-items-center justify-content-center"
-                        style="background-color: dark; border: 1px solid #ccc; border-radius: 6px;">
-                        <i class="mdi mdi-arrow-left me-1"></i> Back
-                    </a>
-                </div>
-
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
-                @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-                @endif
-
-                <form action="{{ route('states.store') }}" method="POST" class="needs-validation" novalidate>
-                    @csrf
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="name" class="form-label">State Name</label>
-                                <input type="text" name="name" class="form-control form-control-lg" placeholder="Enter state name" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="country_id" class="form-label">Country</label>
-                                <select name="country_id" class="form-control form-control-lg" required>
-                                    @foreach ($countries as $country)
-                                    <option value="{{ $country->id }}">{{ $country->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-end mt-4">
-                        <button type="submit" class="btn btn-dark px-4 py-3 d-inline-flex btn-lg">Add State</button>
-                    </div>
-                </form>
+    <div class="app-wrapper flex-column flex-row-fluid">
+        <!-- <div class="card shadow-sm mb-4"> -->
+        <div class=" p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
+            <div class=" d-flex justify-content-between align-items-center mb-3">
+                <h4 class="card-title mb-0">Add New State</h4>
+                <a href="{{ route('states.index') }}"
+                    class="btn text-dark px-4 py-3 d-inline-flex align-items-center justify-content-center"
+                    style="background-color: dark; border: 1px solid #ccc; border-radius: 6px;">
+                    <i class="mdi mdi-arrow-left me-1"></i> Back
+                </a>
             </div>
+
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
+            @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+            @endif
+
+            <form action="{{ route('states.store') }}" method="POST" class="needs-validation" novalidate>
+                @csrf
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="name" class="form-label">State Name</label>
+                            <input type="text" name="name" class="form-control form-control-lg" placeholder="Enter state name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="country_id" class="form-label">Country</label>
+                            <select name="country_id" class="form-control form-control-lg" required>
+                                @foreach ($countries as $country)
+                                <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-end mt-4">
+                    <button type="submit" class="btn btn-dark px-4 py-3 d-inline-flex btn-lg">Add State</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 </div>
 @endsection
 

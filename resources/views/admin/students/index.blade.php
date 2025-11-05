@@ -4,73 +4,76 @@
 
 @section('content')
 <div class="app-wrapper flex-column flex-row-fluid">
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-body p-4">
+    <!-- <div class="card border-0 shadow-sm rounded-3"> -->
+    <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
 
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
-                        Students
-                    </h3>
-                </div>
-                <a href="{{ route('students.create') }}"
-                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
-                    <i class="mdi mdi-account-plus"></i> Add Student
-                </a>
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
+                    Students
+                </h3>
             </div>
-
-            <!-- Table -->
-            <div class="table-responsive">
-                <table class="table align-middle mb-3 table-hover student-table">
-                    <thead class="table-light">
-                        <tr>
-                            <th>USER</th>
-                            <th>PHONE</th>
-                            <th class="text-center" style="width: 120px;">ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($students as $student)
-                        <tr id="student-row-{{ $student->id }}">
-
-                            <td class="d-flex align-items-center gap-3">
-                                <img src="{{ $student->avatar ? asset('storage/'.$student->avatar) : asset('assets/images/default-avatar.png') }}"
-                                    alt="{{ $student->first_name }}" class="rounded-circle shadow-sm" width="42" height="42" />
-                                <div>
-                                    <div class="fw-semibold">{{ $student->first_name }} {{ $student->last_name }}</div>
-                                    <div class="fw-semibold text-gray">{{ $student->email }}</div>
-                                </div>
-                            </td>
-
-                            <td class="text-muted small">{{ $student->phone ?? 'N/A' }}</td>
-                            <td class="text-center">
-                                <div class="d-inline-flex gap-2">
-                                    <a href="{{ route('students.edit', $student->id) }}"
-                                        class="btn btn-sm custom-edit-btn" title="Edit">
-                                        <i class="mdi mdi-pencil"></i>
-                                    </a>
-                                    <button type="button"
-                                        class="btn btn-sm custom-delete-btn delete-student-btn"
-                                        data-id="{{ $student->id }}" data-name="{{ $student->first_name }} {{ $student->last_name }}"
-                                        title="Delete">
-                                        <i class="mdi mdi-delete"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                        @if ($students->isEmpty())
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-4">No students found.</td>
-                        </tr>
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-
+            <a href="{{ route('students.create') }}"
+                class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
+                <i class="mdi mdi-account-plus"></i> Add Student
+            </a>
         </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table align-middle mb-3 table-hover student-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>USER</th>
+                        <th>CREATED AT</th>
+                        <!-- <th>PHONE</th> -->
+                        <th class="text-center" style="width: 120px;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($students as $student)
+                    <tr id="student-row-{{ $student->id }}">
+
+                        <td class="d-flex align-items-center gap-3">
+                            <img src="{{ $student->avatar ? asset('storage/'.$student->avatar) : asset('assets/images/default-avatar1.jpg') }}"
+                                alt="{{ $student->first_name }}" class="rounded-circle shadow-sm" width="42" height="42" />
+                            <div>
+                                <div class="fw-semibold">{{ $student->first_name }} {{ $student->last_name }}</div>
+                                <div class="fw-semibold text-gray">{{ $student->email }}</div>
+                            </div>
+                        </td>
+                        <td class="text-muted">
+                            {{ $student->created_at->format('d M Y, h:i A') }}
+                        </td>
+                        <!-- <td class="text-muted small">{{ $student->phone ?? 'N/A' }}</td> -->
+                        <td class="text-center">
+                            <div class="d-inline-flex gap-2">
+                                <a href="{{ route('students.edit', $student->id) }}"
+                                    class="btn btn-sm custom-edit-btn" title="Edit">
+                                    <i class="mdi mdi-pencil"></i>
+                                </a>
+                                <button type="button"
+                                    class="btn btn-sm custom-delete-btn delete-student-btn"
+                                    data-id="{{ $student->id }}" data-name="{{ $student->first_name }} {{ $student->last_name }}"
+                                    title="Delete">
+                                    <i class="mdi mdi-delete"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                    @if ($students->isEmpty())
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No students found.</td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+
     </div>
+</div>
 </div>
 
 <!-- Delete Confirmation Modal -->

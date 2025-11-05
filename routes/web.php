@@ -40,10 +40,12 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/profile/edit', [AdminController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [AdminController::class, 'update'])->name('profile.update');
 
+    Route::post('/users/{user}/remove-avatar', [AdminController::class, 'removeAvatar'])->name('users.removeAvatar');
+
     // Users
     Route::resource('users', AdminController::class);
     Route::post('/users/bulk-delete', [AdminController::class, 'bulkDelete'])->name('users.bulkDelete');
-    Route::post('/users/{user}/remove-avatar', [AdminController::class, 'removeAvatar'])->name('users.removeAvatar');
+
 
     // ------------------------
     // Students
@@ -55,10 +57,11 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     // Grades - AJAX
     Route::get('/students/{student}/grades-sections/{school}', [StudentController::class, 'gradesSections'])->name('students.gradesSections');
-    Route::post('/students/{student}/storegrades', [StudentController::class, 'storeGrade'])->name('students.storeGrade');
+    // Route::post('/students/{student}/storegrades', [StudentController::class, 'storeGrade'])->name('students.storeGrade');
+    Route::post('/students/{student}/storegrades', [StudentController::class, 'storeGrades'])->name('students.storeGrades');
     Route::get('/students/{student}/load-grades', [StudentController::class, 'loadGrades'])->name('students.loadGrades');
-    Route::put('/students/{student}/updategrades', [StudentController::class, 'updateGrades']);
     Route::post('/students/{student}/updategrades', [StudentController::class, 'updateGradesInline'])->name('students.updateGradesInline');
+    Route::post('/students/{student}/delete-subject', [StudentController::class, 'deleteSubject']);
     Route::delete('/students/{student}/grades/{grade}', [StudentController::class, 'destroyGrade'])->name('students.destroyGrade');
 
     // ------------------------

@@ -3,25 +3,25 @@
 
 @section('content')
 <div class="container-fluid">
+    <div class=" border-2 rounded-3 p-4 mb-5 bg-white shadow-sm">
 
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-        <h3 class="fw-semibold text-dark mb-0">
-            <i class="bi bi-pencil-square me-2"></i>Edit Subject
-        </h3>
-        <a href="{{ route('schools.subjects.index', $school->id) }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
-            ← Back
-        </a>
-    </div>
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <h3 class="fw-semibold text-dark mb-0">
+                <i class="bi bi-pencil-square me-2"></i>Edit Subject
+            </h3>
+            <a href="{{ route('schools.subjects.index', $school->id) }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                ← Back
+            </a>
+        </div>
 
-    <!-- Main Panel -->
-    <div class="border border-2 rounded-3 p-4 mb-5 bg-white shadow-sm">
+        <!-- Main Panel -->
 
         <form action="{{ route('schools.subjects.update', [$school->id, $subject->id]) }}" method="POST" class="row g-3">
             @csrf
             @method('PUT')
 
-            
+
 
 
             <!-- Subject Name -->
@@ -40,7 +40,7 @@
                     <i class="bi bi-save"></i> Update Subject
                 </button>
             </div>
-        </form> 
+        </form>
     </div>
 </div>
 @endsection

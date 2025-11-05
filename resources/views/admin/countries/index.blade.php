@@ -3,9 +3,9 @@
 @section('title', 'Countries')
 
 @section('content')
-<!-- <div class="container-fluid"> -->
-<div class="card border-0 shadow-sm rounded-3">
-    <div class="card-body p-4">
+<div class="app-wrapper flex-column flex-row-fluid">
+    <!-- <div class="card border-0 shadow-sm rounded-3"> -->
+    <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
 
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">

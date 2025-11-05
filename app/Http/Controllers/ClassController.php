@@ -7,6 +7,7 @@ use App\Http\Requests\Class\UpdateClassRequest;
 use App\Models\ClassModel;
 use App\Models\School;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ClassController extends Controller
 {
@@ -50,9 +51,24 @@ class ClassController extends Controller
 
     public function destroy(School $school, ClassModel $class)
     {
-        $class->delete();
-        return redirect()
-            ->route('schools.classes.index', $school)
-            ->with('success', 'Class deleted!');
+        try {
+            // 🟢 Delete all student grades associated with this class
+            if ($class->studentGrades()->exists()) {
+                $class->studentGrades()->delete();
+            }
+
+            // 🟢 Now delete the class itself
+            $class->delete();
+
+            return redirect()
+                ->route('schools.classes.index', $school)
+                ->with('success', 'Class and related student grades deleted successfully.');
+        } catch (\Throwable $e) {
+            Log::error('Class delete error: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
+
+            return redirect()
+                ->route('schools.classes.index', $school)
+                ->with('error', 'Error deleting class and related data.');
+        }
     }
 }

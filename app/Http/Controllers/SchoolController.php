@@ -183,6 +183,8 @@ class SchoolController extends Controller
                 ->with('error', 'Error deleting school.');
         }
     }
+
+
     public function getByState($stateId)
     {
         $schools = \App\Models\School::where('state_id', $stateId)->get(['id', 'name']);

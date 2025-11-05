@@ -2,20 +2,20 @@
 @section('title', 'Edit Class')
 
 @section('content')
-<div class="container-fluid">
+<div class="app-wrapper flex-column flex-row-fluid">
+    <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
 
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-        <h3 class="fw-semibold text-dark mb-0">
-            <i class="bi bi-pencil-square me-2"></i>Edit Class
-        </h3>
-        <a href="{{ route('schools.classes.index', $school->id) }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
-            ← Back
-        </a>
-    </div>
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <h3 class="fw-semibold text-dark mb-0">
+                <i class="bi bi-pencil-square me-2"></i>Edit Class
+            </h3>
+            <a href="{{ route('schools.classes.index', $school->id) }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                ← Back
+            </a>
+        </div>
 
-    <!-- Main Bordered Panel -->
-    <div class="border border-2 rounded-3 p-4 mb-5 mb-xl-10 bg-white shadow-sm">
+        <!-- Main Bordered Panel -->
 
         <form action="{{ route('schools.classes.update', [$school->id, $class->id]) }}" method="POST" class="row g-3">
             @csrf

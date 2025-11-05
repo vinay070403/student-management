@@ -317,7 +317,6 @@
 
 
 
-
 @extends('layouts.app')
 
 @section('title', 'Edit Student')
@@ -538,50 +537,70 @@
         // Load Subjects for Section
         // -----------------------
         function loadClassSubjects($section, classId) {
-            $.getJSON(`/admin/students/${studentId}/load-class-subjects/${classId}`, function(data) {
-                if (!data?.subjects) return;
+            $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}?class_id=${classId}`, function(data) {
                 const $container = $section.find('.subjects-container');
-                data.subjects.forEach(sub => {
-                    $container.append(generateSubjectRow(sub.subject_id, sub.subject_name, sub.grade_id, sub.min_score, sub.max_score));
-                });
+                $container.empty();
+
+                const subjects = data.subjects || [];
+                const grades = data.grades || [];
+
+                // Show "Add Subject" button only if class has subjects
+                if (subjects.length === 0) {
+                    $container.append('<p class="text-muted">No subjects found for this class.</p>');
+                    return;
+                }
+
+                // Start with one subject row by default
+                $container.append(generateSubjectRow(subjects, grades));
             });
         }
+
 
         // -----------------------
         // Generate Subject Row
         // -----------------------
-        function generateSubjectRow(subjectId = '', subjectName = '', gradeId = '', minScore = '', maxScore = '') {
+        function generateSubjectRow(subjects = [], grades = [], selectedSubjectId = '', selectedGradeId = '', minScore = '', maxScore = '') {
             return $(`
-            <div class="row g-2 mb-2 align-items-center subject-grade-row">
-                <div class="col-md-4">
-                    <input type="text" class="form-control form-control-sm subject-name" placeholder="Subject" value="${subjectName}" data-subject-id="${subjectId}">
-                </div>
-                <div class="col-md-2">
-                    <select class="form-select form-select-sm grade-select">
-                        <option value="">Select Grade</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <input type="number" class="form-control form-control-sm min-score" placeholder="Min" value="${minScore}">
-                </div>
-                <div class="col-md-2">
-                    <input type="number" class="form-control form-control-sm max-score" placeholder="Max" value="${maxScore}">
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-dark btn-sm btn-delete-subject">&times;</button>
-                </div>
+        <div class="row g-2 mb-2 align-items-center subject-grade-row">
+            <div class="col-md-4">
+                <select class="form-select form-select-sm subject-select">
+                    <option value="">Select Subject</option>
+                    ${subjects.map(s => `<option value="${s.id}" ${s.id == selectedSubjectId ? 'selected' : ''}>${s.name}</option>`).join('')}
+                </select>
             </div>
-        `);
+            <div class="col-md-3">
+                <select class="form-select form-select-sm grade-select">
+                    <option value="">Select Grade</option>
+                    ${grades.map(g => `<option value="${g.id}" data-min="${g.min_score}" data-max="${g.max_score}" ${g.id == selectedGradeId ? 'selected' : ''}>${g.grade}</option>`).join('')}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control form-control-sm min-score" placeholder="Min" value="${minScore}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control form-control-sm max-score" placeholder="Max" value="${maxScore}">
+            </div>
+            <div class="col-md-1 text-end">
+                <button class="btn btn-danger btn-sm btn-delete-subject">&times;</button>
+            </div>
+        </div>
+    `);
         }
+
 
         // -----------------------
         // Add Subject Row
         // -----------------------
         sectionsContainer.on('click', '.btn-add-subject', function() {
             const $section = $(this).closest('.class-section');
-            const $container = $section.find('.subjects-container');
-            $container.append(generateSubjectRow());
-            loadGradeOptions($container.find('.subject-grade-row:last .grade-select'));
+            const classId = $section.data('class-id');
+
+            $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}?class_id=${classId}`, function(data) {
+                const $container = $section.find('.subjects-container');
+                const subjects = data.subjects || [];
+                const grades = data.grades || [];
+                $container.append(generateSubjectRow(subjects, grades));
+            });
         });
 
         // -----------------------
@@ -621,28 +640,42 @@
             const $section = $(this).closest('.class-section');
             const classId = $section.data('class-id');
             const payload = [];
+
             $section.find('.subject-grade-row').each(function() {
-                const subjectName = $(this).find('.subject-name').val();
+                const subjectId = $(this).find('.subject-select').val();
                 const gradeId = $(this).find('.grade-select').val();
                 const min = $(this).find('.min-score').val();
                 const max = $(this).find('.max-score').val();
-                if (!subjectName || !gradeId) return;
+                if (!subjectId || !gradeId) return;
                 payload.push({
                     class_id: classId,
-                    subject_name: subjectName,
+                    subject_id: subjectId, // ✅ correct
                     grade_id: gradeId,
                     min_score: min,
                     max_score: max
                 });
             });
+
             if (!payload.length) return alert('Add at least one subject with grade.');
-            $.post(`/admin/students/${studentId}/store-or-update-grades`, {
+
+            $.post(`/admin/students/${studentId}/storegrades`, {
                     grades: payload,
                     _token: csrfToken
                 })
                 .done(() => alert('Grades saved successfully!'))
                 .fail(xhr => console.error(xhr.responseText));
         });
+
+
+        sectionsContainer.on('change', '.grade-select', function() {
+            const $option = $(this).find('option:selected');
+            const min = $option.data('min');
+            const max = $option.data('max');
+            const $row = $(this).closest('.subject-grade-row');
+            $row.find('.min-score').val(min);
+            $row.find('.max-score').val(max);
+        });
+
 
     });
 </script>
