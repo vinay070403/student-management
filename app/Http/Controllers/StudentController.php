@@ -310,6 +310,34 @@ class StudentController extends Controller
     }
 
     // ------------------------
+    // Delete Class and its Subjects/Grades (AJAX)
+    // ------------------------
+    public function deleteClass(Request $request, $studentId)
+    {
+        $request->validate([
+            'class_id' => 'required|integer|exists:classes,id',
+        ]);
+
+        try {
+            $classId = $request->class_id;
+
+            // Delete all student grades for this class
+            \App\Models\StudentGrade::where('student_id', $studentId)
+                ->where('class_id', $classId)
+                ->delete();
+
+            // Optionally: Delete all subjects of this class (if they are exclusive to this class)
+            // \App\Models\Subject::where('class_id', $classId)->delete(); 
+            // ⚠ Only uncomment if subjects are not shared with other classes
+
+            return response()->json(['success' => true, 'message' => 'Class and its grades deleted.']);
+        } catch (\Throwable $e) {
+            Log::error('Delete class error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Server error while deleting class.'], 500);
+        }
+    }
+
+    // ------------------------
     // Delete Subject (AJAX)
     // ------------------------
     public function deleteSubject($studentId, Request $request)

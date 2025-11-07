@@ -8,7 +8,10 @@
         <!-- <div class="card shadow-sm mb-6"> -->
         <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
             <div class=" fw-semibold mb-3 text-dark d-flex justify-content-between align-items-center ">
-                <h3 class="card-title mb-0">Edit User Details</h3>
+                <h3 class="card-title mb-0">
+                    <i class="fa-solid fa-user-pen"></i>
+                    Edit User
+                </h3>
                 <a href="{{ route('users.index') }}" class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                     <i class="mdi mdi-arrow-left me-2"></i> Back
                 </a>
@@ -73,28 +76,36 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group ">
-                                <label for="avatar" class="form-label">Avatar</label>
-                                <input type="file" name="avatar" class="form-control form-control-lg">
-                                @if ($user->avatar_url)
-                                <div id="avatar-wrapper" class="position-relative mt-2 d-inline-block">
-                                    <img src="{{ $user->avatar_url }}" id="user-avatar" alt="Avatar" class="img-thumbnail mt-2" style="max-width: 100px;">
+                            <div class="form-group">
+                                <label for="avatar" class="form-label fw-semibold">Avatar</label>
+                                <input type="file" name="avatar" class="form-control form-control-lg" accept="image/*">
 
-                                    <!-- ❌ Cross button -->
-                                    <button type="button" id="remove-avatar-btn"
-                                        class="btn btn-sm btn-danger position-absolute top-0 end-6 translate-middle rounded-circle"
-                                        style="padding:3px 6px;font-size:12px;line-height:1;">
+                                <div id="avatar-wrapper" class="position-relative mt-3 d-inline-block">
+                                    @if (!empty($user->avatar))
+                                    <img src="{{ Storage::url($user->avatar) }}"
+                                        id="user-avatar"
+                                        alt="User Avatar"
+                                        class="img-thumbnail shadow-sm"
+                                        style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+
+                                    <!-- ❌ Remove Button -->
+                                    <button type="button"
+                                        id="remove-avatar-btn"
+                                        class="btn btn-sm btn-danger position-absolute top-0 start-100 translate-middle rounded-circle"
+                                        style="padding: 2px 6px; font-size: 12px; line-height: 1;">
                                         ×
                                     </button>
+                                    @else
+                                    <img src="{{ asset('images/default-avatar1.jpg') }}"
+                                        id="user-avatar"
+                                        alt="Default Avatar"
+                                        class="img-thumbnail shadow-sm"
+                                        style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                    @endif
                                 </div>
-                                @else
-                                <img id="user-avatar" src="{{ asset('images/default-avatar1.jpg') }}"
-                                    alt="Default Avatar"
-                                    class="img-thumbnail mt-2"
-                                    style="max-width: 100px;">
-                                @endif
                             </div>
                         </div>
+
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="address" class="form-label">Address</label>

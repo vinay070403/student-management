@@ -9,7 +9,10 @@
         <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="card-title mb-0">Edit Student Details</h2>
+                <h3 class="card-title mb-0">
+                    <i class="fa-solid fa-users-gear"></i>
+                    Edit Student Details
+                </h3>
                 <a href="{{ route('students.index') }}" class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                     <i class="mdi mdi-arrow-left me-2"></i> Back
                 </a>
@@ -127,13 +130,13 @@
                         </div>
 
                         {{-- School info + Add Class --}}
-                        <div id="school-actions" class="mb-3" @if(!$hasSchool) style="display:none;" @endif>
-                            <span class="fw-bold fs-2">
-                                School: <span id="school-name">@if($student->school){{ $student->school->name }}@endif</span>
+                        <div id="school-actions" class="mb-3 d-flex align-items-center justify-content-between" @if(!$hasSchool) style="display:none;" @endif>
+                            <span class="fw-bold fs-4">
+                                School : <span id="school-name">@if($student->school){{ $student->school->name }}@endif</span>
                             </span>
-                            <hr>
+
                             <div>
-                                <button id="btn-add-class" class="btn btn-light border py-3 px-3 gap-2 rounded-7 mb-2"> + Add Class</button>
+                                <button id="btn-add-class" class="btn btn-light border py-3 px-3 d-flex align-items-center gap-2 rounded-3"> + Add Class</button>
                             </div>
                         </div>
 
@@ -281,16 +284,13 @@
 
             const $section = $(`
             <div class="card mb-3 class-section" data-class-id="${classId}">
-                <div class="card-body">
+                
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5>${className}</h5>
-                        <button class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg btn-delete-section">Delete</button>
+                        <h5>Class: ${className}</h5>
                     </div>
                     <div class="subjects-container mb-2"></div>
-                    <button class="btn btn-dark btn-sm btn-add-subject mb-2">Add Subject</button>
-                    <div class="text-end">
-                        <button class="btn btn-dark btn-save-section">Save</button>
-                    </div>
+                    <button class=btn btn-light btn-sm btn-add-subject mb-2">Add Subject</button>
+                    
                 </div>
             </div>
         `);
@@ -304,187 +304,76 @@
             $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}?class_id=${classId}`, function(data) {
                 const $container = $section.find('.subjects-container');
                 $container.empty();
+
                 const subjects = data.subjects || [];
                 const grades = data.grades || [];
-                if (!subjects.length) return $container.append('<p class="text-muted">No subjects found for this class.</p>');
-                $container.append(generateSubjectRow(subjects, grades));
+
+                if (!subjects.length) {
+                    return $container.append('<p class="text-muted">No subjects found for this class.</p>');
+                }
+
+                // Create and animate new row
+                const $newRow = generateSubjectRow(subjects, grades);
+                $container.append($newRow);
+
+                // Trigger smooth animation (using CSS class)           &times;</button>
+                setTimeout(() => $newRow.addClass('show'), 10);
             });
         }
 
+        // ------------------------------ GENERATE SUBJECT ROW ------------------------------
         function generateSubjectRow(subjects = [], grades = [], selectedSubjectId = '', selectedGradeId = '', minScore = '', maxScore = '') {
             return $(`
-            <div class="row g-2 mb-2 align-items-center subject-grade-row">
-                <div class="col-md-4">
-                    <select class="form-select form-select-sm subject-select">
-                        <option value="">Select Subject</option>
-                        ${subjects.map(s => `<option value="${s.id}" ${s.id == selectedSubjectId ? 'selected' : ''}>${s.name}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select form-select-sm grade-select">
-                        <option value="">Select Grade</option>
-                        ${grades.map(g => `<option value="${g.id}" data-min="${g.min_score}" data-max="${g.max_score}" ${g.id == selectedGradeId ? 'selected' : ''}>${g.grade}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <input type="number" class="form-control form-control-sm min-score" placeholder="Min" value="${minScore}" readonly>
-                </div>
-                <div class="col-md-2">
-                    <input type="number" class="form-control form-control-sm max-score" placeholder="Max" value="${maxScore}" readonly>
-                </div>
-                <div class="col-md-1 text-end">
-                    <button class="btn btn-light border py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-delete-subject">&times;</button>
-                </div>
+        <div class="row g-2 mb-2 align-items-center subject-grade-row smooth-appear  bg-white p-2 rounded-3 shadow-sm">
+            <div class="col-md-4">
+                <select class="form-select form-select-sm subject-select">
+                    <option value="">Select Subject</option>
+                    ${subjects.map(s => `<option value="${s.id}" ${s.id == selectedSubjectId ? 'selected' : ''}>${s.name}</option>`).join('')}
+                </select>
             </div>
-        `);
+            <div class="col-md-3">
+                <select class="form-select form-select-sm grade-select">
+                    <option value="">Select Grade</option>
+                    ${grades.map(g => `<option value="${g.id}" data-min="${g.min_score}" data-max="${g.max_score}" ${g.id == selectedGradeId ? 'selected' : ''}>${g.grade}</option>`).join('')}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control form-control-sm min-score" placeholder="Min" value="${minScore}" readonly>
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control form-control-sm max-score" placeholder="Max" value="${maxScore}" readonly>
+            </div>
+            <div class="col-md-1 text-end">
+                <button class="btn btn-light btn-sm rounded-5 btn-delete-subject">
+               <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+        </div>
+    `);
         }
 
-        // ------------------------------ ADD SUBJECT ------------------------------
-        sectionsContainer.on('click', '.btn-add-subject', function() {
-            const $section = $(this).closest('.class-section');
-            const classId = $section.data('class-id');
-
-            $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}?class_id=${classId}`, function(data) {
-                const $container = $section.find('.subjects-container');
-                const subjects = data.subjects || [];
-                const grades = data.grades || [];
-                $container.append(generateSubjectRow(subjects, grades));
-            });
-        });
-
-        // ------------------------------ DELETE SUBJECT ------------------------------
-        sectionsContainer.on('click', '.btn-delete-subject', function() {
-            const $row = $(this).closest('.subject-grade-row');
-            const subjectId = $row.find('.subject-select').val();
-            const classId = $(this).closest('.class-section').data('class-id');
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This action cannot be undone!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    if (subjectId) {
-                        $.post(`/admin/students/${studentId}/delete-subject`, {
-                                class_id: classId,
-                                subject_id: subjectId,
-                                _token: csrfToken
-                            })
-                            .done(() => $row.remove())
-                            .fail(() => Swal.fire('Error', 'Failed to delete subject.', 'error'));
-                    } else $row.remove();
-
-                    Swal.fire('Deleted!', 'Subject has been deleted.', 'success');
-                }
-            });
-        });
-
-        // ------------------------------ DELETE CLASS ------------------------------
-        sectionsContainer.on('click', '.btn-delete-section', function() {
-            const $section = $(this).closest('.class-section');
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You won't be able to revert this!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, delete it!"
-            }).then((result) => {
-                if (result.isConfirmed) $section.remove();
-            });
-        });
-
-        // ------------------------------ GRADE MIN/MAX AUTO-FILL ------------------------------
-        sectionsContainer.on('change', '.grade-select', function() {
-            const $row = $(this).closest('.subject-grade-row');
-            const $selectedOption = $(this).find('option:selected');
-            $row.find('.min-score').val($selectedOption.data('min') ?? '');
-            $row.find('.max-score').val($selectedOption.data('max') ?? '');
-        });
-
-        function loadGradeOptions($select, schoolId) {
-            $.getJSON(`/admin/students/${studentId}/grades-sections/${schoolId}`, function(data) {
-                data.grades?.forEach(g => $select.append(`<option value="${g.id}" data-min="${g.min_score}" data-max="${g.max_score}">${g.grade}</option>`));
-            });
-        }
-
-        sectionsContainer.on('focus', '.grade-select', function() {
-            const schoolId = savedSchool.id;
-            if ($(this).children().length <= 1) loadGradeOptions($(this), schoolId);
-        });
-
-        // ------------------------------ SAVE GRADES ------------------------------
-        sectionsContainer.on('click', '.btn-save-section', function() {
-            const $section = $(this).closest('.class-section');
-            const classId = $section.data('class-id');
-            const payload = [];
-
-            $section.find('.subject-grade-row').each(function() {
-                const subjectId = $(this).find('.subject-select').val();
-                const gradeId = $(this).find('.grade-select').val();
-                const min = $(this).find('.min-score').val();
-                const max = $(this).find('.max-score').val();
-                if (!subjectId || !gradeId) return;
-                payload.push({
-                    class_id: classId,
-                    subject_id: subjectId,
-                    grade_id: gradeId,
-                    min_score: min,
-                    max_score: max
-                });
-            });
-
-            if (!payload.length) return Swal.fire({
-                icon: 'warning',
-                title: 'No Subjects Added!',
-                text: 'Please add at least one subject with grade.',
-                confirmButtonColor: '#3085d6'
-            });
-
-            $.post(`/admin/students/${studentId}/storegrades`, {
-                    grades: payload,
-                    _token: csrfToken
-                })
-                .done(() => Swal.fire({
-                    icon: 'success',
-                    title: 'Grades Saved!',
-                    text: 'All grades were saved successfully.',
-                    timer: 1800,
-                    showConfirmButton: false
-                }))
-                .fail(() => Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Something went wrong while saving grades.'
-                }));
-        });
 
         // ------------------------------ LOAD EXISTING GRADES ------------------------------
         if (savedSchool?.id) {
             $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}?load_existing=1`, function(data) {
                 const savedClasses = data.saved_classes || [];
+
                 savedClasses.forEach(cls => {
                     const $section = $(`
                     <div class="card mb-3 class-section" data-class-id="${cls.id}">
-                        <div class="p-4 bg-light border rounded-4 shadow-sm mb-5y">
+                        <div class="p-4 bg-light border rounded-4 shadow-sm mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h5>${cls.name}</h5>
-                                <button class="btn btn-light border py-3 px-3 gap-2 rounded-7 mb-2 btn-delete-section">
+                                <h4>Class: ${cls.name}</h4>
+                                <button class="btn btn-light border py-2 px-2 rounded-3 btn-delete-section">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>
-                            <div class="subjects-container mb-2"></div>
-                            <button class="btn btn-light border py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-add-subject mb-2"> + Add Subject</button>
-                            <div class="text-end">
-                                <button class="btn btn-dark btn-save-section">Save</button>
-                            </div>
+                            <div class="subjects-container mb-4"></div>
+                            <button class="btn btn-light btn-sm btn-add-subject mb-2">+ Add Subject</button>
                         </div>
                     </div>
                 `);
+
                     sectionsContainer.append($section);
 
                     const $container = $section.find('.subjects-container');
@@ -499,16 +388,161 @@
                         );
                         $container.append($row);
 
-                        // Ensure min/max fields are correct even after refresh
                         const $gradeSelect = $row.find('.grade-select');
                         const $selectedOption = $gradeSelect.find('option:selected');
                         $row.find('.min-score').val($selectedOption.data('min') ?? sub.min_score ?? '');
                         $row.find('.max-score').val($selectedOption.data('max') ?? sub.max_score ?? '');
                     });
-
                 });
+
+                // Add a single "Save All" button at the bottom if not exists
+                if ($('#btn-save-all').length === 0) {
+                    sectionsContainer.after(`
+                    <div class="text-end mt-3">
+                        <button id="btn-save-all" class="btn btn-dark">Save All</button>
+                    </div>
+                `);
+                }
             });
         }
+
+        // ------------------------------ ADD SUBJECT ------------------------------
+        sectionsContainer.on('click', '.btn-add-subject', function() {
+            const $section = $(this).closest('.class-section');
+            const classId = $section.data('class-id');
+
+            $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}?class_id=${classId}`, function(data) {
+                const $container = $section.find('.subjects-container');
+                const subjects = data.subjects || [];
+                const grades = data.grades || [];
+                $container.append(generateSubjectRow(subjects, grades));
+
+            });
+        });
+
+        // ------------------------------ DELETE SUBJECT ------------------------------
+        sectionsContainer.on('click', '.btn-delete-subject', function() {
+            const $row = $(this).closest('.subject-grade-row');
+            const subjectId = $row.find('.subject-select').val();
+            const classId = $(this).closest('.class-section').data('class-id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will remove the subject row!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    if (subjectId) {
+                        $.post(`/admin/students/${studentId}/delete-subject`, {
+                            _token: csrfToken,
+                            class_id: classId,
+                            subject_id: subjectId
+                        }).done(() => {
+                            $row.remove();
+                            Swal.fire('Deleted!', 'Subject deleted successfully.', 'success');
+                        }).fail(() => Swal.fire('Error', 'Failed to delete subject.', 'error'));
+                    } else {
+                        $row.remove();
+                        Swal.fire('Deleted!', 'Subject row removed.', 'success');
+                    }
+                }
+            });
+        });
+
+        // ------------------------------ DELETE CLASS ------------------------------
+        sectionsContainer.on('click', '.btn-delete-section', function() {
+            const $section = $(this).closest('.class-section');
+            const classId = $section.data('class-id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will remove the class and all its subjects/grades!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/admin/students/${studentId}/delete-class`,
+                        method: 'POST',
+                        data: {
+                            _token: csrfToken,
+                            class_id: classId
+                        },
+                        success: function(res) {
+                            $section.remove();
+                            Swal.fire('Deleted!', 'Class and all related subjects/grades removed.', 'success');
+                        },
+                        error: function(err) {
+                            console.error(err.responseJSON);
+                            let msg = 'Failed to delete class.';
+                            if (err.responseJSON && err.responseJSON.message) {
+                                msg = err.responseJSON.message;
+                            }
+                            Swal.fire('Error', msg, 'error');
+                        }
+                    });
+                }
+            });
+        });
+
+        // ------------------------------ AUTO-FILL MIN/MAX ------------------------------
+        sectionsContainer.on('change', '.grade-select', function() {
+            const $row = $(this).closest('.subject-grade-row');
+            const $selectedOption = $(this).find('option:selected');
+            $row.find('.min-score').val($selectedOption.data('min') ?? '');
+            $row.find('.max-score').val($selectedOption.data('max') ?? '');
+        });
+
+        // ------------------------------ SAVE ALL LOGIC ------------------------------
+        $(document).on('click', '#btn-save-all', function() {
+            const allData = [];
+
+            $('.class-section').each(function() {
+                const classId = $(this).data('class-id');
+                $(this).find('.subjects-container .subject-grade-row').each(function() {
+                    const subjectId = $(this).find('.subject-select').val();
+                    const gradeId = $(this).find('.grade-select').val();
+                    if (!subjectId || !gradeId) return; // skip incomplete rows
+
+                    allData.push({
+                        class_id: classId,
+                        subject_id: subjectId,
+                        grade_id: gradeId,
+                        min_score: $(this).find('.min-score').val() || null,
+                        max_score: $(this).find('.max-score').val() || null
+                    });
+                });
+            });
+
+            if (!allData.length) {
+                return Swal.fire('Warning', 'No subjects/grades to save!', 'warning');
+            }
+
+            $.ajax({
+                url: `/admin/students/${studentId}/storegrades`,
+                method: 'POST',
+                data: {
+                    _token: csrfToken,
+                    grades: allData
+                },
+                success: function(res) {
+                    Swal.fire('Success', 'All grades saved successfully!', 'success');
+                },
+                error: function(err) {
+                    console.error(err.responseJSON);
+                    let msg = 'Something went wrong while saving.';
+                    if (err.responseJSON && err.responseJSON.errors) {
+                        msg = Object.values(err.responseJSON.errors).flat().join('<br>');
+                    }
+                    Swal.fire('Error', msg, 'error');
+                }
+            });
+        });
 
     });
 </script>

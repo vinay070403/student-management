@@ -8,7 +8,10 @@
         <!-- <div class="card shadow-sm mb-6"> -->
         <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="card-title mb-0">Edit State</h2>
+                <h3 class="card-title mb-1">
+                    <i class="fa-solid fa-street-view"></i>
+                    Edit State
+                </h3>
                 <a href="{{ route('states.index') }}" class="btn btn-dark">
                     <i class="mdi mdi-arrow-left me-2"></i> Back
                 </a>

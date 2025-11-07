@@ -5,7 +5,10 @@
     <div class="app-wrapper flex-column flex-row-fluid">
         <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="card-title mb-0">Add New User</h4>
+                <h3 class="card-title mb-0">
+                    <i class="fa-solid fa-user-plus"></i>
+                    Add New User
+                </h3>
                 <a href="{{ route('users.index') }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                     <i class="mdi mdi-arrow-left me-2"></i> Back
                 </a>
@@ -20,7 +23,7 @@
                     @csrf
                     <div class="form-group p-4 mb-2" style="background-color: #f8f9fa; border-radius: 8px;">
                         <label class="form-label d-block">Select Role</label>
-                        <div class="form-check form-check-inline">
+                        <div class="form-check form-check-inline mb-2">
                             <input class="form-check-input" type="radio" name="role" id="super_admin" value="Super Admin" required>
                             <label class="form-check-label" for="super_admin">Super Admin</label>
                         </div>

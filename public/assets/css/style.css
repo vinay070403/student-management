@@ -27754,7 +27754,7 @@ table.dataTable tbody td.select-checkbox:after {
 
 .main-panel {
   transition: width 0.25s ease, margin 0.25s ease;
-  width: calc(100% - 235px);
+  width: calc(100% - 225px);
   min-height: calc(100vh - 60px);
   display: -webkit-flex;
   display: flex;
@@ -27770,7 +27770,7 @@ table.dataTable tbody td.select-checkbox:after {
 }
 
 .content-wrapper {
-  background: #F5F7FF;
+  background: #D6D3B8;
   padding: 2.375rem 2.375rem;
   width: 100%;
   -webkit-flex-grow: 1;
@@ -27786,8 +27786,8 @@ table.dataTable tbody td.select-checkbox:after {
 /* Sidebar */
 .sidebar {
   min-height: calc(100vh - 60px);
-  background: #fff;
-  font-family: "Nunito", sans-serif;
+  background: #f8f9fa;
+  font-family: "Montserrat", sans-serif;
   font-weight: 500;
   padding: 0;
   width: 235px;
@@ -27860,7 +27860,7 @@ table.dataTable tbody td.select-checkbox:after {
   -moz-osx-font-smoothing: grayscale;
   margin-left: auto;
   margin-right: 0;
-  color: #2e2b52;
+  color: skyblue;
 }
 
 .rtl .sidebar .nav .nav-item .nav-link i.menu-arrow {
@@ -27944,7 +27944,7 @@ table.dataTable tbody td.select-checkbox:after {
 
 .sidebar .nav:not(.sub-menu)>.nav-item:hover>.nav-link,
 .sidebar .nav:not(.sub-menu)>.nav-item:hover[aria-expanded=true] {
-  background: navy;
+  background: #5870A7;
   color: #fff;
 }
 

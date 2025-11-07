@@ -6,7 +6,10 @@
 
     <!-- Panel Header -->
     <div class="d-flex justify-content-between align-items-center mb-5 pb-3 border-bottom">
-        <h2 class="fw-bold text-dark mb-0" style="letter-spacing:1px;">EDIT SCHOOL: {{ $school->name }}</h2>
+        <h3 class="fw-bold text-dark mb-0" style="letter-spacing:1px;">
+            <i class="fa-solid fa-school-circle-check"></i>
+            Edit School: {{ $school->name }}
+        </h3>
         <a href="{{ route('schools.index') }}" class="btn btn-dark px-5 py-3 rounded-3 fw-bold shadow-sm">
             ← Back
         </a>
@@ -66,7 +69,7 @@
                                 <div class="col-md-2">Grade</div>
                                 <div class="col-md-3">Min</div>
                                 <div class="col-md-3">Max</div>
-                                <div class="col-md-2">Point</div>
+                                <div class="col-md-2">Grade Point</div>
                                 <div class="col-md-2 text-end">Action</div>
                             </div>
 
@@ -97,7 +100,9 @@
                                         <input type="number" name="point[]" class="form-control form-control-sm text-center" placeholder="Point" value="{{ $grade->grade_point }}" required>
                                     </div>
                                     <div class="col-md-2 text-end">
-                                        <button type="button" class="btn btn-danger btn-sm rounded-3 remove-grade-btn">Delete</button>
+                                        <button type="button" class="btn btn-light btn-sm rounded-3 remove-grade-btn">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 @endforeach

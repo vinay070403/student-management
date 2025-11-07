@@ -60,6 +60,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/students/{student}/storegrades', [StudentController::class, 'storeGrades'])->name('students.storeGrades');
     Route::get('/students/{student}/load-grades', [StudentController::class, 'loadGrades'])->name('students.loadGrades');
     Route::post('/students/{student}/updategrades', [StudentController::class, 'updateGradesInline'])->name('students.updateGradesInline');
+    Route::post('/students/{student}/delete-class', [StudentController::class, 'deleteClass']);
     Route::post('/students/{student}/delete-subject', [StudentController::class, 'deleteSubject']);
     Route::delete('/students/{student}/grades/{grade}', [StudentController::class, 'destroyGrade'])->name('students.destroyGrade');
 

@@ -7,7 +7,10 @@
     <div class="app-wrapper flex-column flex-row-fluid">
         <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="card-title mb-0">Add New Student</h4>
+                <h3 class="card-title mb-0">
+                    <i class="fa-solid fa-user-tie"></i>
+                    Add New Student
+                </h3>
                 <a href="{{ route('students.index') }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                     <i class="mdi mdi-arrow-left me-2"></i> Back
                 </a>

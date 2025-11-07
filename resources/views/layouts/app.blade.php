@@ -7,6 +7,11 @@
     <title>@yield('title', 'SkyDash Admin') - Admin Panel</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Google Font: Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
     <!-- SkyDash CSS with fallbacks -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}" onerror="this.href='https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.1/iconfont/material-icons.css'">
     <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}" onerror="this.href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css'">
@@ -19,10 +24,34 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
-
     @yield('styles')
+
     <style>
-        /* Reset & Base */
+        /* -------------------- Font Integration -------------------- */
+        body {
+            font-family: "Montserrat", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        /* You can also apply heavier/lighter font weights if needed */
+        .montserrat-bold {
+            font-family: "Montserrat", sans-serif;
+            font-weight: 700;
+        }
+
+        .montserrat-medium {
+            font-family: "Montserrat", sans-serif;
+            font-weight: 500;
+        }
+
+        .montserrat-light {
+            font-family: "Montserrat", sans-serif;
+            font-weight: 300;
+        }
+
+        /* -------------------- Layout Styling -------------------- */
         html,
         body {
             height: 100%;
@@ -30,7 +59,6 @@
             background: #bdd6f1ff;
         }
 
-        /* Header */
         .navbar {
             position: fixed;
             top: 0;
@@ -40,7 +68,6 @@
             z-index: 1030;
         }
 
-        /* Sidebar */
         .sidebar {
             position: fixed;
             top: 70px;
@@ -53,7 +80,6 @@
             z-index: 1020;
         }
 
-        /* Main Panel (scrollable area) */
         .main-panel {
             margin-left: 230px;
             margin-top: 60px;
@@ -64,7 +90,6 @@
             background: #f9fafb;
         }
 
-        /* Footer */
         .footer {
             position: fixed;
             bottom: 0;
@@ -81,7 +106,6 @@
             z-index: 1020;
         }
 
-        /* Sidebar Profile Image */
         .nav-profile-img {
             width: 32px;
             height: 32px;
@@ -91,7 +115,6 @@
             vertical-align: middle;
         }
 
-        /* Responsive Adjustments */
         @media (max-width: 991px) {
             .sidebar {
                 left: -230px;
@@ -111,9 +134,8 @@
             }
         }
     </style>
-
-
 </head>
+
 
 <body>
     <!-- Header -->

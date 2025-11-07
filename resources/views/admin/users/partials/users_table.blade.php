@@ -18,7 +18,7 @@
         <tbody>
             @foreach ($users as $user)
             <tr id="user-row-{{ $user->id }}" class="user-row">
-                <td><input type="checkbox" class="select-user" data-id="{{ $user->id }}" /></td>
+                <td class="align-items-center"><input type="checkbox" class="select-user" data-id="{{ $user->id }}" /></td>
 
                 <td class="d-flex align-items-center gap-3">
                     <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : asset('assets/images/default-avatar1.jpg') }}"
@@ -43,16 +43,14 @@
                             class="btn btn-outline-old-dark btn-sm d-flex align-items-center justify-content-center p-2"
                             style="width: 36px; height: 36px; border-radius: 8px;"
                             title="Edit">
-                            <i class="mdi mdi-pencil-outline" style="font-size: 1.1rem;"></i>
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </a>
 
                         <!-- Delete Button (Professional) -->
                         <button type="button"
                             class="btn btn-outline- btn-sm d-flex align-items-center justify-content-center p-2 delete-user-btn"
-                            data-id="{{ $user->id }}"
-                            style="width: 36px; height: 36px; border-radius: 8px;"
-                            title="Delete">
-                            <i class="mdi mdi-delete-circle-outline" style="font-size: 1.1rem;"></i>
+                            data-id="{{ $user->id }}">
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
 
                     </div>

@@ -8,7 +8,10 @@
         <!-- <div class="card shadow-sm mb-4"> -->
         <div class=" p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
             <div class=" d-flex justify-content-between align-items-center mb-3">
-                <h4 class="card-title mb-0">Add New State</h4>
+                <h4 class="card-title mb-0">
+                    <i class="fa-solid fa-location-pin"></i>
+                    Add New State
+                </h4>
                 <a href="{{ route('states.index') }}"
                     class="btn btn-dark">
                     <i class="mdi mdi-arrow-left me-1"></i> Back

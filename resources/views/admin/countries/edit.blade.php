@@ -8,7 +8,10 @@
         <!-- <div class="card shadow-sm mb-4"> -->
         <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="card-title mb-0">Edit Country</h4>
+                <h3 class="card-title mb-0">
+                    <i class="fa-solid fa-globe"></i>
+                    Edit Country
+                </h3>
                 <a href="{{ route('countries.index') }}" class="btn btn-dark btn-sm-2">
                     <i class="mdi mdi-arrow-left sm-2"></i> Back
                 </a>

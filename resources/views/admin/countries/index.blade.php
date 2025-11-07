@@ -5,12 +5,15 @@
 @section('content')
 <div class="app-wrapper flex-column flex-row-fluid">
     <!-- <div class="card border-0 shadow-sm rounded-3"> -->
-    <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
+    <div class="p-4 border-2 rounded-2 shadow-lg mb-5 mb-xl-10"
+        style="border-color: #adb5bd; background-color: #f8f9fa;">
+
 
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
+                    <i class="fa-solid fa-earth-africa"></i>
                     Countries
                 </h3>
                 <!-- <p class="text-muted small mb-0">
@@ -24,7 +27,10 @@
         </div>
         <!-- Alert Box -->
         <div id="alert-box" class="alert d-none" role="alert"></div>
-        <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
+
+        <div class="p-4 border rounded-3 mb-5"
+            style="border-color: #dee2e6; background-color: #f8f9fa;">
+
             <!-- Search Bar -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="input-group" style="max-width: 350px;">
@@ -57,12 +63,12 @@
                                 <div class="d-inline-flex gap-2">
                                     <a href="{{ route('countries.edit', $country->id) }}"
                                         class="btn btn-sm custom-edit-btn" title="Edit">
-                                        <i class="mdi mdi-pencil"></i>
+                                        <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
                                     <button type="button"
                                         class="btn btn-sm custom-delete-btn delete-country-btn"
                                         data-id="{{ $country->id }}" title="Delete">
-                                        <i class="mdi mdi-delete"></i>
+                                        <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </div>
                             </td>

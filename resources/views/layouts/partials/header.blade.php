@@ -9,36 +9,54 @@
     <div class="ms-auto d-flex align-items-center gap-3">
         @php
         $user = auth()->user();
-        $full = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
-        $parts = preg_split('/\s+/', $full);
+
+        // Full name
+        $fullName = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
+        $nameParts = preg_split('/\s+/', $fullName);
+
+        // Default initials
         $initials = 'NA';
+
+        // Determine avatar URL
         if (!empty($user->avatar)) {
-        $avatar_url = Storage::disk('public')->url($user->avatar);
+        $avatarUrl = Storage::disk('public')->url($user->avatar);
         } else {
-        if (count($parts) >= 2 && $parts[0] !== '' && $parts[1] !== '') {
-        $initials = mb_strtoupper(mb_substr($parts[0], 0, 1) . mb_substr($parts[1], 0, 1));
-        } elseif (!empty($parts[0])) {
-        $initials = mb_strtoupper(mb_substr($parts[0], 0, 2));
+        // Compute initials
+        if (count($nameParts) >= 2 && !empty($nameParts[0]) && !empty($nameParts[1])) {
+        $initials = mb_strtoupper(mb_substr($nameParts[0], 0, 1) . mb_substr($nameParts[1], 0, 1));
+        } elseif (!empty($nameParts[0])) {
+        $initials = mb_strtoupper(mb_substr($nameParts[0], 0, 2));
         }
-        $avatar_url = null;
+        $avatarUrl = null;
         }
         @endphp
-
         <!-- Profile Dropdown -->
         <div class="dropdown profile-dropdown">
-            <a href="#" id="profileDropdown" class="d-flex align-items-center text-decoration-none"
-                data-bs-toggle="dropdown" aria-expanded="false" role="button">
-                @if($avatar_url)
-                <img src="{{ $avatar_url }}" alt="Avatar" class="avatar-box me-2">
+            <a href="#" id="profileDropdown"
+                class="d-flex align-items-center text-decoration-none"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                role="button"
+                style="gap: 8px;">
+
+                @if (!empty($avatar_url))
+                <img src="{{ $avatar_url }}"
+                    alt="Avatar"
+                    class="rounded-circle border shadow-sm"
+                    style="width: 38px; height: 38px; object-fit: cover;">
                 @else
-                <div class="avatar-box me-2">{{ $initials }}</div>
+                <div class="rounded-circle bg-primary text-white fw-semibold d-flex justify-content-center align-items-center shadow-sm"
+                    style="width: 38px; height: 38px; font-size: 14px;">
+                    {{ $initials }}
+                </div>
                 @endif
-                <div class="d-none d-sm-block fw-semibold text-dark">
+
+                <div class="d-none d-sm-block text-dark fw-semibold">
                     {{ $user->first_name ?? 'User' }} {{ $user->last_name ?? '' }}
                 </div>
-                <i class="mdi mdi-chevron-down ms-1 text-muted"></i>
-            </a>
 
+                <i class="mdi mdi-chevron-down text-muted ms-1"></i>
+            </a>
             <ul class="dropdown-menu dropdown-menu-end mt-2 border-2 shadow-sm rounded-3 p-4"
                 aria-labelledby="profileDropdown">
                 <li class="px-3 py-2 border-bottom">

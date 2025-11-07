@@ -3,12 +3,13 @@
 
 @section('content')
 <div class="app-wrapper flex-column flex-row-fluid">
-    <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
+    <div class="p-4 bg-white border-2 rounded-2 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="d-flex align-items-center gap-2">
-                <i class="mdi mdi-account-group" style="font-size: 2.3rem; color: #0d6efd;"></i>
+                <i class="mdi " style="font-size: 2.3rem; color: dark;"></i>
                 <h3 class="fw-semibold mb-0 text-dark" style="font-family: 'Inter', sans-serif">
+                    <i class="fa-solid fa-user-group"></i>
                     Users
                 </h3>
             </div>

@@ -5,12 +5,13 @@
 @section('content')
 <div class="app-wrapper flex-column flex-row-fluid">
     <!-- <div class="card border-0 shadow-sm rounded-3"> -->
-    <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
+    <div class="p-4 bg-white border-2 rounded-2 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
 
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
+                    <i class="fa-solid fa-graduation-cap"></i>
                     Students
                 </h3>
             </div>
@@ -59,13 +60,13 @@
                                 <div class="d-inline-flex gap-2">
                                     <a href="{{ route('students.edit', $student->id) }}"
                                         class="btn btn-sm custom-edit-btn" title="Edit">
-                                        <i class="mdi mdi-pencil"></i>
+                                        <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
                                     <button type="button"
                                         class="btn btn-sm custom-delete-btn delete-student-btn"
                                         data-id="{{ $student->id }}" data-name="{{ $student->first_name }} {{ $student->last_name }}"
                                         title="Delete">
-                                        <i class="mdi mdi-delete"></i>
+                                        <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </div>
                             </td>

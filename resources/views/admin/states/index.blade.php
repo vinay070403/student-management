@@ -11,6 +11,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
+                    <i class="fa-solid fa-location-dot"></i>
                     States
                 </h3>
                 <!-- <p class="text-muted small mb-0">
@@ -58,12 +59,12 @@
                                 <div class="d-inline-flex gap-2">
                                     <a href="{{ route('states.edit', $state->id) }}"
                                         class="btn btn-sm custom-edit-btn" title="Edit">
-                                        <i class="mdi mdi-pencil"></i>
+                                        <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
                                     <button type="button"
                                         class="btn btn-sm custom-delete-btn delete-state-btn"
                                         data-id="{{ $state->id }}" title="Delete">
-                                        <i class="mdi mdi-delete"></i>
+                                        <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </div>
                             </td>
