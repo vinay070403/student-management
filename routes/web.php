@@ -9,6 +9,7 @@ use App\Http\Controllers\StateController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -25,6 +26,9 @@ Route::prefix('auth')->group(function () {
     Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
     Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update');
 
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 });
 
@@ -36,17 +40,12 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // Dashboard
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
-    // Profile
-    Route::get('/profile/edit', [AdminController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [AdminController::class, 'update'])->name('profile.update');
 
-    Route::post('/users/{user}/remove-avatar', [AdminController::class, 'removeAvatar'])->name('users.removeAvatar');
 
     // Users
     Route::resource('users', AdminController::class);
     Route::post('/users/bulk-delete', [AdminController::class, 'bulkDelete'])->name('users.bulkDelete');
-
-
+    Route::post('/users/{user}/remove-avatar', [AdminController::class, 'removeAvatar'])->name('users.removeAvatar');
     // ------------------------
     // Students
     // ------------------------

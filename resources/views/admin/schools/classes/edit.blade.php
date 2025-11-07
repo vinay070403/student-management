@@ -16,26 +16,26 @@
         </div>
 
         <!-- Main Bordered Panel -->
+        <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
+            <form action="{{ route('schools.classes.update', [$school->id, $class->id]) }}" method="POST" class="row g-3">
+                @csrf
+                @method('PUT')
 
-        <form action="{{ route('schools.classes.update', [$school->id, $class->id]) }}" method="POST" class="row g-3">
-            @csrf
-            @method('PUT')
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Class Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" id="name" class="form-control form-control-lg @error('name') is-invalid @enderror" value="{{ old('name', $class->name) }}" required>
+                    @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
-            <div class="col-md-6">
-                <label for="name" class="form-label">Class Name <span class="text-danger">*</span></label>
-                <input type="text" name="name" id="name" class="form-control form-control-lg @error('name') is-invalid @enderror" value="{{ old('name', $class->name) }}" required>
-                @error('name')
-                <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+                <div class="col-12 text-end mt-4">
+                    <button type="submit" class="btn btn-dark px-4 py-3 rounded-3 btn-lg d-flex align-items-center gap-2">
+                        <i class="bi bi-save"></i> Update Class
+                    </button>
+                </div>
+            </form>
 
-            <div class="col-12 text-end mt-4">
-                <button type="submit" class="btn btn-dark px-4 py-3 rounded-3 btn-lg d-flex align-items-center gap-2">
-                    <i class="bi bi-save"></i> Update Class
-                </button>
-            </div>
-        </form>
-
+        </div>
     </div>
-</div>
-@endsection
+    @endsection

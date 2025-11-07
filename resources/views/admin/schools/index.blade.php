@@ -25,56 +25,56 @@
 
         <!-- Alert Box -->
         <div id="alert-box" class="alert d-none" role="alert"></div>
-
-        <!-- Table -->
-        <div class="table-responsive">
-            <table class="table align-middle mb-3 table-hover school-table">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 60px;">#</th>
-                        <th>SCHOOL NAME</th>
-                        <th>STATE</th>
-                        <!-- <th>ADDRESS</th> -->
-                        <!-- <th>ZIPCODE</th> -->
-                        <th class="text-center" style="width: 120px;">ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($schools as $school)
-                    <tr id="school-row-{{ $school->id }}">
-                        <td class="fw-bold text-secondary">{{ $school->id }}</td>
-                        <td class="fw-semibold">{{ ucfirst($school->name) }}</td>
-                        <td class="text-muted small">{{ $school->state->name ?? 'N/A' }}</td>
-                        <div>
-                            <!-- <td class="text-muted small">
+        <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table align-middle mb-3 table-hover school-table">
+                    <thead class="table-light">
+                        <tr>
+                            <!-- <th style="width: 60px;">#</th> -->
+                            <th>SCHOOL NAME</th>
+                            <th>STATE</th>
+                            <!-- <th>ADDRESS</th> -->
+                            <!-- <th>ZIPCODE</th> -->
+                            <th class="text-center" style="width: 120px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($schools as $school)
+                        <tr id="school-row-{{ $school->id }}">
+                            <!-- <td class="fw-bold text-secondary">{{ $school->id }}</td> -->
+                            <td class="fw-semibold">{{ ucfirst($school->name) }}</td>
+                            <td class="text-muted small">{{ $school->state->name ?? 'N/A' }}</td>
+                            <div>
+                                <!-- <td class="text-muted small">
                                     {{ \Illuminate\Support\Str::words($school->address ?? 'N/A', 55, '.......') }}
                                 </td> -->
-                            <!-- <td class="text-muted small">{{ $school->zipcode ?? 'N/A' }}</td> -->
-                            <td class="text-center">
-                                <div class="d-inline-flex gap-2">
-                                    <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-sm custom-edit-btn" title="Edit">
-                                        <i class="mdi mdi-pencil"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-sm custom-delete-btn delete-school-btn" data-id="{{ $school->id }}" title="Delete">
-                                        <i class="mdi mdi-delete"></i>
-                                    </button>
-                                </div>
-                        </div>
+                                <!-- <td class="text-muted small">{{ $school->zipcode ?? 'N/A' }}</td> -->
+                                <td class="text-center">
+                                    <div class="d-inline-flex gap-2">
+                                        <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-sm custom-edit-btn" title="Edit">
+                                            <i class="mdi mdi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm custom-delete-btn delete-school-btn" data-id="{{ $school->id }}" title="Delete">
+                                            <i class="mdi mdi-delete"></i>
+                                        </button>
+                                    </div>
+                            </div>
 
-                        </td>
-                    </tr>
-                    @endforeach
-                    @if ($schools->isEmpty())
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">No schools found.</td>
-                    </tr>
-                    @endif
-                </tbody>
-            </table>
+                            </td>
+                        </tr>
+                        @endforeach
+                        @if ($schools->isEmpty())
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">No schools found.</td>
+                        </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+
         </div>
-
     </div>
-</div>
 </div>
 
 <!-- Delete Confirmation Modal -->

@@ -46,10 +46,12 @@
                     <small class="text-muted">{{ $user->email }}</small>
                 </li>
                 <li>
-                    <!-- <a class="dropdown-item py-2 d-flex align-items-center gap-2">
-
+                <li>
+                    <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('profile.edit') }}">
                         <i class="mdi mdi-account-edit text-primary fs-5"></i> Edit Profile
-                    </a> -->
+                    </a>
+                </li>
+
                 </li>
                 <li>
                     <form action="{{ route('logout') }}" method="POST" class="m-0">

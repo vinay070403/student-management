@@ -24,6 +24,9 @@ class StudentController extends Controller
         return view('admin.students.index', compact('students'));
     }
 
+    // ------------------------
+    // Create Student
+    // ------------------------
     public function create()
     {
         $schools = School::all();
@@ -31,6 +34,9 @@ class StudentController extends Controller
         return view('admin.students.create', compact('schools', 'countries'));
     }
 
+    // ------------------------
+    // Store Student
+    // ------------------------
     public function store(Request $request)
     {
         $request->validate([
@@ -40,7 +46,7 @@ class StudentController extends Controller
             'phone'      => 'nullable|string',
             'dob'        => 'nullable|date',
             'avatar'     => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048',
-            'password'   => 'required|min:8',
+            // 'password'   => 'required|min:8',
         ]);
 
         $data = $request->all();
@@ -54,6 +60,9 @@ class StudentController extends Controller
         return redirect()->route('students.index')->with('success', 'Student added!');
     }
 
+    // ------------------------
+    // Edit Student
+    // ------------------------
     public function edit(User $student)
     {
         $schools = School::all();
@@ -65,6 +74,9 @@ class StudentController extends Controller
         return view('admin.students.edit', compact('student', 'schools', 'countries', 'grades'));
     }
 
+    // ------------------------
+    // Update Student Info)
+    // ------------------------
     public function update(Request $request, User $student)
     {
         $validated = $request->validate([
@@ -74,7 +86,7 @@ class StudentController extends Controller
             'phone'      => 'nullable|string',
             'dob'        => 'nullable|date',
             'avatar'     => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048',
-            'password'   => 'nullable|min:8',
+            // 'password'   => 'nullable|min:8',
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -92,33 +104,9 @@ class StudentController extends Controller
         return redirect()->route('students.index')->with('success', 'Student updated!');
     }
 
-    /**
-     * Delete student and their related grades
-     */
-    public function destroy(User $student)
-    {
-        try {
-            // If Student has related grades
-            if ($student->grades()->exists()) {
-                $student->grades()->delete();
-            }
-
-            // Now delete the student
-            $student->delete();
-
-            return redirect()
-                ->route('students.index')
-                ->with('success', 'Student and all related grades deleted successfully!');
-        } catch (\Throwable $e) {
-            Log::error('Student delete error: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
-
-            return redirect()
-                ->route('students.index')
-                ->with('error', 'Server error while deleting student.');
-        }
-    }
-
-
+    // ------------------------
+    // Update Student Grades
+    // ------------------------
     public function updateGrades(Request $request, User $student)
     {
         $request->validate([
@@ -171,6 +159,9 @@ class StudentController extends Controller
         return back()->with('success', 'Student grades updated successfully!');
     }
 
+    // ------------------------
+    // Update Grades Inline (AJAX)
+    // ------------------------
     public function updateGradesInline(Request $request, User $student)
     {
         $request->validate([
@@ -195,7 +186,6 @@ class StudentController extends Controller
 
         return response()->json(['message' => 'Grades updated successfully.']);
     }
-
 
     // ------------------------
     // Assign School (AJAX)
@@ -319,6 +309,9 @@ class StudentController extends Controller
         return response()->json(['grades' => $grades]);
     }
 
+    // ------------------------
+    // Delete Subject (AJAX)
+    // ------------------------
     public function deleteSubject($studentId, Request $request)
     {
         $request->validate([
@@ -345,5 +338,31 @@ class StudentController extends Controller
         $grade->delete();
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Delete student and their related grades
+     */
+    public function destroy(User $student)
+    {
+        try {
+            // If Student has related grades
+            if ($student->grades()->exists()) {
+                $student->grades()->delete();
+            }
+
+            // Now delete the student
+            $student->delete();
+
+            return redirect()
+                ->route('students.index')
+                ->with('success', 'Student and all related grades deleted successfully!');
+        } catch (\Throwable $e) {
+            Log::error('Student delete error: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
+
+            return redirect()
+                ->route('students.index')
+                ->with('error', 'Server error while deleting student.');
+        }
     }
 }

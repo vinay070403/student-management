@@ -20,60 +20,68 @@
             </a>
         </div>
 
-        <!-- Table -->
-        <div class="table-responsive">
-            <table class="table align-middle mb-3 table-hover student-table">
-                <thead class="table-light">
-                    <tr>
-                        <th>USER</th>
-                        <th>CREATED AT</th>
-                        <!-- <th>PHONE</th> -->
-                        <th class="text-center" style="width: 120px;">ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($students as $student)
-                    <tr id="student-row-{{ $student->id }}">
+        <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
+            <!-- Search Bar -->
+            <div class="col-md-6 mb-3">
+                <input type="text" id="studentSearch" class="form-control form-control-lg"
+                    placeholder="Search by name or email...">
+            </div>
 
-                        <td class="d-flex align-items-center gap-3">
-                            <img src="{{ $student->avatar ? asset('storage/'.$student->avatar) : asset('assets/images/default-avatar1.jpg') }}"
-                                alt="{{ $student->first_name }}" class="rounded-circle shadow-sm" width="42" height="42" />
-                            <div>
-                                <div class="fw-semibold">{{ $student->first_name }} {{ $student->last_name }}</div>
-                                <div class="fw-semibold text-gray">{{ $student->email }}</div>
-                            </div>
-                        </td>
-                        <td class="text-muted">
-                            {{ $student->created_at->format('d M Y, h:i A') }}
-                        </td>
-                        <!-- <td class="text-muted small">{{ $student->phone ?? 'N/A' }}</td> -->
-                        <td class="text-center">
-                            <div class="d-inline-flex gap-2">
-                                <a href="{{ route('students.edit', $student->id) }}"
-                                    class="btn btn-sm custom-edit-btn" title="Edit">
-                                    <i class="mdi mdi-pencil"></i>
-                                </a>
-                                <button type="button"
-                                    class="btn btn-sm custom-delete-btn delete-student-btn"
-                                    data-id="{{ $student->id }}" data-name="{{ $student->first_name }} {{ $student->last_name }}"
-                                    title="Delete">
-                                    <i class="mdi mdi-delete"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                    @if ($students->isEmpty())
-                    <tr>
-                        <td colspan="5" class="text-center text-muted py-4">No students found.</td>
-                    </tr>
-                    @endif
-                </tbody>
-            </table>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table align-middle mb-3 table-hover student-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>USER</th>
+                            <th>CREATED AT</th>
+                            <!-- <th>PHONE</th> -->
+                            <th class="text-center" style="width: 120px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($students as $student)
+                        <tr id="student-row-{{ $student->id }}">
+
+                            <td class="d-flex align-items-center gap-3">
+                                <img src="{{ $student->avatar ? asset('storage/'.$student->avatar) : asset('assets/images/default-avatar1.jpg') }}"
+                                    alt="{{ $student->first_name }}" class="rounded-circle shadow-sm" width="42" height="42" />
+                                <div>
+                                    <div class="fw-semibold">{{ $student->first_name }} {{ $student->last_name }}</div>
+                                    <div class="fw-semibold text-gray">{{ $student->email }}</div>
+                                </div>
+                            </td>
+                            <td class="text-muted">
+                                {{ $student->created_at->format('d M Y, h:i A') }}
+                            </td>
+                            <!-- <td class="text-muted small">{{ $student->phone ?? 'N/A' }}</td> -->
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{{ route('students.edit', $student->id) }}"
+                                        class="btn btn-sm custom-edit-btn" title="Edit">
+                                        <i class="mdi mdi-pencil"></i>
+                                    </a>
+                                    <button type="button"
+                                        class="btn btn-sm custom-delete-btn delete-student-btn"
+                                        data-id="{{ $student->id }}" data-name="{{ $student->first_name }} {{ $student->last_name }}"
+                                        title="Delete">
+                                        <i class="mdi mdi-delete"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                        @if ($students->isEmpty())
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">No students found.</td>
+                        </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+
         </div>
-
     </div>
-</div>
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -166,6 +174,18 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+
+        // SEARCH FILTER
+        const searchInput = document.getElementById('studentSearch');
+        searchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            document.querySelectorAll('#studentTableBody tr').forEach(row => {
+                const name = row.querySelector('td div.fw-semibold').textContent.toLowerCase();
+                const email = row.querySelector('td div.text-muted').textContent.toLowerCase();
+                row.style.display = name.includes(filter) || email.includes(filter) ? '' : 'none';
+            });
+        });
+
         const baseUrl = "{{ url('admin/students') }}";
         let currentId = null;
         let studentName = '';

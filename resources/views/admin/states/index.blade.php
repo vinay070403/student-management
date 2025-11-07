@@ -25,45 +25,61 @@
 
         <!-- Alert Box -->
         <div id="alert-box" class="alert d-none" role="alert"></div>
+        <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
+            <!-- Search Bar -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="input-group" style="max-width: 350px;">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="mdi mdi-magnify text-muted"></i>
+                    </span>
+                    <input type="text" id="search-state" class="form-control border-start-0 ps-0"
+                        placeholder="Search state..." />
+                </div>
+            </div>
 
-        <!-- Table -->
-        <div class="table-responsive">
-            <table class="table align-middle mb-3 table-hover state-table">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 60px;">#</th>
-                        <th>STATE NAME</th>
-                        <th>COUNTRY</th>
-                        <th class="text-center" style="width: 120px;">ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($states as $state)
-                    <tr id="state-row-{{ $state->id }}">
-                        <td class="fw-bold text-secondary">{{ $state->id }}</td>
-                        <td class="fw-semibold">{{ ucfirst($state->name) }}</td>
-                        <td class="text-muted small">{{ $state->country->name ?? 'N/A' }}</td>
-                        <td class="text-center">
-                            <div class="d-inline-flex gap-2">
-                                <a href="{{ route('states.edit', $state->id) }}"
-                                    class="btn btn-sm custom-edit-btn" title="Edit">
-                                    <i class="mdi mdi-pencil"></i>
-                                </a>
-                                <button type="button"
-                                    class="btn btn-sm custom-delete-btn delete-state-btn"
-                                    data-id="{{ $state->id }}" title="Delete">
-                                    <i class="mdi mdi-delete"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table align-middle mb-3 table-hover state-table">
+                    <thead class="table-light">
+                        <tr>
+                            <!-- <th style="width: 60px;">#</th> -->
+                            <th>STATE NAME</th>
+                            <th>COUNTRY</th>
+                            <th class="text-center" style="width: 120px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($states as $state)
+                        <tr id="state-row-{{ $state->id }}">
+                            <!-- <td class="fw-bold text-secondary">{{ $state->id }}</td> -->
+                            <td class="fw-semibold">{{ ucfirst($state->name) }}</td>
+                            <td class="text-muted small">{{ $state->country->name ?? 'N/A' }}</td>
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{{ route('states.edit', $state->id) }}"
+                                        class="btn btn-sm custom-edit-btn" title="Edit">
+                                        <i class="mdi mdi-pencil"></i>
+                                    </a>
+                                    <button type="button"
+                                        class="btn btn-sm custom-delete-btn delete-state-btn"
+                                        data-id="{{ $state->id }}" title="Delete">
+                                        <i class="mdi mdi-delete"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                        @if ($states->isEmpty())
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">No state found.</td>
+                        </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+
         </div>
-
     </div>
-</div>
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -239,6 +255,18 @@
                 })
                 .finally(() => confirmBtn.disabled = false);
         });
+        // Live search filter for states
+        const searchInput = document.getElementById('search-state');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.state-table tbody tr');
+
+            rows.forEach(row => {
+                const stateName = row.querySelector('td')?.textContent.toLowerCase() || '';
+                row.style.display = stateName.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
     });
 </script>
 @endpush

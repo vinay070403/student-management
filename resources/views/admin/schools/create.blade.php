@@ -2,34 +2,34 @@
 @section('title', 'Add School')
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm mb-4 rounded-4">
-            <div class="card-body p-4">
-                <!-- Header with Back Button -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="card-title mb-0">Add New School</h4>
-                    <a href="{{ route('schools.index') }}"
-                        class="btn btn-light border px-3 py-3 d-flex align-items-center gap-2 rounded-3">
-                        <i class="mdi mdi-arrow-left"></i> Back
-                    </a>
-                </div>
+    <div class="app-wrapper flex-column flex-row-fluid">
+        <!-- <div class="card shadow-sm mb-4 rounded-4"     btn btn-light border px-3 py-3 d-flex align-items-center gap-2 rounded-3> -->
+        <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
+            <!-- Header with Back Button -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="card-title mb-0">Add New School</h4>
+                <a href="{{ route('schools.index') }}"
+                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                    <i class="mdi mdi-arrow-left"></i> Back
+                </a>
+            </div>
 
-                @if ($errors->any())
-                <div class="alert alert-danger mb-3">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
+            @if ($errors->any())
+            <div class="alert alert-danger mb-3">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
 
-                @if (session('success'))
-                <div class="alert alert-success mb-3">
-                    {{ session('success') }}
-                </div>
-                @endif
-
+            @if (session('success'))
+            <div class="alert alert-success mb-3">
+                {{ session('success') }}
+            </div>
+            @endif
+            <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
                 <form action="{{ route('schools.store') }}" method="POST">
                     @csrf
                     <div class="row g-3">
@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="text-end mt-4">
-                        <button type="submit" class="btn btn-dark btn-lg px-3 py-3 rounded-3">
+                        <button type="submit" class="btn btn-dark px-4 py-3  gap-2 rounded-3 btn-lg">
                             Add School
                         </button>
                     </div>

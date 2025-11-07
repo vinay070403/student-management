@@ -12,6 +12,7 @@
             </a>
         </div>
     </div>
+
     <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
             <tr>

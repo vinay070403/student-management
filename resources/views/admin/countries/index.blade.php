@@ -24,45 +24,61 @@
         </div>
         <!-- Alert Box -->
         <div id="alert-box" class="alert d-none" role="alert"></div>
+        <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
+            <!-- Search Bar -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="input-group" style="max-width: 350px;">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="mdi mdi-magnify text-muted"></i>
+                    </span>
+                    <input type="text" id="search-country" class="form-control border-start-0 ps-0"
+                        placeholder="Search country..." />
+                </div>
+            </div>
 
-        <!-- Table -->
-        <div class="table-responsive">
-            <table class="table align-middle mb-3 table-hover country-table">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 60px;">#</th>
-                        <th>COUNTRY NAME</th>
-                        <th>CREATED AT</th>
-                        <th class="text-center" style="width: 120px;">ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($countries as $country)
-                    <tr id="country-row-{{ $country->id }}">
-                        <td class="fw-bold text-secondary">{{ $country->id }}</td>
-                        <td class="fw-semibold">{{ ucfirst($country->name) }}</td>
-                        <td class="text-muted small">{{ $country->created_at->format('d M Y, h:i A') }}</td>
-                        <td class="text-center">
-                            <div class="d-inline-flex gap-2">
-                                <a href="{{ route('countries.edit', $country->id) }}"
-                                    class="btn btn-sm custom-edit-btn" title="Edit">
-                                    <i class="mdi mdi-pencil"></i>
-                                </a>
-                                <button type="button"
-                                    class="btn btn-sm custom-delete-btn delete-country-btn"
-                                    data-id="{{ $country->id }}" title="Delete">
-                                    <i class="mdi mdi-delete"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table align-middle mb-3 table-hover country-table">
+                    <thead class="table-light">
+                        <tr>
+                            <!-- <th style="width: 60px;">#</th> -->
+                            <th>COUNTRY NAME</th>
+                            <th>CREATED AT</th>
+                            <th class="text-center" style="width: 120px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($countries as $country)
+                        <tr id="country-row-{{ $country->id }}">
+                            <!-- <td class="fw-bold text-secondary">{{ $country->id }}</td> -->
+                            <td class="fw-semibold">{{ ucfirst($country->name) }}</td>
+                            <td class="text-muted small">{{ $country->created_at->format('d M Y, h:i A') }}</td>
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{{ route('countries.edit', $country->id) }}"
+                                        class="btn btn-sm custom-edit-btn" title="Edit">
+                                        <i class="mdi mdi-pencil"></i>
+                                    </a>
+                                    <button type="button"
+                                        class="btn btn-sm custom-delete-btn delete-country-btn"
+                                        data-id="{{ $country->id }}" title="Delete">
+                                        <i class="mdi mdi-delete"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                        @if ($countries->isEmpty())
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">No Country found.</td>
+                        </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+
         </div>
-
     </div>
-</div>
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -170,6 +186,21 @@
         opacity: 0;
         transition: opacity 0.4s ease-out;
     }
+
+    #search-country {
+        border-radius: 10px;
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+    }
+
+    #search-country:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+    }
+
+    .input-group-text {
+        border-radius: 10px 0 0 10px;
+    }
 </style>
 @endpush
 
@@ -236,6 +267,17 @@
                     showToast('danger', error.response?.data?.message || 'Delete failed.');
                 })
                 .finally(() => confirmBtn.disabled = false);
+        });
+    });
+    // Country Search Filter
+    const searchInput = document.getElementById('search-country');
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const rows = document.querySelectorAll('.country-table tbody tr');
+
+        rows.forEach(row => {
+            const countryName = row.querySelector('td')?.textContent.toLowerCase() || '';
+            row.style.display = countryName.includes(searchTerm) ? '' : 'none';
         });
     });
 </script>

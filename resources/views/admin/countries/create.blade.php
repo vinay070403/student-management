@@ -30,25 +30,26 @@
                 {{ session('success') }}
             </div>
             @endif
+            <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
 
-            <form action="{{ route('countries.store') }}" method="POST" class="needs-validation" novalidate>
-                @csrf
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="name" class="form-label">Country Name</label>
-                            <input type="text" name="name" class="form-control form-control-lg" placeholder="Enter country name" required>
+                <form action="{{ route('countries.store') }}" method="POST" class="needs-validation" novalidate>
+                    @csrf
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name" class="form-label">Country Name</label>
+                                <input type="text" name="name" class="form-control form-control-lg" placeholder="Enter country name" required>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="text-end mt-4">
-                    <button type="submit" class="btn btn-dark btn-lg">Add Country</button>
-                </div>
-            </form>
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-dark btn-lg">Add Country</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 </div>
 @endsection
 

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class SchoolController extends Controller
 {
+    
     public function index()
     {
         $schools = School::with('state')->get();
@@ -183,7 +184,6 @@ class SchoolController extends Controller
                 ->with('error', 'Error deleting school.');
         }
     }
-
 
     public function getByState($stateId)
     {

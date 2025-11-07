@@ -52,12 +52,23 @@ class AdminController extends Controller
 
         $user->save();
 
-        $user->assignRole('Admin');
-        $user->givePermissionTo(['user-list', 'user-create', 'school-list']);
+        // ✅ Role assign from form input (radio / card / button)
+        if ($request->filled('role')) {
+            $user->assignRole($request->role);
+        } else {
+            $user->assignRole('Admin'); // fallback (optional)
+        }
+
+        // Optionally: Give permissions based on role
+        if ($request->role === 'Super Admin') {
+            $user->givePermissionTo(\Spatie\Permission\Models\Permission::all());
+        } elseif ($request->role === 'Admin') {
+            $user->givePermissionTo(['user-list', 'user-create', 'school-list']);
+        }
 
         Swal::success([
             'title' => 'User Created!',
-            'text'  => 'The new admin user has been added successfully.',
+            'text'  => 'The new user has been added successfully.',
             'confirmButtonText' => 'OK',
         ]);
 
@@ -95,7 +106,7 @@ class AdminController extends Controller
 
         Swal::toastSuccess(['title' => 'User updated successfully!']);
 
-        return redirect()->route('users.edit', $user->id);
+        return redirect()->route('users.index', $user->id);
     }
 
     public function removeAvatar(User $user)
