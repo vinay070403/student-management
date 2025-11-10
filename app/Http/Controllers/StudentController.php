@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\School;
 use App\Models\Country;
 use App\Models\ClassModel;
+use App\Models\School;
 use App\Models\Subject;
-use App\Models\GradeScale;
 use App\Models\StudentGrade;
+use App\Models\User;
+use App\Models\GradeScale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -117,8 +117,8 @@ class StudentController extends Controller
             'schools.*.classes.*.subjects' => 'required|array|min:1',
             'schools.*.classes.*.subjects.*.subject_id' => 'required|string|max:25',
             'schools.*.classes.*.subjects.*.grade_id' => 'nullable|exists:grade_scales,id',
-            'schools.*.classes.*.subjects.*.min_percentage' => 'nullable|numeric',
-            'schools.*.classes.*.subjects.*.max_percentage' => 'nullable|numeric',
+            'schools.*.classes.*.subjects.*.min_percentage' => 'nullable|numeric|min:0|max:100|required_with:schools.*.classes.*.subjects.*.max_percentage',
+            'schools.*.classes.*.subjects.*.max_percentage' => 'nullable|numeric|min:0|max:100|gt:schools.*.classes.*.subjects.*.min_percentage|required_with:schools.*.classes.*.subjects.*.min_percentage',
         ]);
 
         $schools = $request->input('schools', []);
@@ -169,8 +169,9 @@ class StudentController extends Controller
             'grades.*.id' => 'required|exists:student_grades,id',
             'grades.*.subject_id' => 'required|exists:subjects,id',
             'grades.*.grade_id' => 'required|exists:grade_scales,id',
-            'grades.*.min_score' => 'nullable|numeric',
-            'grades.*.max_score' => 'nullable|numeric',
+            'grades.*.min_score' => 'nullable|numeric|min:0|max:100|required_with:grades.*.max_score',
+            'grades.*.max_score' => 'nullable|numeric|min:0|max:100|gt:grades.*.min_score|required_with:grades.*.min_score',
+
         ]);
 
         foreach ($request->grades as $g) {
@@ -265,8 +266,9 @@ class StudentController extends Controller
             'grades.*.class_id' => 'required|integer',
             'grades.*.subject_id' => 'required|integer',
             'grades.*.grade_id' => 'required|integer',
-            'grades.*.min_score' => 'nullable|numeric',
-            'grades.*.max_score' => 'nullable|numeric',
+            'grades.*.min_score' => 'nullable|numeric|min:0|max:100|required_with:grades.*.max_score',
+            'grades.*.max_score' => 'nullable|numeric|min:0|max:100|gt:grades.*.min_score|required_with:grades.*.min_score',
+
         ]);
 
         foreach ($validated['grades'] as $data) {
@@ -325,10 +327,6 @@ class StudentController extends Controller
             \App\Models\StudentGrade::where('student_id', $studentId)
                 ->where('class_id', $classId)
                 ->delete();
-
-            // Optionally: Delete all subjects of this class (if they are exclusive to this class)
-            // \App\Models\Subject::where('class_id', $classId)->delete(); 
-            // ⚠ Only uncomment if subjects are not shared with other classes
 
             return response()->json(['success' => true, 'message' => 'Class and its grades deleted.']);
         } catch (\Throwable $e) {

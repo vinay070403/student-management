@@ -23,7 +23,7 @@ class SubjectController extends Controller
     public function store(Request $request, School $school)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:25',
         ]);
 
         $school->subjects()->create($request->all());
@@ -39,7 +39,7 @@ class SubjectController extends Controller
     public function update(Request $request, School $school, Subject $subject)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:25',
         ]);
 
         $subject->update($request->all());

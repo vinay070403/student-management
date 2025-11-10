@@ -6,8 +6,8 @@ use App\Http\Requests\Class\StoreClassRequest;
 use App\Http\Requests\Class\UpdateClassRequest;
 use App\Models\ClassModel;
 use App\Models\School;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 class ClassController extends Controller
 {
