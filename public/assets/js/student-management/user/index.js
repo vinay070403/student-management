@@ -19,9 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Handle Confirm Delete
     confirmDeleteBtn.addEventListener("click", async function () {
-        const csrfToken = document
-            .querySelector('meta[name="csrf-token"]')
-            ?.getAttribute("content");
+        const csrfToken = document.querySelector("")?.getAttribute("content");
 
         if (userId) {
             // Single delete
@@ -90,7 +88,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
     });
-
     // Bulk action button
     bulkActionBtn.addEventListener("click", function () {
         const selectedIds = [
@@ -107,6 +104,4 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.href = "/admin/users/create";
         }
     });
-
-    // Select All checkbox
 });

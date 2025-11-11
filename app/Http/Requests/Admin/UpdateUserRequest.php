@@ -34,7 +34,7 @@ class UpdateUserRequest extends FormRequest
             ],
             'phone'         => 'nullable|string|max:20',
             'dob'           => 'nullable|date',
-            'address'       => 'nullable|string|max:100',
+            'address'       => 'nullable|string|max:55',
             'avatar'        => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'remove_avatar' => 'nullable|boolean',
         ];

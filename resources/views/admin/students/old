@@ -1,0 +1,511 @@
+@extends('layouts.app')
+
+@section('title', 'Edit Student')
+
+@section('content')
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm mb-6">
+            <div class="card-body p-6">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="card-title mb-0">Edit Student Details</h2>
+                    <a href="{{ route('students.index') }}" class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                        <i class="mdi mdi-arrow-left me-2"></i> Back
+                    </a>
+                </div>
+
+                {{-- Validation & Success Messages --}}
+                @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+                @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
+
+                {{-- Tabs --}}
+                <ul class="nav nav-tabs mb-4" id="studentTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab">Details</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="grades-tab" data-bs-toggle="tab" data-bs-target="#grades" type="button" role="tab">Grades</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="studentTabContent">
+                    {{-- Details Tab --}}
+                    <div class="tab-pane fade show active" id="details" role="tabpanel">
+                        <form action="{{ route('students.update', $student->id) }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" name="first_name" class="form-control form-control-lg" value="{{ $student->first_name }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" name="last_name" class="form-control form-control-lg" value="{{ $student->last_name }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control form-control-lg" value="{{ $student->email }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone</label>
+                                    <input type="text" name="phone" class="form-control form-control-lg" value="{{ $student->phone }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Date of Birth</label>
+                                    <input type="date" name="dob" class="form-control form-control-lg" value="{{ $student->dob }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Avatar</label>
+                                    <input type="file" name="avatar" class="form-control form-control-lg">
+                                    @if ($student->avatar_url)
+                                    <img src="{{ $student->avatar_url }}" alt="Avatar" class="img-thumbnail mt-2" style="max-width: 100px;">
+                                    @endif
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Address</label>
+                                    <input type="text" name="address" class="form-control form-control-lg" value="{{ $student->address }}">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2 mt-4">
+                                <button type="submit" class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                                    Update Student
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    {{-- Grades Tab --}}
+                    <div class="tab-pane fade" id="grades" role="tabpanel">
+                        <h5 class="fw-semibold">Assign School & Grades</h5>
+                        @php $hasSchool = (bool) $student->school_id; @endphp
+
+                        {{-- Country/State/School selects --}}
+                        <div id="school-select-area" class="row g-3 mb-4" @if($hasSchool) style="display:none;" @endif>
+                            <div class="col-md-4">
+                                <label class="form-label">Country</label>
+                                <select id="select-country" class="form-select">
+                                    <option value="">Select Country</option>
+                                    @foreach($countries as $country)
+                                    <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">State</label>
+                                <select id="select-state" class="form-select" disabled>
+                                    <option value="">Select State</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">School</label>
+                                <select id="select-school" class="form-select" disabled>
+                                    <option value="">Select School</option>
+                                </select>
+                            </div>
+                            <div id="save-school-container" class="col-12 mt-2 d-none">
+                                <button id="btn-save-school" class="btn btn-primary">Save & Next</button>
+                            </div>
+                        </div>
+
+                        {{-- School info + Add Class --}}
+                        <div id="school-actions" class="mb-3" @if(!$hasSchool) style="display:none;" @endif>
+                            <strong>School: <span id="school-name">@if($student->school){{ $student->school->name }}@endif</span></strong>
+                            <button id="btn-add-class" class="btn btn-dark ms-3">Add Class</button>
+                        </div>
+
+                        {{-- Grades Sections --}}
+                        <div id="grades-sections-container"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        const studentId = "{{ $student->id }}";
+        const csrfToken = "{{ csrf_token() }}";
+
+        // ------------------------------
+        //  GLOBAL VARIABLES
+        // ------------------------------
+        let savedSchool = JSON.parse('{!! addslashes(json_encode($student->school ?? null)) !!}');
+        let selectedSchoolId = null;
+
+        const countrySelect = $('#select-country');
+        const stateSelect = $('#select-state');
+        const schoolSelect = $('#select-school');
+        const saveSchoolContainer = $('#save-school-container');
+        const btnSaveSchool = $('#btn-save-school');
+        const schoolActions = $('#school-actions');
+        const schoolNameSpan = $('#school-name');
+        const addClassBtn = $('#btn-add-class');
+        const sectionsContainer = $('#grades-sections-container');
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            }
+        });
+
+        // ------------------------------
+        //  COUNTRY → STATE → SCHOOL
+        // ------------------------------
+        countrySelect.on('change', function() {
+            const id = $(this).val();
+            stateSelect.html('<option value="">Select State</option>').prop('disabled', true);
+            schoolSelect.html('<option value="">Select School</option>').prop('disabled', true);
+            saveSchoolContainer.addClass('d-none');
+
+            if (!id) return;
+            $.getJSON(`/admin/countries/${id}/states`, data => {
+                data.states?.forEach(s => stateSelect.append(`<option value="${s.id}">${s.name}</option>`));
+                stateSelect.prop('disabled', false);
+            }).fail(() => alert('Error fetching states'));
+        });
+
+        stateSelect.on('change', function() {
+            const id = $(this).val();
+            schoolSelect.html('<option value="">Select School</option>').prop('disabled', true);
+            saveSchoolContainer.addClass('d-none');
+
+            if (!id) return;
+            $.getJSON(`/admin/states/${id}/schools`, data => {
+                data.schools?.forEach(s => schoolSelect.append(`<option value="${s.id}">${s.name}</option>`));
+                schoolSelect.prop('disabled', false);
+            }).fail(() => alert('Error fetching schools'));
+        });
+
+        schoolSelect.on('change', function() {
+            selectedSchoolId = $(this).val() || null;
+            selectedSchoolId ? saveSchoolContainer.removeClass('d-none') : saveSchoolContainer.addClass('d-none');
+        });
+
+        // ------------------------------
+        //  ASSIGN SCHOOL
+        // ------------------------------
+        btnSaveSchool.on('click', function(e) {
+            e.preventDefault();
+            if (!selectedSchoolId) return alert('Please select a school.');
+
+            $.post(`/admin/students/${studentId}/assign-school`, {
+                    school_id: selectedSchoolId
+                })
+                .done(() => {
+                    const schoolText = $('#select-school option:selected').text();
+                    savedSchool = {
+                        id: selectedSchoolId,
+                        name: schoolText,
+                        classes: []
+                    };
+                    schoolNameSpan.text(schoolText);
+                    $('#school-select-area').hide();
+                    schoolActions.show();
+                    sectionsContainer.html('');
+                    alert('School assigned successfully.');
+                })
+                .fail(() => alert('Unable to assign school.'));
+        });
+
+        if (savedSchool?.id) {
+            schoolNameSpan.text(savedSchool.name);
+            $('#school-select-area').hide();
+            schoolActions.show();
+        }
+
+        // ------------------------------
+        //  LOAD EXISTING GRADES
+        // ------------------------------
+        $.getJSON(`/admin/students/${studentId}/load-grades`, function(data) {
+            if (!data.grades?.length) return;
+
+            const grouped = {};
+            data.grades.forEach(g => {
+                if (!grouped[g.class_name]) grouped[g.class_name] = [];
+                grouped[g.class_name].push(g);
+            });
+
+            Object.entries(grouped).forEach(([className, subjects]) => {
+                const sectionId = Date.now() + Math.random();
+                const $card = $(`
+            <div class="card mb-3 p-3 class-section" data-section-id="${sectionId}">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label>Class</label>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn btn-dark btn-edit-section">Edit</button>
+                        <button class="btn btn-dark btn-save-update d-none">Save Changes</button>
+                    </div>
+                </div>
+                <div class="subjects-container mt-3">
+                    <h6>Subjects & Grades</h6>
+                    ${subjects.map(sub => `
+                        <div class="row g-2 mb-2 align-items-center subject-grade-row" data-grade-id="${sub.id}">
+                            <div class="col-md-4"><input type="text" class="form-control form-control-sm subject-name" value="${sub.subject_name}" readonly></div>
+                            <div class="col-md-2"><input type="text" class="form-control form-control-sm grade-input" value="${sub.grade}" readonly></div>
+                            <div class="col-md-2"><input type="number" class="form-control form-control-sm min-score" value="${sub.min_score}" readonly></div>
+                            <div class="col-md-2"><input type="number" class="form-control form-control-sm max-score" value="${sub.max_score}" readonly></div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `);
+                sectionsContainer.append($card);
+            });
+        });
+
+
+        // ------------------------------
+        //  EDIT MODE FOR EXISTING GRADES
+        // ------------------------------
+        sectionsContainer.on('click', '.btn-edit-section', function() {
+            const $card = $(this).closest('.class-section');
+            const $editBtn = $(this);
+            const $saveBtn = $card.find('.btn-save-update');
+            const $inputs = $card.find('input');
+
+            // 1. Switch to edit mode
+            $inputs.prop('readonly', false);
+            $editBtn.addClass('d-none');
+            $saveBtn.removeClass('d-none');
+
+            // 2. Replace grade and subject text inputs with <select> dropdowns
+            $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}`, function(data) {
+                // Replace grade input fields with dropdowns
+                $card.find('.subject-grade-row').each(function() {
+                    const $row = $(this);
+                    const currentGrade = $row.find('.grade-input').val();
+                    const currentSubject = $row.find('.subject-name').val();
+
+                    // Subject select
+                    const subjectSelect = `
+                <select class="form-select form-select-sm subject-select">
+                    ${data.subjects.map(s => `<option value="${s.id}" ${s.name === currentSubject ? 'selected' : ''}>${s.name}</option>`).join('')}
+                </select>
+            `;
+                    $row.find('.subject-name').parent().html(subjectSelect);
+
+                    // Grade select
+                    const gradeSelect = `
+                <select class="form-select form-select-sm grade-select">
+                    <option value="">Select Grade</option>
+                    ${data.grades.map(g => `
+                        <option value="${g.id}" data-min="${g.min_score}" data-max="${g.max_score}" ${g.grade === currentGrade ? 'selected' : ''}>${g.grade}</option>
+                    `).join('')}
+                </select>
+            `;
+                    $row.find('.grade-input').parent().html(gradeSelect);
+                });
+            });
+        });
+
+        // ------------------------------
+        //  SAVE UPDATED GRADES
+        // ------------------------------
+        sectionsContainer.on('click', '.btn-save-update', function() {
+            const $card = $(this).closest('.class-section');
+            const className = $card.find('.class-select option:selected').text();
+            const gradesPayload = [];
+
+            $card.find('.subject-grade-row').each(function() {
+                const $row = $(this);
+                const gradeId = $row.find('.grade-select').val();
+                const subjectId = $row.find('.subject-select').val();
+                const minScore = $row.find('.min-score').val() || $row.find('.min-score-input').val();
+                const maxScore = $row.find('.max-score').val() || $row.find('.max-score-input').val();
+                const recordId = $row.data('grade-id');
+
+                if (!subjectId || !gradeId) return;
+                gradesPayload.push({
+                    id: recordId,
+                    subject_id: subjectId,
+                    grade_id: gradeId,
+                    min_score: minScore,
+                    max_score: maxScore
+                });
+            });
+
+            if (!gradesPayload.length) return alert('No changes to save.');
+
+            $.ajax({
+                url: `/admin/students/${studentId}/updategrades`, // ✅ matches new route
+                type: 'POST',
+                data: {
+                    grades: gradesPayload,
+                    _token: csrfToken
+                },
+                success: function() {
+                    alert('Grades updated successfully!');
+                    $card.find('input, select').prop('readonly', true).prop('disabled', true);
+                    $card.find('.btn-save-update').addClass('d-none');
+                    $card.find('.btn-edit-section').removeClass('d-none');
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert('Error updating grades.');
+                }
+            });
+
+        });
+
+        // ------------------------------
+        //  ADD CLASS SECTION
+        // ------------------------------
+        addClassBtn.on('click', function() {
+            if (!savedSchool?.id) return alert('Please assign a school first.');
+
+            const sectionId = Date.now();
+            const $card = $(`
+            <div class="card mb-3 p-3 class-section" data-section-id="${sectionId}">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label>Class</label>
+                        <select class="form-select class-select"><option value="">Select Class</option></select>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn btn-danger btn-sm btn-remove-section">Remove</button>
+                    </div>
+                </div>
+                <div class="subjects-container mt-3 d-none"></div>
+                <div class="d-flex justify-content-end mt-2">
+                    <button class="btn btn-success save-class-btn d-none">Save Class</button>
+                </div>
+            </div>
+        `);
+            sectionsContainer.prepend($card);
+
+            const $classSelect = $card.find('.class-select');
+            const $subjectsContainer = $card.find('.subjects-container');
+            const $saveClassBtn = $card.find('.save-class-btn');
+
+            // Fetch class & subjects
+            $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}`, function(data) {
+                data.classes?.forEach(cl => $classSelect.append(`<option value="${cl.id}">${cl.name}</option>`));
+
+                $classSelect.on('change', function() {
+                    const classId = $(this).val();
+                    if (!classId) return $subjectsContainer.addClass('d-none').html('');
+
+                    let html = `<h6>Subjects & Grades</h6>`;
+                    data.subjects.forEach(sub => {
+                        html += `
+                        <div class="row g-2 mb-2 align-items-center subject-grade-row" data-subject-id="${sub.id}">
+                            <div class="col-md-5">
+                                <select class="form-select form-select-sm subject-select">
+                                    <option value="">Select Subject</option>
+                                    ${data.subjects.map(s => `<option value="${s.id}" ${s.id===sub.id?'selected':''}>${s.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select form-select-sm grade-select">
+                                    <option value="">Select Grade</option>
+                                    ${data.grades.map(g => `
+                                        <option value="${g.id}" data-min="${g.min_score}" data-max="${g.max_score}">
+                                            ${g.grade}
+                                        </option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="col-md-2"><input type="number" class="form-control form-control-sm min-score-input" placeholder="Min"></div>
+                            <div class="col-md-2"><input type="number" class="form-control form-control-sm max-score-input" placeholder="Max"></div>
+                            <div class="col-md-1 text-center"><input type="checkbox" class="use-subject-checkbox" checked></div>
+                        </div>`;
+                    });
+
+                    $subjectsContainer.html(html).removeClass('d-none');
+                    $saveClassBtn.removeClass('d-none');
+                });
+            });
+
+            // --------------------------
+            //  EVENT GROUP: DYNAMIC ACTIONS
+            // --------------------------
+            $card.on('change', '.grade-select', function() {
+                const $row = $(this).closest('.subject-grade-row');
+                const sel = $(this).find(':selected');
+                $row.find('.min-score-input').val(sel.data('min') || '');
+                $row.find('.max-score-input').val(sel.data('max') || '');
+                $row.data('grade-id', sel.val());
+            });
+
+            $card.on('click', '.btn-remove-section', function() {
+                if (confirm('Remove this class section?')) $card.remove();
+            });
+
+            $saveClassBtn.on('click', function(e) {
+                e.preventDefault();
+                const classId = $classSelect.val();
+                if (!classId) return alert('Select a class.');
+
+                const gradesPayload = [];
+                $subjectsContainer.find('.subject-grade-row').each(function() {
+                    const $row = $(this);
+                    if (!$row.find('.use-subject-checkbox').is(':checked')) return;
+                    const subjectId = $row.find('.subject-select').val();
+                    const gradeId = $row.find('.grade-select').val();
+                    const minScore = $row.find('.min-score-input').val();
+                    const maxScore = $row.find('.max-score-input').val();
+                    if (!subjectId || !gradeId) return;
+                    gradesPayload.push({
+                        class_id: classId,
+                        subject_id: subjectId,
+                        grade_id: gradeId,
+                        min_score: minScore,
+                        max_score: maxScore
+                    });
+                });
+
+                if (!gradesPayload.length) return alert('Please fill at least one subject grade.');
+
+                $.post(`/admin/students/${studentId}/storegrades`, {
+                        grades: gradesPayload
+                    })
+                    .done(() => {
+                        alert('Class & grades saved successfully.');
+                        $classSelect.prop('disabled', true);
+                        $subjectsContainer.find('input, select').prop('disabled', true);
+                        $saveClassBtn.prop('disabled', true);
+                    })
+                    .fail(xhr => console.error(xhr.responseText));
+            });
+        });
+        // ✅ Works everywhere — edit mode or new section
+        $(document).on('change', '.grade-select', function() {
+            const $row = $(this).closest('.subject-grade-row');
+            const selected = $(this).find('option:selected');
+            const min = selected.data('min') || '';
+            const max = selected.data('max') || '';
+
+            // Update input values dynamically
+            $row.find('.min-input, .min-score, .min-score-input').val(min);
+            $row.find('.max-input, .max-score, .max-score-input').val(max);
+
+            // Add visual feedback
+            $row.find('.min-input, .min-score, .min-score-input, .max-input, .max-score, .max-score-input')
+                .addClass('bg-warning-subtle');
+            setTimeout(() => {
+                $row.find('.min-input, .min-score, .min-score-input, .max-input, .max-score, .max-score-input')
+                    .removeClass('bg-warning-subtle');
+            }, 400);
+        });
+
+    });
+</script>
+@endpush

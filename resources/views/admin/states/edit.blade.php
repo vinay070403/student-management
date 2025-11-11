@@ -4,31 +4,35 @@
 
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm mb-6">
-            <div class="card-body p-6">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h2 class="card-title mb-0">Edit State</h2>
-                    <a href="{{ route('states.index') }}" class="btn btn-dark">
-                        <i class="mdi mdi-arrow-left me-2"></i> Back
-                    </a>
-                </div>
+    <div class="app-wrapper flex-column flex-row-fluid">
+        <!-- <div class="card shadow-sm mb-6"> -->
+        <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="card-title mb-1">
+                    <i class="fa-solid fa-street-view"></i>
+                    Edit State
+                </h3>
+                <a href="{{ route('states.index') }}" class="btn btn-dark">
+                    <i class="mdi mdi-arrow-left me-2"></i> Back
+                </a>
+            </div>
 
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
 
-                @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-                @endif
+            @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+            @endif
+            <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
 
                 <form action="{{ route('states.update', $state->id) }}" method="POST" class="needs-validation" novalidate>
                     @csrf
@@ -57,7 +61,7 @@
                     <!-- Update & Delete Buttons side by side -->
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="submit" class="btn btn-dark px-3 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
-                            Update State
+                            Save Changes
                         </button>
 
                         <!-- Delete Button triggers dialog -->

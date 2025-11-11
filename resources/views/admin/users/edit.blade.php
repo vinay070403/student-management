@@ -4,31 +4,35 @@
 
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm mb-6">
-            <div class="card-body p-6">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h2 class="card-title mb-0">Edit User Details</h2>
-                    <a href="{{ route('users.index') }}" class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
-                        <i class="mdi mdi-arrow-left me-2"></i> Back
-                    </a>
-                </div>
+    <div class="app-wrapper flex-column flex-row-fluid">
+        <!-- <div class="card shadow-sm mb-6"> -->
+        <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
+            <div class=" fw-semibold mb-3 text-dark d-flex justify-content-between align-items-center ">
+                <h3 class="card-title mb-0">
+                    <i class="fa-solid fa-user-pen"></i>
+                    Edit User
+                </h3>
+                <a href="{{ route('users.index') }}" class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                    <i class="mdi mdi-arrow-left me-2"></i> Back
+                </a>
+            </div>
 
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
 
-                @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-                @endif
+            @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+            @endif
+            <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
 
                 <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                     @csrf
@@ -57,9 +61,11 @@
                         </div>
 
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="phone" class="form-label">Phone</label>
-                                <input type="text" name="phone" class="form-control form-control-lg" value="{{ $user->phone }}">
+                            <div class="form-group"> <label for="phone" class="form-label">Phone</label>
+                                <div class="input-group"> <select name="phone_code" class="form-select form-select-lg" style="max-width: 90px;">
+                                        <option value="+91">+91</option>
+                                        <!-- More codes if needed -->
+                                    </select> <input type="text" name="phone" class="form-control form-control-lg" required pattern="\d{10}" placeholder="1234567890" maxlength="10"> </div>
                             </div>
                         </div>
 
@@ -70,42 +76,43 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group ">
-                                <label for="avatar" class="form-label">Avatar</label>
-                                <input type="file" name="avatar" class="form-control form-control-lg">
-                                @if ($user->avatar_url)
-                                <div id="avatar-wrapper" class="position-relative mt-2 d-inline-block">
-                                    <img src="{{ $user->avatar_url }}" id="user-avatar" alt="Avatar" class="img-thumbnail mt-2" style="max-width: 100px;">
+                            <div class="form-group">
+                                <label for="avatar" class="form-label fw-semibold">Avatar</label>
+                                <input type="file" name="avatar" class="form-control form-control-lg" accept="image/*">
 
-                                    <!-- ❌ Cross button -->
-                                    <button type="button" id="remove-avatar-btn"
-                                        class="btn btn-sm btn-danger position-absolute top-0 end-6 translate-middle rounded-circle"
-                                        style="padding:3px 6px;font-size:12px;line-height:1;">
+                                <div id="avatar-wrapper" class="position-relative mt-3 d-inline-block">
+                                    @if (!empty($user->avatar))
+                                    <img src="{{ Storage::url($user->avatar) }}"
+                                        id="user-avatar"
+                                        alt="User Avatar"
+                                        class="img-thumbnail shadow-sm"
+                                        style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+
+                                    <!-- ❌ Remove Button -->
+                                    <button type="button"
+                                        id="remove-avatar-btn"
+                                        class="btn btn-sm btn-danger position-absolute top-0 start-100 translate-middle rounded-circle"
+                                        style="padding: 2px 6px; font-size: 12px; line-height: 1;">
                                         ×
                                     </button>
+                                    @else
+                                    <img src="{{ asset('images/default-avatar1.jpg') }}"
+                                        id="user-avatar"
+                                        alt="Default Avatar"
+                                        class="img-thumbnail shadow-sm"
+                                        style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                    @endif
                                 </div>
-                                @else
-                                <img id="user-avatar" src="{{ asset('images/default1-avatar.png') }}"
-                                    alt="Default Avatar"
-                                    class="img-thumbnail mt-2"
-                                    style="max-width: 100px;">
-                                @endif
                             </div>
                         </div>
-                        <div class="col-6">
+
+                        <div class="col-12">
                             <div class="form-group">
                                 <label for="address" class="form-label">Address</label>
                                 <input type="text" name="address" class="form-control form-control-lg" value="{{ $user->address }}">
                             </div>
                         </div>
 
-                        <!-- 🧩 Current Password -->
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label for="current_password" class="form-label">Current Password</label>
-                                <input type="password" name="current_password" class="form-control form-control-lg" placeholder="Enter your current password">
-                            </div>
-                        </div>
 
                         <!-- 🆕 New Password -->
                         <div class="col-6">
@@ -127,7 +134,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button type="submit" class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg">Update User</button>
+                        <button type="submit" class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg">Save Changes</button>
                     </div>
                 </form>
 
@@ -151,7 +158,7 @@
                         }
                     })
                     .then(response => {
-                        document.getElementById('user-avatar').src = "{{ asset('images/default-avatar.png') }}";
+                        document.getElementById('user-avatar').src = "{{ asset('images/default-avatar1.jpg') }}";
                         removeBtn.remove(); // remove the cross
                         alert('Avatar removed successfully!');
                     })

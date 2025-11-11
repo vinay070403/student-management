@@ -1,45 +1,31 @@
 @extends('layouts.app')
 @section('title', 'Classes')
+
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body p-3">
-                <h4 class="card-title mb-3">Class List</h4>
-                <a href="{{ route('schools.classes.create', $school->id) }}" class="btn btn-primary mb-3">Add Class</a>
-                <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-sm custom-edit-btn" title="Edit">back</a>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>School</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($classes as $class)
-                        <!-- <tr onclick="window.location.href='{{ route('schools.classes.edit', [$school->id, $class->id]) }}'" style="cursor: pointer;"> -->
-                        <tr @if($class->id) onclick="window.location.href='{{ route('schools.classes.edit',[$school->id, $class->id]) }}'" @endif style="cursor: pointer;">
-                            <td>{{ $class->name }}</td>
-                            <td>{{ $class->school->name ?? 'N/A' }}</td>
-                            <td>
-                                <form action="{{ route('schools.classes.destroy', [$school->id, $class->id]) }}" method="POST" style="display:inline;" onclick="event.stopPropagation();">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm-2" onclick="return confirm('Are you sure?')">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                        @if ($classes->isEmpty())
-                        <tr>
-                            <td colspan="3" class="text-center">No classes found for this school.</td>
-                        </tr>
-                        @endif
-                    </tbody>
-                </table>
+<div class="app-wrapper flex-column flex-row-fluid">
+    <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <h3 class="fw-semibold text-dark mb-0">
+                <i class="bi bi-people me-2"></i> Classes List
+            </h3>
+            <div class="d-flex gap-2">
+                <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-dark px-5 py-3 rounded-3 fw-bold shadow-sm">
+                    ← Back
+                </a>
+                <!-- <a href="{{ route('schools.classes.create', $school->id) }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                + Add Class
+            </a> -->
             </div>
         </div>
+
+        <!-- Main bordered panel -->
+
+        <div class="card-body p-4">
+            @include('admin.schools.classes.partials.table')
+        </div>
+
     </div>
+
 </div>
 @endsection
