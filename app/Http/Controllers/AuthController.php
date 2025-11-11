@@ -8,49 +8,51 @@ use App\Http\Requests\Auth\ResetPasswordRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
+    /**
+     * Show login form
+     */
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
+    /**
+     * Handle login request
+     */
     public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
-        $user = \App\Models\User::where('email', $credentials['email'])->first();
 
-        // Check if email exists
-        if (!$user) {
-            return back()
-                ->withErrors(['email' => 'This email ID does not exist.'])
-                ->withInput($request->only('email'));
-        }
+        // Attempt to log in
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            // Regenerate session to prevent fixation
+            $request->session()->regenerate();
 
-        // Check if password matches
-        if (!\Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password)) {
-            return back()
-                ->withErrors(['password' => 'Your password is incorrect. Please try again.'])
-                ->withInput($request->only('email'));
-        }
-
-        // Attempt login (if all ok)
-        if (\Illuminate\Support\Facades\Auth::attempt($credentials)) {
             return redirect()->intended(route('dashboard'));
         }
 
-        // Fallback
-        return back()->withErrors(['credential' => 'Invalid credentials.'])->withInput($request->only('email'));
+        // Login failed
+        return back()
+            ->withErrors(['email' => 'Invalid email or password.'])
+            ->withInput($request->only('email'));
     }
 
-
+    /**
+     * Show forgot password form
+     */
     public function showForgotPasswordForm()
     {
         return view('auth.forgot-password');
     }
 
+    /**
+     * Send password reset link
+     */
     public function sendResetLinkEmail(ForgotPasswordRequest $request)
     {
         $status = Password::sendResetLink($request->only('email'));
@@ -60,17 +62,24 @@ class AuthController extends Controller
             : back()->withErrors(['email' => __($status)]);
     }
 
+    /**
+     * Show reset password form
+     */
     public function showResetForm($token)
     {
-        return view('auth.reset-password')->with(['token' => $token]);
+        return view('auth.reset-password', compact('token'));
     }
 
+    /**
+     * Reset password
+     */
     public function reset(ResetPasswordRequest $request)
     {
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
-                $user->update(['password' => bcrypt($password)]);
+                $user->password = Hash::make($password);
+                $user->save();
             }
         );
 
@@ -79,21 +88,37 @@ class AuthController extends Controller
             : back()->withErrors(['email' => __($status)]);
     }
 
+    /**
+     * Logout user
+     */
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::logout(); // Remove user from session
 
-        $request->session()->invalidate(); // Invalidate old session
-        $request->session()->regenerateToken(); // Prevent CSRF reuse
+        $request->session()->invalidate(); // Clear session data
+        $request->session()->regenerateToken(); // Generate new CSRF token
 
-        // Remove Laravel session cookie explicitly
+        // Remove session cookie
         $cookie = Cookie::forget('laravel_session');
 
         return redirect()->route('login')->withCookie($cookie);
     }
 
+    /**
+     * Show dashboard (protected)
+     */
     public function dashboard()
     {
-        return view('admin.dashboard');
+        $usersCount     = \App\Models\User::count();
+        $schoolsCount   = \App\Models\School::count();
+        $countriesCount = \App\Models\Country::count();
+        $statesCount    = \App\Models\State::count();
+
+        return view('admin.dashboard', compact(
+            'usersCount',
+            'schoolsCount',
+            'countriesCount',
+            'statesCount'
+        ));
     }
 }
