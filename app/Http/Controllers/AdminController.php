@@ -8,11 +8,9 @@ use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Requests\Admin\BulkDeleteUserRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use SweetAlert2\Laravel\Swal;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -22,7 +20,7 @@ class AdminController extends Controller
     public function index()
     {
         if (request()->ajax()) {
-            $users = User::latest()->paginate(2);
+            $users = User::latest()->paginate(10);
             return view('admin.users.partials.users_table', compact('users'))->render();
         }
 
