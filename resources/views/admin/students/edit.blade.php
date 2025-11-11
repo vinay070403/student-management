@@ -255,7 +255,7 @@
                 if (!id) return;
                 $.getJSON(`/admin/states/${id}/schools`, data => {
                     data.schools?.forEach(s => schoolSelect.append(
-                        `<option value="${s.id}">${s.name}</option>`));
+                        `<option value="${s.id}" >${s.name}</option>`));
                     schoolSelect.prop('disabled', false);
                 }).fail(() => alert('Error fetching schools'));
             });
@@ -280,15 +280,30 @@
                             name: schoolText,
                             classes: []
                         };
+
+                        // ✅ Update UI
                         schoolNameSpan.text(schoolText);
                         $('#school-select-area').hide();
                         schoolActions.show();
                         sectionsContainer.html('');
-                        Swal.fire('Success!', 'School assigned successfully.', 'success');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'School assigned successfully. Reloading...',
+                            timer: 1200,
+                            showConfirmButton: false
+                        });
+
+                        // ✅ Reload page after short delay to refresh everything
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1300);
                     })
                     .fail(() => Swal.fire('Error!', 'Unable to assign school.', 'error'));
             });
 
+            // If already has a school, set it up
             if (savedSchool?.id) {
                 schoolNameSpan.text(savedSchool.name);
                 $('#school-select-area').hide();
@@ -336,6 +351,7 @@
                 loadClassSubjects($section, classId);
             });
 
+
             // ------------------------------ LOAD SUBJECTS ------------------------------
             function loadClassSubjects($section, classId) {
                 $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}?class_id=${classId}`,
@@ -366,13 +382,13 @@
                 return $(`
                     <div class="row g-2 mb-2 align-items-center subject-grade-row smooth-appear  ">
                         <div class="col-md-4">
-                            <select class="form-select form-select-sm subject-select">
+                           <select class="form-select form-select-sm subject-select" style="font-weight:700; color:#212529;">
                                 <option value="">Select Subject</option>
                                 ${subjects.map(s => `<option value="${s.id}" ${s.id == selectedSubjectId ? 'selected' : ''}>${s.name}</option>`).join('')}
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <select class="form-select form-select-sm grade-select">
+                           <select class="form-select form-select-sm grade-select" style="font-weight:700; color:#212529;">
                                 <option value="">Select Grade</option>
                                 ${grades.map(g => `<option value="${g.id}" data-min="${g.min_score}" data-max="${g.max_score}" ${g.id == selectedGradeId ? 'selected' : ''}>${g.grade}</option>`).join('')}
                             </select>
@@ -399,45 +415,48 @@
 
                         savedClasses.forEach(cls => {
                             const $section = $(`
-                                                <div class="card mb-3 class-section" data-class-id="${cls.id}">
-                                                    <div class="p-4 bg-light border rounded-4 mb-3">
-                                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                                            <h4>Class: ${cls.name}</h4>
-                                                            <button class="btn btn-light border py-2 px-2 rounded-3 btn-delete-section">
-                                                                <i class="fa fa-trash"></i>
-                                                            </button>
-                                                        </div>
-                                                        <div class="subjects-container mb-4"></div>
-                                                        <button class="btn btn-light btn-sm btn-add-subject mb-2">+ Add Subject</button>
-                                                    </div>
-                                                </div>
-                                            `);
+                    <div class="card mb-3 class-section" data-class-id="${cls.id}">
+                        <div class="p-4 bg-light border rounded-4 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4>Class: ${cls.name}</h4>
+                                <button class="btn btn-light border py-2 px-2 rounded-3 btn-delete-section">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="subjects-container mb-4"></div>
+                            <button class="btn btn-light border py-3 px-3 d-flex align-items-center gap-2 rounded-2 btn-add-subject mb-2">+ Add Subject</button>
+                        </div>
+                    </div>
+                `);
 
                             sectionsContainer.append($section);
-
                             const $container = $section.find('.subjects-container');
-                            // inside savedClasses.forEach(cls => { ... })
+
                             cls.subjects.forEach(sub => {
+                                // Fallback min/max if null: use the grade scale
+                                const gradeInfo = data.grades.find(g => g.id == sub.grade_id) ||
+                                {};
+                                const minScore = sub.min_score ?? gradeInfo.min_score ?? '';
+                                const maxScore = sub.max_score ?? gradeInfo.max_score ?? '';
+
                                 const $row = generateSubjectRow(
                                     data.subjects,
                                     data.grades,
                                     sub.subject_id ?? '',
                                     sub.grade_id ?? '',
-                                    sub.min_score ?? '',
-                                    sub.max_score ?? ''
+                                    minScore,
+                                    maxScore
                                 );
+
                                 $container.append($row);
 
-                                // set the score-range visible + hidden values
+                                // Set the score-range visible + hidden inputs
                                 $row.find('.score-range').val(
-                                    (sub.min_score !== null && sub.min_score !== undefined ?
-                                        sub.min_score : '') +
-                                    (sub.max_score !== null && sub.max_score !== undefined ?
-                                        '-' + sub.max_score : '')
+                                    minScore !== '' && maxScore !== '' ?
+                                    `${minScore}-${maxScore}` : ''
                                 );
-
-                                $row.find('input[name="min_score[]"]').val(sub.min_score ?? '');
-                                $row.find('input[name="max_score[]"]').val(sub.max_score ?? '');
+                                $row.find('input[name="min_score[]"]').val(minScore);
+                                $row.find('input[name="max_score[]"]').val(maxScore);
                             });
                         });
 
@@ -449,9 +468,9 @@
                     </div>
                 `);
                         }
-                    });
+                    }
+                );
             }
-
             // ------------------------------ ADD SUBJECT ------------------------------
             sectionsContainer.on('click', '.btn-add-subject', function() {
                 const $section = $(this).closest('.class-section');
@@ -594,18 +613,28 @@
 
             // ------------------------------ SAVE ALL LOGIC ------------------------------
             $(document).on('click', '#btn-save-all', function() {
+                console.log(" Save All button clicked");
+
                 const allData = [];
 
                 $('.class-section').each(function() {
                     const classId = $(this).data('class-id');
+                    console.log("Class ID:", classId);
+
                     $(this).find('.subjects-container .subject-grade-row').each(function() {
                         const subjectId = $(this).find('.subject-select').val();
                         const gradeId = $(this).find('.grade-select').val();
-                        if (!subjectId || !gradeId) return; // skip incomplete rows
-
-                        // read from the hidden inputs we created in generateSubjectRow
                         const minScore = $(this).find('input[name="min_score[]"]').val();
                         const maxScore = $(this).find('input[name="max_score[]"]').val();
+
+                        console.log("  ↳ Row Data:", {
+                            subjectId,
+                            gradeId,
+                            minScore,
+                            maxScore
+                        });
+
+                        if (!subjectId || !gradeId) return;
 
                         allData.push({
                             class_id: classId,
@@ -617,7 +646,10 @@
                     });
                 });
 
+                console.log("Data to send to backend:", allData);
+
                 if (!allData.length) {
+                    console.warn("No data found to save.");
                     return Swal.fire('Warning', 'No subjects/grades to save!', 'warning');
                 }
 
@@ -629,10 +661,11 @@
                         grades: allData
                     },
                     success: function(res) {
+                        console.log("Save success:", res);
                         Swal.fire('Success', 'All grades saved successfully!', 'success');
                     },
                     error: function(err) {
-                        console.error(err.responseJSON);
+                        console.error(" Save failed:", err.responseJSON);
                         let msg = 'Something went wrong while saving.';
                         if (err.responseJSON && err.responseJSON.errors) {
                             msg = Object.values(err.responseJSON.errors).flat().join('<br>');
@@ -643,6 +676,7 @@
                     }
                 });
             });
+
 
         });
     </script>
