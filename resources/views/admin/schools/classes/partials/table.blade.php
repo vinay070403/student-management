@@ -7,7 +7,8 @@
             <!-- <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-secondary px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                 ← Back
             </a> -->
-            <a href="{{ route('schools.classes.create', $school->id) }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+            <a href="{{ route('schools.classes.create', $school->id) }}"
+                class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                 + Add Class
             </a>
         </div>
@@ -23,24 +24,30 @@
         </thead>
         <tbody>
             @forelse ($school->classes as $class)
-            <tr>
-                <!-- <td>{{ $class->school->name ?? 'N/A' }}</td> -->
-                <td>{{ $class->name }}</td>
-                <td class="text-end">
-                    <a href="{{ route('schools.classes.edit', [$school->id, $class->id]) }}" class="btn btn-sm btn-outline-secondary me-2">Edit</a>
-                    <form action="{{ route('schools.classes.destroy', [$school->id, $class->id]) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">
-                            Delete
-                        </button>
-                    </form>
-                </td>
-            </tr>
+                <tr>
+                    <!-- <td>{{ $class->school->name ?? 'N/A' }}</td> -->
+                    <td>{{ $class->name }}</td>
+                    <td class="text-end">
+                        <a href="{{ route('schools.classes.edit', [$school->id, $class->id]) }}"
+                            class="btn btn-sm custom-edit-btn">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+
+                        <form action="{{ route('schools.classes.destroy', [$school->id, $class->id]) }}" method="POST"
+                            style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm custom-delete-btn delete-state-btn"
+                                onclick="return confirm('Are you sure?')">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
             @empty
-            <tr>
-                <td colspan="3" class="text-center text-muted">No classes yet.</td>
-            </tr>
+                <tr>
+                    <td colspan="3" class="text-center text-muted">No classes yet.</td>
+                </tr>
             @endforelse
         </tbody>
     </table>
