@@ -912,7 +912,7 @@ ADD CONSTRAINT `role_has_permissions_role_id_foreign` FOREIGN KEY (`role_id`) RE
 CASCADE;
 
 --
--- Constraints for table `schools`
+-- Constraints for table `schools`          wwwww
 --
 ALTER TABLE `schools`
 ADD CONSTRAINT `schools_state_id_foreign` FOREIGN KEY (`state_id`) REFERENCES `states` (`id`);
