@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\State;
 use App\Models\Country;
+use App\Models\State;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -19,6 +19,12 @@ class StateController extends Controller
     {
         $countries = Country::all();
         return view('admin.states.create', compact('countries'));
+    }
+
+    public function schools($stateId)
+    {
+        $state = State::with('schools')->findOrFail($stateId);
+        return response()->json(['schools' => $state->schools]);
     }
 
     public function store(Request $request)
@@ -49,6 +55,15 @@ class StateController extends Controller
 
         $state->update($request->all());
         return redirect()->route('states.index')->with('success', 'State updated!');
+    }
+
+    public function getByCountry($countryId)
+    {
+        $states = \App\Models\State::where('country_id', $countryId)
+            ->select('id', 'name')
+            ->get();
+
+        return response()->json(['states' => $states]);
     }
 
     /**

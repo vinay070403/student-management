@@ -3,35 +3,47 @@
 @section('title', 'States')
 
 @section('content')
-<div class="container-fluid">
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-body p-4">
+<div class="app-wrapper flex-column flex-row-fluid">
+    <!-- <div class="card border-0 shadow-sm rounded-3"> -->
+    <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
 
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
-                        States
-                    </h3>
-                    <p class="text-muted small mb-0">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-semibold mb-1 text-dark" style="font-family: 'Inter', sans-serif">
+                    <i class="fa-solid fa-location-dot"></i>
+                    States
+                </h3>
+                <!-- <p class="text-muted small mb-0">
                         A list of all states available in your system.
-                    </p>
-                </div>
-                <a href="{{ route('states.create') }}"
-                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
-                    <i class="mdi mdi-map-marker-plus"></i> Add State
-                </a>
+                    </p> -->
             </div>
+            <a href="{{ route('states.create') }}"
+                class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
+                <i class="mdi mdi-map-marker-plus"></i> Add State
+            </a>
+        </div>
 
-            <!-- Alert Box -->
-            <div id="alert-box" class="alert d-none" role="alert"></div>
+        <!-- Alert Box -->
+        <div id="alert-box" class="alert d-none" role="alert"></div>
+        <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
+            <!-- Search Bar -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="input-group" style="max-width: 350px;">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="mdi mdi-magnify text-muted"></i>
+                    </span>
+                    <input type="text" id="search-state" class="form-control border-start-0 ps-0"
+                        placeholder="Search state..." />
+                </div>
+            </div>
 
             <!-- Table -->
             <div class="table-responsive">
                 <table class="table align-middle mb-3 table-hover state-table">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 60px;">#</th>
+                            <!-- <th style="width: 60px;">#</th> -->
                             <th>STATE NAME</th>
                             <th>COUNTRY</th>
                             <th class="text-center" style="width: 120px;">ACTIONS</th>
@@ -40,24 +52,29 @@
                     <tbody>
                         @foreach ($states as $state)
                         <tr id="state-row-{{ $state->id }}">
-                            <td class="fw-bold text-secondary">{{ $state->id }}</td>
+                            <!-- <td class="fw-bold text-secondary">{{ $state->id }}</td> -->
                             <td class="fw-semibold">{{ ucfirst($state->name) }}</td>
                             <td class="text-muted small">{{ $state->country->name ?? 'N/A' }}</td>
                             <td class="text-center">
                                 <div class="d-inline-flex gap-2">
                                     <a href="{{ route('states.edit', $state->id) }}"
                                         class="btn btn-sm custom-edit-btn" title="Edit">
-                                        <i class="mdi mdi-pencil"></i>
+                                        <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
                                     <button type="button"
                                         class="btn btn-sm custom-delete-btn delete-state-btn"
                                         data-id="{{ $state->id }}" title="Delete">
-                                        <i class="mdi mdi-delete"></i>
+                                        <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </div>
                             </td>
                         </tr>
                         @endforeach
+                        @if ($states->isEmpty())
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">No state found.</td>
+                        </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -239,6 +256,18 @@
                 })
                 .finally(() => confirmBtn.disabled = false);
         });
+        // Live search filter for states
+        const searchInput = document.getElementById('search-state');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.state-table tbody tr');
+
+            rows.forEach(row => {
+                const stateName = row.querySelector('td')?.textContent.toLowerCase() || '';
+                row.style.display = stateName.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
     });
 </script>
 @endpush

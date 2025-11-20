@@ -3,59 +3,44 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth; // Add this import
-use App\Models\User;
 
 class ProfileController extends Controller
 {
     public function edit()
     {
-        $user = Auth::user(); // Use Auth::user() instead of auth()->user()
-        return view('admin.profile.edit', compact('user'));
+        $user = Auth::user();
+        return view('admin.profile-edit', compact('user'));
     }
 
     public function update(Request $request)
     {
-        $user = Auth::user();
-        // dd(Auth::user());
-        // dd($user);
+        $user = \App\Models\User::find(Auth::id());
+
         $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone' => 'nullable|string',
-            'dob' => 'nullable|date',
-            'avatar' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048',
-            'address' => 'nullable|string',
-            'password' => 'nullable|confirmed|min:8',
+            'first_name' => 'required|string|max:50',
+            'last_name'  => 'required|string|max:50',
+            'email'      => 'required|email|unique:users,email,' . $user->id,
+            'avatar'     => 'nullable|image|max:2048',
         ]);
 
-        // $data = $request->all();
-        $data = $request->only(['first_name', 'last_name', 'email', 'phone', 'dob', 'address']); // Safe fields
-
+        // Handle avatar upload
         if ($request->hasFile('avatar')) {
-            if ($user->avatar && Storage::exists('public/avatars/' . $user->avatar)) {
-                Storage::delete('public/avatars/' . $user->avatar);
+            // Delete old avatar if exists
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
             }
-            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $path;
         }
 
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        }
+        // Update other fields
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->email = $request->email;
+        $user->save();
 
-        foreach ($data as $key => $value) {
-            $user->$key = $value;
-        }
-        $user;
-
-        // Auth::setUser($user->fresh());
-
-
-        // session()->flash('avatarUpdated', true); // Flag to indicate avatar change
-
-        return redirect()->route('dashboard')->with('success', 'Profile updated!');
+        return redirect()->route('profile.edit')->with('success', 'Profile updated successfully.');
     }
 }

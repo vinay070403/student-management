@@ -4,33 +4,36 @@
 
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="card-title mb-0">Add New Country</h4>
-                    <a href="{{ route('countries.index') }}"
-                        class="btn text-dark px-4 py-3 d-inline-flex align-items-center justify-content-center"
-                        style="background-color: #e5e5e5; border: 1px solid #ccc; border-radius: 6px;">
-                        <i class="mdi mdi-arrow-left me-1"></i> Back
-                    </a>
-                </div>
+    <div class="app-wrapper flex-column flex-row-fluid">
+        <!-- <div class="card shadow-sm mb-4"> -->
+        <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="card-title mb-0">
+                    <i class="fa-solid fa-globe"></i>
+                    Add New Country
+                </h3>
+                <a href="{{ route('countries.index') }}"
+                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                    <i class="mdi mdi-arrow-left me-1"></i> Back
+                </a>
+            </div>
 
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
 
-                @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-                @endif
+            @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+            @endif
+            <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
 
                 <form action="{{ route('countries.store') }}" method="POST" class="needs-validation" novalidate>
                     @csrf
@@ -101,7 +104,7 @@
 
     .card {
         border-radius: 12px;
-        background-color: #fafafa;
+        background-color: #0056b3;
     }
 </style>
 @endpush
