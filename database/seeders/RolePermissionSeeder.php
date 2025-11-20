@@ -9,6 +9,7 @@ use Spatie\Permission\Models\Permission;
 use App\Models\PermissionGroup;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class RolePermissionSeeder extends Seeder
 {
@@ -110,8 +111,10 @@ class RolePermissionSeeder extends Seeder
             ['email' => 'superadmin@example.com'],
             [
                 'first_name' => 'Super',
-                'last_name' => 'Admin',
-                'password' => bcrypt('password'),
+                'last_name'  => 'Admin',
+                'ulid'       => Str::ulid(),       // generate ULID explicitly
+                'password'   => Hash::make('password'),
+                'status'     => 1,                  // active by default
             ]
         );
         $superAdmin->assignRole('Super Admin');

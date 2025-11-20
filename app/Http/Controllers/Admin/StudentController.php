@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Country;
-use App\Models\ClassModel;
+use App\Models\Schoolclass;
 use App\Models\School;
 use App\Models\Subject;
 use App\Models\StudentGrade;
@@ -12,17 +13,83 @@ use App\Models\GradeScale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
 
 class StudentController extends Controller
 {
     // ------------------------
     // CRUD: Students
     // ------------------------
-    public function index()
+    public function index(Request $request)
     {
-        $students = User::role('Student')->with('school')->get();
-        return view('admin.students.index', compact('students'));
+        if ($request->ajax()) {
+
+            // Base query: only students
+            $students = User::role('Student')->with('school')->select(
+                'id',
+                'ulid',
+                'first_name',
+                'last_name',
+                'email',
+                'avatar',
+                'status',
+                'school_id',
+                'created_at'
+            );
+
+            // Custom search
+            $search = $request->input('search');
+            if (!empty($search)) {
+                $students->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+
+
+            return DataTables::of($students)
+                ->addColumn('student', function ($student) {
+                    $avatar = $student->avatar
+                        ? asset('storage/' . $student->avatar)
+                        : asset('assets/images/default-avatar.png');
+
+                    return '
+                <div class="d-flex align-items-center">
+                    <img src="' . $avatar . '" class="me-3 border shadow-sm" width="48" height="48"
+                        style="object-fit: cover; border-radius: 0;">
+
+                    <div style="line-height: 1.4;">
+                        <div class="fw-bold text-dark" style="font-size: 15px;">' . e($student->first_name . ' ' . $student->last_name) . '</div>
+
+                        <div class="text-muted" style="font-size: 13px; margin-top: 3px;">
+                            <strong>Email:</strong> ' . e($student->email) . '
+                        </div>
+
+                        <div class="text-muted" style="font-size: 13px; margin-top: 4px;">
+                            <strong>School:</strong> ' . e($student->school?->name ?? 'No School Assigned') . '
+                        </div>
+                    </div>
+                </div>';
+                })
+                ->addColumn('status', function ($student) {
+                    $badge = $student->status ? 'success' : 'danger';
+                    $text = $student->status ? 'Active' : 'Inactive';
+                    return '<span class="badge bg-' . $badge . '" style="border-radius:0; padding:6px 12px;">' . $text . '</span>';
+                })
+                ->addColumn('created_at', function ($student) {
+                    return $student->created_at ? $student->created_at->format('d M Y, h:i A') : '';
+                })
+                ->addColumn('actions', function ($student) {
+                    return view('admin.students.partials.student_actions', compact('student'))->render();
+                })
+                ->rawColumns(['student', 'status', 'actions'])
+                ->make(true);
+        }
+
+        return view('admin.students.index');
     }
+
 
     // ------------------------
     // Create Student
@@ -69,7 +136,7 @@ class StudentController extends Controller
         $countries = Country::with('states')->get();
 
         // Load related grades for summary
-        $grades = $student->grades()->with('classModel', 'subject', 'gradeScale')->get();
+        $grades = $student->grades()->with('SchoolClass', 'subject', 'gradeScale')->get();
 
         return view('admin.students.edit', compact('student', 'schools', 'countries', 'grades'));
     }
@@ -127,7 +194,7 @@ class StudentController extends Controller
             $school = School::firstOrCreate(['name' => $schoolData['school_name']]);
 
             foreach ($schoolData['classes'] as $classData) {
-                $class = ClassModel::firstOrCreate([
+                $class = Schoolclass::firstOrCreate([
                     'school_id' => $school->id,
                     'name'      => $classData['class_name']
                 ]);
@@ -193,18 +260,31 @@ class StudentController extends Controller
     // ------------------------
     public function assignSchool(Request $request, User $student)
     {
+        // incoming school_id is ULID from the frontend select
         $request->validate([
-            'school_id' => 'required|exists:schools,id',
+            'school_id' => 'required|string|exists:schools,ulid',
         ]);
 
-        $student->school_id = $request->school_id;
+        // resolve numeric id from ULID safely
+        $school = School::where('ulid', $request->school_id)->first();
+
+        if (! $school) {
+            return response()->json(['success' => false, 'message' => 'School not found.'], 404);
+        }
+
+        $student->school_id = $school->id; // numeric id column
         $student->save();
 
         return response()->json(['success' => true]);
     }
 
+    // ------------------------
+    // Load Grades, Classes, Subjects for Student (AJAX)
+    // ------------------------
     public function gradesSections(Request $request, $studentId, $schoolId)
     {
+        $student = User::where('ulid', $studentId)->firstOrFail();
+
         $school = School::with([
             'classes:id,school_id,name',
             'subjects:id,school_id,name',
@@ -218,7 +298,6 @@ class StudentController extends Controller
             'max_score' => $g->max_score,
         ]);
 
-        // 🟢 Case 1: Only load data for "Add Class" dropdown
         if (!$request->has('load_existing')) {
             return response()->json([
                 'classes'  => $school->classes,
@@ -227,19 +306,19 @@ class StudentController extends Controller
             ]);
         }
 
-        // 🟢 Case 2: Load student's saved grades
-        $studentGrades = \App\Models\StudentGrade::with(['classModel', 'subject', 'gradeScale'])
-            ->where('student_id', $studentId)
+        $studentGrades = StudentGrade::with(['Schoolclass', 'subject', 'gradeScale'])
+            ->where('student_id', $student->id)
             ->get()
             ->groupBy('class_id');
 
         $savedClasses = [];
 
         foreach ($studentGrades as $classId => $gradesGroup) {
-            $class = $gradesGroup->first()->classModel; // <-- use classModel
+            $class = $gradesGroup->first()->Schoolclass;
+
             $savedClasses[] = [
                 'id' => $classId,
-                'name' => $class?->name ?? 'Unknown Class', // fallback
+                'name' => $class?->name ?? 'Unknown Class',
                 'subjects' => $gradesGroup->map(fn($g) => [
                     'subject_id' => $g->subject_id,
                     'grade_id' => $g->grade_id,
@@ -259,7 +338,8 @@ class StudentController extends Controller
     // ------------------------
     // Store Student Grades (AJAX)
     // ------------------------
-    public function storeGrades($studentId, Request $request)
+    // Before: public function storeGrades($studentId, Request $request)
+    public function storeGrades(User $student, Request $request)
     {
         $validated = $request->validate([
             'grades' => 'required|array',
@@ -268,26 +348,41 @@ class StudentController extends Controller
             'grades.*.grade_id' => 'required|integer',
             'grades.*.min_score' => 'nullable|numeric|min:0|max:100|required_with:grades.*.max_score',
             'grades.*.max_score' => 'nullable|numeric|min:0|max:100|gt:grades.*.min_score|required_with:grades.*.min_score',
-
         ]);
 
         foreach ($validated['grades'] as $data) {
             StudentGrade::updateOrCreate(
                 [
-                    'student_id' => $studentId,
-                    'class_id' => $data['class_id'],
+                    'student_id' => $student->id,      // Use numeric ID
+                    'class_id'   => $data['class_id'],
                     'subject_id' => $data['subject_id'],
                 ],
                 [
-                    'grade_id' => $data['grade_id'],
-                    'min_score' => $data['min_score'],
-                    'max_score' => $data['max_score'],
+                    'grade_id'    => $data['grade_id'],
+                    'min_percentage' => $data['min_score'] ?? null,
+                    'max_percentage' => $data['max_score'] ?? null,
                 ]
             );
         }
 
+        // Return the updated grades immediately
+        $grades = $student->grades()
+            ->with('Schoolclass:id,name', 'subject:id,name', 'gradeScale:id,grade,min_score,max_score')
+            ->get()
+            ->map(function ($g) {
+                return [
+                    'id' => $g->id,
+                    'class_name' => $g->Schoolclass->name ?? '',
+                    'subject_name' => $g->subject->name ?? '',
+                    'grade' => $g->gradeScale->grade ?? '',
+                    'min_score' => $g->min_percentage ?? $g->gradeScale->min_score ?? '',
+                    'max_score' => $g->max_percentage ?? $g->gradeScale->max_score ?? '',
+                ];
+            });
+
         return response()->json(['success' => true]);
     }
+
 
     // ------------------------
     // Load saved grades for student (AJAX)
@@ -295,12 +390,12 @@ class StudentController extends Controller
     public function loadGrades(User $student)
     {
         $grades = $student->grades()
-            ->with('classModel:id,name', 'subject:id,name', 'gradeScale:id,grade,min_score,max_score')
+            ->with('Schoolclass:id,name', 'subject:id,name', 'gradeScale:id,grade,min_score,max_score')
             ->get()
             ->map(function ($g) {
                 return [
                     'id' => $g->id,
-                    'class_name' => $g->classModel->name ?? '',
+                    'class_name' => $g->Schoolclass->name ?? '',
                     'subject_name' => $g->subject->name ?? '',
                     'grade' => $g->gradeScale->grade ?? '',
                     'min_score' => $g->gradeScale->min_score ?? '',
@@ -320,20 +415,15 @@ class StudentController extends Controller
             'class_id' => 'required|integer|exists:classes,id',
         ]);
 
-        try {
-            $classId = $request->class_id;
+        $student = User::where('ulid', $studentId)->firstOrFail();
 
-            // Delete all student grades for this class
-            \App\Models\StudentGrade::where('student_id', $studentId)
-                ->where('class_id', $classId)
-                ->delete();
+        StudentGrade::where('student_id', $student->id)
+            ->where('class_id', $request->class_id)
+            ->delete();
 
-            return response()->json(['success' => true, 'message' => 'Class and its grades deleted.']);
-        } catch (\Throwable $e) {
-            Log::error('Delete class error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Server error while deleting class.'], 500);
-        }
+        return response()->json(['success' => true]);
     }
+
 
     // ------------------------
     // Delete Subject (AJAX)
@@ -345,13 +435,16 @@ class StudentController extends Controller
             'subject_id' => 'required|integer',
         ]);
 
-        StudentGrade::where('student_id', $studentId)
+        $student = User::where('ulid', $studentId)->firstOrFail();
+
+        StudentGrade::where('student_id', $student->id)
             ->where('class_id', $request->class_id)
             ->where('subject_id', $request->subject_id)
             ->delete();
 
         return response()->json(['success' => true]);
     }
+
 
     // ------------------------
     // Delete Grade (AJAX)

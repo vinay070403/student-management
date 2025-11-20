@@ -33,7 +33,7 @@ Root path: `c:\xampp\htdocs\student-management-second`
 │   │           ├── 🐘 StoreClassRequest.php
 │   │           └── 🐘 UpdateClassRequest.php
 │   ├── 📁 Models/
-│   │   ├── 🐘 ClassModel.php
+│   │   ├── 🐘 SchoolClass.php
 │   │   ├── 🐘 Country.php
 │   │   ├── 🐘 GradeScale.php
 │   │   ├── 🐘 PermissionGroup.php

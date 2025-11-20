@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Country;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;

@@ -11,15 +11,10 @@
                         <i class="fa-solid fa-school-flag"></i>
                         Add New School
                     </h3>
-                    {{-- <a href="{{ route('schools.index') }}"
-                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
-                    <i class="mdi mdi-arrow-left"></i> Back
-                </a> --}}
-                    <a href="{{ route('schools.edit', $school->id) }}"
-                        class="btn btn-dark px-5 py-3 mb-3 rounded-3 fw-bold shadow-sm">
-                        <i class="bi bi-arrow-left"></i> Back
+                    <a href="{{ route('schools.index') }}"
+                        class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
+                        <i class="mdi mdi-arrow-left"></i> Back
                     </a>
-
                 </div>
 
                 @if ($errors->any())
@@ -43,13 +38,13 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="name" class="form-label">School Name</label>
+                                    <label for="name" class="form-label fw-bold text-dark">School Name</label>
                                     <input type="text" name="name" class="form-control form-control-lg" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="state_id" class="form-label">State</label>
+                                    <label for="state_id" class="form-label fw-bold text-dark">State</label>
                                     <select name="state_id" class="form-control form-control-lg" required>
                                         @foreach ($states as $state)
                                             <option value="{{ $state->id }}">{{ $state->name }}</option>
@@ -58,17 +53,17 @@
                                 </div>
                             </div>
                             <!-- <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="address" class="form-label">Address</label>
-                                                <input type="text" name="address" class="form-control form-control-lg">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="zipcode" class="form-label">Zipcode</label>
-                                                <input type="text" name="zipcode" class="form-control form-control-lg">
-                                            </div>
-                                        </div> -->
+                                                        <div class="form-group">
+                                                            <label for="address" class="form-label fw-bold text-dark">Address</label>
+                                                            <input type="text" name="address" class="form-control form-control-lg">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="zipcode" class="form-label fw-bold text-dark">Zipcode</label>
+                                                            <input type="text" name="zipcode" class="form-control form-control-lg">
+                                                        </div>
+                                                    </div> -->
                         </div>
 
                         <div class="text-end mt-4">
@@ -96,7 +91,7 @@
         }
 
         /* Labels and inputs larger */
-        .form-label {
+        .form-label fw-bold text-dark {
             font-size: 1.2rem;
             font-weight: 500;
         }

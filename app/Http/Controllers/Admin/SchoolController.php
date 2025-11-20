@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\School;
 use App\Models\State;
 use App\Models\GradeScale;
@@ -11,11 +12,60 @@ use Illuminate\Support\Facades\Log;
 
 class SchoolController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $schools = School::with('state')->get();
-        return view('admin.schools.index', compact('schools'));
+        if ($request->ajax()) {
+
+            $schools = School::select(
+                'id',
+                'ulid',
+                'state_id',
+                'name',
+                'created_at'
+            )
+                ->with('state:id,name');
+
+            // Custom search support
+            $search = $request->input('custom_search');
+
+            if (!empty($search)) {
+                $schools->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
+            }
+
+
+            return datatables()->of($schools)
+                ->addColumn('checkbox', function ($school) {
+                    return '<input type="checkbox" class="select-school" data-id="' . $school->id . '">';
+                })
+
+                ->addColumn('school_name', function ($school) {
+                    return '<span class="fw-semibold">' . e($school->name) . '</span>';
+                })
+
+                ->addColumn('state', function ($school) {
+                    return $school->state ? e($school->state->name) : '-';
+                })
+
+                ->addColumn('created_at', function ($school) {
+                    return $school->created_at
+                        ? $school->created_at->format('d M Y, h:i A')
+                        : '';
+                })
+
+                ->addColumn('actions', function ($school) {
+                    return view('admin.schools.partials.actions', compact('school'))->render();
+                })
+
+                ->rawColumns(['checkbox', 'school_name', 'actions'])
+                ->make(true);
+        }
+
+        return view('admin.schools.index');
     }
+
+
 
     public function create()
     {
@@ -90,9 +140,17 @@ class SchoolController extends Controller
     public function edit(School $school)
     {
         $states = State::all();
-        $school->load(['classes', 'subjects', 'gradeScales']);
+
+        // Eager load relations with only needed fields
+        $school->load([
+            'classes:id,school_id,ulid,name',        // Classes with ULID
+            'subjects:id,school_id,ulid,name',      // Subjects with ULID
+            'gradeScales:id,school_id,grade,min_score,max_score,grade_point'
+        ]);
+
         return view('admin.schools.edit', compact('school', 'states'));
     }
+
 
     public function update(Request $request, School $school)
     {
@@ -191,9 +249,21 @@ class SchoolController extends Controller
         }
     }
 
-    public function getByState($stateId)
+    // public function getByState($stateId)
+    // {
+    //     $schools = School::where('state_id', $stateId)->get(['id', 'name']);
+    //     return response()->json(['schools' => $schools]);
+    // }
+
+    public function getByState($stateUlid)
     {
-        $schools = School::where('state_id', $stateId)->get(['id', 'name']);
+        $state = State::where('ulid', $stateUlid)->first();
+
+        if (!$state) {
+            return response()->json(['schools' => []]);
+        }
+
+        $schools = $state->schools()->get(['ulid', 'name']); // use ULID for school
         return response()->json(['schools' => $schools]);
     }
 }

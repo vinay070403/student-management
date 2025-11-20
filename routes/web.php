@@ -1,15 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\CountryController;
-use App\Http\Controllers\StateController;
-use App\Http\Controllers\SchoolController;
-use App\Http\Controllers\ClassController;
-use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\CountryController;
+use App\Http\Controllers\Admin\StateController;
+use App\Http\Controllers\Admin\SchoolController;
+use App\Http\Controllers\Admin\ClassController;
+use App\Http\Controllers\Admin\SubjectController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -40,20 +40,26 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // Dashboard
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
-
-
     // Users
-    Route::resource('users', AdminController::class);
-    Route::post('/users/bulk-delete', [AdminController::class, 'bulkDelete'])->name('users.bulkDelete');
-    Route::post('/users/{user}/remove-avatar', [AdminController::class, 'removeAvatar'])->name('users.removeAvatar');
+    Route::resource('users', UserController::class)->parameters([
+        'users' => 'user:ulid',
+    ]);
+
+    // STATUS TOGGLE (THIS ONE)
+    Route::post('/users/change-status/{id}', [UserController::class, 'updateStatus'])
+        ->name('users.change-status');
+
+
+    // custom route for status update
+    Route::post('users/update-status', [UserController::class, 'updateStatus'])->name('admin.users.updateStatus');
+    Route::post('/users/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulkDelete');
+    Route::post('/users/{user}/remove-avatar', [UserController::class, 'removeAvatar'])->name('users.removeAvatar');
     // ------------------------
     // Students
     // ------------------------
     Route::resource('students', StudentController::class);
-
     // Assign school
     Route::post('/students/{student}/assign-school', [StudentController::class, 'assignSchool'])->name('students.assignSchool');
-
     // Grades - AJAX
     Route::get('/students/{student}/grades-sections/{school}', [StudentController::class, 'gradesSections'])->name('students.gradesSections');
     // Route::post('/students/{student}/storegrades', [StudentController::class, 'storeGrade'])->name('students.storeGrade');
@@ -63,16 +69,30 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/students/{student}/delete-class', [StudentController::class, 'deleteClass']);
     Route::post('/students/{student}/delete-subject', [StudentController::class, 'deleteSubject']);
     Route::delete('/students/{student}/grades/{grade}', [StudentController::class, 'destroyGrade'])->name('students.destroyGrade');
-
     // ------------------------
     // Locations (Country / State / School)
     // ------------------------
     Route::get('/countries/{country}/states', [StateController::class, 'getByCountry'])->name('countries.states');
     Route::get('/states/{state}/schools', [SchoolController::class, 'getByState'])->name('states.schools');
 
-    Route::resource('countries', CountryController::class);
-    Route::resource('states', StateController::class);
-    Route::resource('schools', SchoolController::class);
-    Route::resource('schools.classes', ClassController::class);
-    Route::resource('schools.subjects', SubjectController::class);
+    Route::resource('countries', CountryController::class)->parameters([
+        'countries' => 'country:ulid',
+    ]);
+    Route::delete('countries/bulk-delete', [CountryController::class, 'bulkDelete'])->name('countries.bulkDelete');
+
+    Route::resource('states', StateController::class)->parameters([
+        'states' => 'state:ulid',
+    ]);
+    Route::resource('schools', SchoolController::class)->parameters([
+        'schools' => 'school:ulid',
+    ]);
+
+    Route::resource('schools.classes', ClassController::class)->scoped([
+        'class' => 'ulid'
+    ]);
+
+
+    Route::resource('schools.subjects', SubjectController::class)->parameters([
+        'subjects' => 'subject:ulid',
+    ]);
 });

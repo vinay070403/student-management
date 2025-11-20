@@ -24,6 +24,7 @@ class BulkDeleteUserRequest extends FormRequest
         return [
             'ids' => 'required|array',
             'ids.*' => 'integer|exists:users,id',
+            // 'ids.*' => 'string|exists:users,ulid', --- IGNORE ---
         ];
     }
 }

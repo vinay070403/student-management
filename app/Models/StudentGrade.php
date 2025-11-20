@@ -13,12 +13,12 @@ class StudentGrade extends Model
 
     public function student()
     {
-        return $this->belongsTo(User::class, 'student_id');
+        return $this->belongsTo(User::class, 'student_id', 'ulid');
     }
 
-    public function classModel()
+    public function SchoolClass()
     {
-        return $this->belongsTo(ClassModel::class, 'class_id');
+        return $this->belongsTo(SchoolClass::class, 'class_id');
     }
 
     public function subject()

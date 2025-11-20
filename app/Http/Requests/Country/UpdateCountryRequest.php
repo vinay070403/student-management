@@ -31,6 +31,7 @@ class UpdateCountryRequest extends FormRequest
         return [
             'name.required' => 'Country name is required.',
             'name.unique' => 'This country name is already taken.',
+
         ];
     }
 }

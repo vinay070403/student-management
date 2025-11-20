@@ -34,7 +34,7 @@
                 @endif
                 <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
                     {{-- Tabs --}}
-                    <ul class="nav nav-tabs mb-4" id="studentTabs" role="tablist">
+                    <ul class="nav nav-tabs mb-5 fw-bold" id="studentTabs" role="tablist style="font-size: 1.1rem;"">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details"
                                 type="button" role="tab">Details</button>
@@ -45,6 +45,8 @@
                         </li>
                     </ul>
 
+
+
                     <div class="tab-content" id="studentTabContent">
                         {{-- Details Tab --}}
                         <div class="tab-pane fade show active" id="details" role="tabpanel">
@@ -54,22 +56,24 @@
                                 @method('PUT')
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label">First Name</label>
-                                        <input type="text" name="first_name" class="form-control form-control-lg"
+                                        <label class="form-label fw-bold text-dark">First Name</label>
+                                        <input type="text" name="first_name"
+                                            class="form-control form-control-lg shadow-sm"
                                             value="{{ $student->first_name }}" required>
                                     </div>
+
                                     <div class="col-md-6">
-                                        <label class="form-label">Last Name</label>
+                                        <label class="form-label fw-bold text-dark">Last Name</label>
                                         <input type="text" name="last_name" class="form-control form-control-lg"
                                             value="{{ $student->last_name }}" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Email</label>
+                                        <label class="form-label fw-bold text-dark">Email</label>
                                         <input type="email" name="email" class="form-control form-control-lg"
                                             value="{{ $student->email }}" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-group"> <label for="phone" class="form-label">Phone</label>
+                                        <div class="form-group"> <label for="phone" class="form-label fw-bold text-dark">Phone</label>
                                             <div class="input-group"> <select name="phone_code"
                                                     class="form-select form-select-lg" style="max-width: 90px;">
                                                     <option value="+91">+91</option>
@@ -80,12 +84,12 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Date of Birth</label>
+                                        <label class="form-label fw-bold text-dark">Date of Birth</label>
                                         <input type="date" name="dob" class="form-control form-control-lg"
                                             value="{{ $student->dob }}">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Avatar</label>
+                                        <label class="form-label fw-bold text-dark">Avatar</label>
                                         <input type="file" name="avatar" class="form-control form-control-lg">
                                         @if ($student->avatar)
                                             <img src="{{ asset('storage/' . $student->avatar) }}" alt="Avatar"
@@ -94,7 +98,7 @@
 
                                     </div>
                                     <div class="col-md-12">
-                                        <label class="form-label">Address</label>
+                                        <label class="form-label fw-bold text-dark">Address</label>
                                         <input type="text" name="address" class="form-control form-control-lg"
                                             value="{{ $student->address }}">
                                     </div>
@@ -156,8 +160,9 @@
 
                                 <div>
                                     <button id="btn-add-class"
-                                        class="btn btn-light border py-3 px-3 d-flex align-items-center gap-2 rounded-3"> +
-                                        Add Class</button>
+                                        class="btn btn-light border py-3 px-3 d-flex align-items-center gap-2 rounded-3">
+                                        <i class="fa-notdog fa-solid fa-plus"></i>
+                                        Class</button>
                                 </div>
                             </div>
 
@@ -199,11 +204,11 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
-            const studentId = "{{ $student->id }}";
+            const studentId = "{{ $student->ulid }}"; // student ulid for routes
             const csrfToken = "{{ csrf_token() }}";
 
             let savedSchool = JSON.parse('{!! addslashes(json_encode($student->school ?? null)) !!}');
-            let selectedSchoolId = null;
+            let selectedSchoolId = null; // this will hold the school's ULID
 
             const countrySelect = $('#select-country');
             const stateSelect = $('#select-state');
@@ -221,46 +226,53 @@
                 }
             });
 
-            // ✅ Helper: Ensure Save All button exists
+            // Helper: Ensure Save All button exists
             function ensureSaveAllButton() {
                 if ($('#btn-save-all').length === 0) {
                     sectionsContainer.after(`
-                <div class="text-end mt-3">
-                    <button id="btn-save-all" class="btn btn-dark px-4 py-2 rounded-3">
-                        <i class="fa-solid fa-floppy-disk me-2"></i> Save All
-                    </button>
-                </div>
-            `);
+                        <div class="text-end mt-3">
+                            <button id="btn-save-all" class="btn btn-dark px-4 py-2 rounded-3">
+                                <i class="fa-solid fa-floppy-disk me-2"></i> Save All
+                            </button>
+                        </div>
+                    `);
                 }
             }
 
             // ------------------------------ COUNTRY → STATE → SCHOOL ------------------------------
             countrySelect.on('change', function() {
-                const id = $(this).val();
+                const countryUlid = $(this).val();
                 stateSelect.html('<option value="">Select State</option>').prop('disabled', true);
                 schoolSelect.html('<option value="">Select School</option>').prop('disabled', true);
                 saveSchoolContainer.addClass('d-none');
-                if (!id) return;
-                $.getJSON(`/admin/countries/${id}/states`, data => {
+                if (!countryUlid) return;
+
+                // states endpoint expects country ulid in route param
+                $.getJSON(`/admin/countries/${countryUlid}/states`, data => {
+                    // Expect states with .ulid and .name
                     data.states?.forEach(s => stateSelect.append(
-                        `<option value="${s.id}">${s.name}</option>`));
+                        `<option value="${s.ulid}">${s.name}</option>`));
                     stateSelect.prop('disabled', false);
                 }).fail(() => alert('Error fetching states'));
             });
 
             stateSelect.on('change', function() {
-                const id = $(this).val();
+                const stateUlid = $(this).val();
                 schoolSelect.html('<option value="">Select School</option>').prop('disabled', true);
                 saveSchoolContainer.addClass('d-none');
-                if (!id) return;
-                $.getJSON(`/admin/states/${id}/schools`, data => {
+                if (!stateUlid) return;
+
+                // schools endpoint expects state identifier (ulid) in route
+                $.getJSON(`/admin/states/${stateUlid}/schools`, data => {
+                    // IMPORTANT: use school.ulid here so subsequent POST uses ulid
                     data.schools?.forEach(s => schoolSelect.append(
-                        `<option value="${s.id}" >${s.name}</option>`));
+                        `<option value="${s.ulid}">${s.name}</option>`));
                     schoolSelect.prop('disabled', false);
                 }).fail(() => alert('Error fetching schools'));
             });
 
             schoolSelect.on('change', function() {
+                // selectedSchoolId is the school's ULID now
                 selectedSchoolId = $(this).val();
                 selectedSchoolId ? saveSchoolContainer.removeClass('d-none') : saveSchoolContainer.addClass(
                     'd-none');
@@ -270,6 +282,7 @@
                 e.preventDefault();
                 if (!selectedSchoolId) return alert('Please select a school.');
 
+                // POST uses school ULID. Controller will resolve numeric id server-side.
                 $.post(`/admin/students/${studentId}/assign-school`, {
                         school_id: selectedSchoolId
                     })
@@ -281,7 +294,7 @@
                             classes: []
                         };
 
-                        // ✅ Update UI
+                        // UI
                         schoolNameSpan.text(schoolText);
                         $('#school-select-area').hide();
                         schoolActions.show();
@@ -295,17 +308,25 @@
                             showConfirmButton: false
                         });
 
-                        // ✅ Reload page after short delay to refresh everything
+                        // Reload page after short delay to refresh everything
                         setTimeout(() => {
                             location.reload();
                         }, 1300);
                     })
-                    .fail(() => Swal.fire('Error!', 'Unable to assign school.', 'error'));
+                    .fail((xhr) => {
+                        // show server error message when available
+                        let msg = 'Unable to assign school.';
+                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        Swal.fire('Error!', msg, 'error');
+                    });
             });
 
-            // If already has a school, set it up
+            // If already has a school, set it up (savedSchool contains DB object with numeric id and name)
             if (savedSchool?.id) {
-                schoolNameSpan.text(savedSchool.name);
+                // savedSchool may be an object (from blade); ensure we display name
+                schoolNameSpan.text(savedSchool.name ?? savedSchool);
                 $('#school-select-area').hide();
                 schoolActions.show();
             }
@@ -316,13 +337,18 @@
 
                 $('#select-new-class').html('<option value="">Select Class</option>');
 
-                $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}`, function(data) {
+                // savedSchool.id here may be ULID (if assigned via JS) or numeric (if page loaded with existing school)
+                const schoolIdentifier = savedSchool.id;
+
+                $.getJSON(`/admin/students/${studentId}/grades-sections/${schoolIdentifier}`, function(
+                    data) {
                     data.classes?.forEach(cl => $('#select-new-class').append(
                         `<option value="${cl.id}">${cl.name}</option>`));
                     $('#modal-add-class').modal('show');
                 });
             });
 
+            // Add Class confirm
             $('#btn-add-class-confirm').on('click', function() {
                 const classId = $('#select-new-class').val();
                 const className = $('#select-new-class option:selected').text();
@@ -336,25 +362,26 @@
                 }
 
                 const $section = $(`
-            <div class="card mb-3 class-section" data-class-id="${classId}">
-
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5>Class: ${className}</h5>
+                    <div class="card mb-3 class-section" data-class-id="${classId}">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5>Class: ${className}</h5>
+                        </div>
+                        <div class="subjects-container mb-4"></div>
+                        <button class="btn btn-light border py-4 px-3 d-flex align-items-center gap-2 rounded-2 btn-add-subject mb-2">
+                            <i class="fa-jelly fa-regular fa-plus"></i>
+                            Subject
+                        </button>
                     </div>
-                    <div class="subjects-container mb-2"></div>
-
-                </div>
-            </div>
-        `);
+                `);
                 sectionsContainer.append($section);
 
                 loadClassSubjects($section, classId);
             });
 
-
             // ------------------------------ LOAD SUBJECTS ------------------------------
             function loadClassSubjects($section, classId) {
-                $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}?class_id=${classId}`,
+                const schoolIdentifier = savedSchool.id;
+                $.getJSON(`/admin/students/${studentId}/grades-sections/${schoolIdentifier}?class_id=${classId}`,
                     function(data) {
                         const $container = $section.find('.subjects-container');
                         $container.empty();
@@ -371,7 +398,6 @@
                         const $newRow = generateSubjectRow(subjects, grades);
                         $container.append($newRow);
 
-                        // Trigger smooth animation (using CSS class)           &times;</button>
                         setTimeout(() => $newRow.addClass('show'), 10);
                     });
             }
@@ -380,33 +406,36 @@
             function generateSubjectRow(subjects = [], grades = [], selectedSubjectId = '', selectedGradeId = '',
                 minScore = '', maxScore = '') {
                 return $(`
-                    <div class="row g-2 mb-2 align-items-center subject-grade-row smooth-appear  ">
+                    <div class="row g-2 mb-2 align-items-center subject-grade-row smooth-appear">
                         <div class="col-md-4">
-                           <select class="form-select form-select-sm subject-select" style="font-weight:700; color:#212529;">
+                            <select class="form-select form-select-sm subject-select" style="font-weight:700; color:#212529;">
                                 <option value="">Select Subject</option>
                                 ${subjects.map(s => `<option value="${s.id}" ${s.id == selectedSubjectId ? 'selected' : ''}>${s.name}</option>`).join('')}
                             </select>
                         </div>
                         <div class="col-md-3">
-                           <select class="form-select form-select-sm grade-select" style="font-weight:700; color:#212529;">
+                            <select class="form-select form-select-sm grade-select" style="font-weight:700; color:#212529;">
                                 <option value="">Select Grade</option>
                                 ${grades.map(g => `<option value="${g.id}" data-min="${g.min_score}" data-max="${g.max_score}" ${g.id == selectedGradeId ? 'selected' : ''}>${g.grade}</option>`).join('')}
                             </select>
                         </div>
                         <div class="col-md-3">
-                       <input type="text" class="form-control form-control-sm score-range" value="${minScore}-${maxScore}" readonly>
-                                <input type="hidden" name="min_score[]" value="${minScore}">
-                                <input type="hidden" name="max_score[]" value="${maxScore}">
+                            <select class="form-select form-select-sm range-select" style="font-weight:700; color:#212529;">
+                                <option value="">Select Range</option>
+                                ${grades.map(g => `<option value="${g.id}" data-min="${g.min_score}" data-max="${g.max_score}" ${g.id == selectedGradeId ? 'selected' : ''}>${g.min_score}-${g.max_score}</option>`).join('')}
+                            </select>
+                            <input type="hidden" name="min_score[]" value="${minScore}">
+                            <input type="hidden" name="max_score[]" value="${maxScore}">
                         </div>
-
                         <div class="col-md-1 text-end">
                             <button class="btn btn-light btn-sm rounded-5 btn-delete-subject">
-                        <i class="fa-solid fa-trash-can"></i>
+                                <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </div>
                     </div>
-    `);
+                `);
             }
+
             // ------------------------------ LOAD EXISTING GRADES ------------------------------
             if (savedSchool?.id) {
                 $.getJSON(`/admin/students/${studentId}/grades-sections/${savedSchool.id}?load_existing=1`,
@@ -415,25 +444,27 @@
 
                         savedClasses.forEach(cls => {
                             const $section = $(`
-                    <div class="card mb-3 class-section" data-class-id="${cls.id}">
-                        <div class="p-4 bg-light border rounded-4 mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h4>Class: ${cls.name}</h4>
-                                <button class="btn btn-light border py-2 px-2 rounded-3 btn-delete-section">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </div>
-                            <div class="subjects-container mb-4"></div>
-                            <button class="btn btn-light border py-3 px-3 d-flex align-items-center gap-2 rounded-2 btn-add-subject mb-2">+ Add Subject</button>
-                        </div>
-                    </div>
-                `);
+                                <div class="card mb-3 class-section" data-class-id="${cls.id}">
+                                    <div class="p-4 bg-light border rounded-4 mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h4>Class: ${cls.name}</h4>
+                                            <button class="btn btn-light border py-2 px-2 rounded-3 btn-delete-section">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                        <div class="subjects-container mb-4"></div>
+                                        <button class="btn btn-dark border py-3 px-3 d-flex align-items-center gap-2 rounded-2 btn-add-subject mb-2">
+                                            <i class="fa-jelly fa-regular fa-plus"></i>
+                                            Subject
+                                        </button>
+                                    </div>
+                                </div>
+                            `);
 
                             sectionsContainer.append($section);
                             const $container = $section.find('.subjects-container');
 
                             cls.subjects.forEach(sub => {
-                                // Fallback min/max if null: use the grade scale
                                 const gradeInfo = data.grades.find(g => g.id == sub.grade_id) ||
                                 {};
                                 const minScore = sub.min_score ?? gradeInfo.min_score ?? '';
@@ -449,41 +480,35 @@
                                 );
 
                                 $container.append($row);
-
-                                // Set the score-range visible + hidden inputs
-                                $row.find('.score-range').val(
-                                    minScore !== '' && maxScore !== '' ?
-                                    `${minScore}-${maxScore}` : ''
-                                );
                                 $row.find('input[name="min_score[]"]').val(minScore);
                                 $row.find('input[name="max_score[]"]').val(maxScore);
                             });
                         });
 
-                        // Add a single "Save All" button at the bottom if not exists
                         if ($('#btn-save-all').length === 0) {
                             sectionsContainer.after(`
-                    <div class="text-end mt-3">
-                        <button id="btn-save-all" class="btn btn-dark">Save All</button>
-                    </div>
-                `);
+                                <div class="text-end mt-3">
+                                    <button id="btn-save-all" class="btn btn-dark">Save All</button>
+                                </div>
+                            `);
                         }
                     }
                 );
             }
+
             // ------------------------------ ADD SUBJECT ------------------------------
             sectionsContainer.on('click', '.btn-add-subject', function() {
                 const $section = $(this).closest('.class-section');
                 const classId = $section.data('class-id');
 
+                const schoolIdentifier = savedSchool.id;
                 $.getJSON(
-                    `/admin/students/${studentId}/grades-sections/${savedSchool.id}?class_id=${classId}`,
+                    `/admin/students/${studentId}/grades-sections/${schoolIdentifier}?class_id=${classId}`,
                     function(data) {
                         const $container = $section.find('.subjects-container');
                         const subjects = data.subjects || [];
                         const grades = data.grades || [];
                         $container.append(generateSubjectRow(subjects, grades));
-
                     });
             });
 
@@ -494,14 +519,12 @@
                 if (!selectedSubjectId) return;
 
                 const $section = $this.closest('.class-section');
-                const classId = $section.data('class-id');
 
-                // Check if this subject is already used in this class
                 let duplicate = false;
                 $section.find('.subject-select').not($this).each(function() {
                     if ($(this).val() === selectedSubjectId) {
                         duplicate = true;
-                        return false; // break loop
+                        return false;
                     }
                 });
 
@@ -511,10 +534,9 @@
                         title: 'Duplicate Subject',
                         text: 'This subject has already been added for this class.',
                     });
-                    $this.val(''); // Reset the dropdown
+                    $this.val('');
                 }
             });
-
 
             // ------------------------------ DELETE SUBJECT ------------------------------
             sectionsContainer.on('click', '.btn-delete-subject', function() {
@@ -590,49 +612,44 @@
                 });
             });
 
-            // ------------------------------ AUTO-FILL RANGE FIELD ------------------------------
+            // When grade changes → update range
             sectionsContainer.on('change', '.grade-select', function() {
                 const $row = $(this).closest('.subject-grade-row');
-                const $selectedOption = $(this).find('option:selected');
+                const $selected = $(this).find('option:selected');
 
-                const min = $selectedOption.data('min') ?? '';
-                const max = $selectedOption.data('max') ?? '';
+                const min = $selected.data('min') ?? '';
+                const max = $selected.data('max') ?? '';
 
-                if (min !== '' && max !== '') {
-                    // Show range like "80-90"
-                    $row.find('.score-range').val(`${min}-${max}`);
-                    $row.find('input[name="min_score[]"]').val(min);
-                    $row.find('input[name="max_score[]"]').val(max);
-                } else {
-                    // Clear if none selected
-                    $row.find('.score-range').val('');
-                    $row.find('input[name="min_score[]"]').val('');
-                    $row.find('input[name="max_score[]"]').val('');
-                }
+                $row.find('.range-select').val($selected.val());
+                $row.find('input[name="min_score[]"]').val(min);
+                $row.find('input[name="max_score[]"]').val(max);
+            });
+
+            // When range changes → update grade
+            sectionsContainer.on('change', '.range-select', function() {
+                const $row = $(this).closest('.subject-grade-row');
+                const $selected = $(this).find('option:selected');
+
+                const min = $selected.data('min') ?? '';
+                const max = $selected.data('max') ?? '';
+
+                $row.find('.grade-select').val($selected.val());
+                $row.find('input[name="min_score[]"]').val(min);
+                $row.find('input[name="max_score[]"]').val(max);
             });
 
             // ------------------------------ SAVE ALL LOGIC ------------------------------
             $(document).on('click', '#btn-save-all', function() {
-                console.log(" Save All button clicked");
-
                 const allData = [];
 
                 $('.class-section').each(function() {
                     const classId = $(this).data('class-id');
-                    console.log("Class ID:", classId);
 
                     $(this).find('.subjects-container .subject-grade-row').each(function() {
                         const subjectId = $(this).find('.subject-select').val();
                         const gradeId = $(this).find('.grade-select').val();
                         const minScore = $(this).find('input[name="min_score[]"]').val();
                         const maxScore = $(this).find('input[name="max_score[]"]').val();
-
-                        console.log("  ↳ Row Data:", {
-                            subjectId,
-                            gradeId,
-                            minScore,
-                            maxScore
-                        });
 
                         if (!subjectId || !gradeId) return;
 
@@ -646,10 +663,7 @@
                     });
                 });
 
-                console.log("Data to send to backend:", allData);
-
                 if (!allData.length) {
-                    console.warn("No data found to save.");
                     return Swal.fire('Warning', 'No subjects/grades to save!', 'warning');
                 }
 
@@ -661,11 +675,9 @@
                         grades: allData
                     },
                     success: function(res) {
-                        console.log("Save success:", res);
                         Swal.fire('Success', 'All grades saved successfully!', 'success');
                     },
                     error: function(err) {
-                        console.error(" Save failed:", err.responseJSON);
                         let msg = 'Something went wrong while saving.';
                         if (err.responseJSON && err.responseJSON.errors) {
                             msg = Object.values(err.responseJSON.errors).flat().join('<br>');
@@ -676,7 +688,6 @@
                     }
                 });
             });
-
 
         });
     </script>

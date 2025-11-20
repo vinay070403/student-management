@@ -12,25 +12,39 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
+
     <!-- SkyDash CSS with fallbacks -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}"
         onerror="this.href='https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.1/iconfont/material-icons.css'">
     <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}"
         onerror="this.href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css'">
+
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- SkyDash Theme CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}"
         onerror="this.href='https://demo.bootstrapdash.com/skydash-free/css/style.css'">
+
+    <!-- Favicon -->
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}"
         onerror="this.href='https://demo.bootstrapdash.com/skydash-free/images/favicon.png'">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css">
+
+    <!-- Existing Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Select2 CSS -->
+
+    <!-- ⭐ NEW: Full FontAwesome (solid + regular + brands + more) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Boxicons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
     @yield('styles')
 
-<style>
+    <style>
         /* -------------------- Font Integration -------------------- */
         body {
             font-family: "Montserrat", sans-serif;
@@ -39,19 +53,15 @@
             font-style: normal;
         }
 
-        /* You can also apply heavier/lighter font weights if needed */
         .montserrat-bold {
-            font-family: "Montserrat", sans-serif;
             font-weight: 700;
         }
 
         .montserrat-medium {
-            font-family: "Montserrat", sans-serif;
             font-weight: 500;
         }
 
         .montserrat-light {
-            font-family: "Montserrat", sans-serif;
             font-weight: 300;
         }
 
@@ -113,10 +123,8 @@
         .nav-profile-img {
             width: 32px;
             height: 32px;
-            border-radius: 0;
             object-fit: cover;
             border: 1px solid #e9ecef;
-            vertical-align: middle;
         }
 
         @media (max-width: 991px) {
@@ -140,8 +148,8 @@
     </style>
 </head>
 
-
 <body>
+
     <!-- Header -->
     @include('layouts.partials.header')
 
@@ -150,7 +158,6 @@
 
     <!-- Main Panel -->
     <div class="main-panel">
-
         <div class="content-wrapper">
             @yield('content')
         </div>
@@ -159,18 +166,21 @@
     <!-- Footer -->
     @include('layouts.partials.footer')
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Scripts -->
+    <!-- JS Dependencies -->
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"
         onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'"></script>
+
     <script src="{{ asset('assets/js/off-canvas.js') }}"
         onerror="this.src='https://demo.bootstrapdash.com/skydash-free/js/off-canvas.js'"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
-    <!-- Select2 JS -->
+
+    <!-- Select2 -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- Tingle -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js"></script>
+
     @stack('scripts')
+
     @include('sweetalert2::index')
 
 </body>
