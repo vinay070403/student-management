@@ -4,12 +4,32 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\App;
 
 class School extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'state_id', 'country_id', 'address', 'zipcode'];
+    protected $fillable = ['name', 'state_id', 'country_id', 'address', 'zipcode', 'ulid'];
+
+    // Automatically generate ULID when creating a new record
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (!$model->ulid) {
+                $model->ulid = Str::ulid();
+            }
+        });
+    }
+
+    // Use ULID for route model binding
+    public function getRouteKeyName(): string
+    {
+        return 'ulid';
+    }
 
     public function state()
     {
@@ -38,6 +58,7 @@ class School extends Model
 
     public function classes()
     {
-        return $this->hasMany(ClassModel::class);
+        return $this->hasMany(SchoolClass::class,  'school_id', 'id');
+        // return $this->hasMany(\App\Models\SchoolClass::class);
     }
 }

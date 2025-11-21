@@ -10,24 +10,20 @@
                 <h3 class="fw-semibold text-dark mb-0">
                     <i class="bi bi-pencil-square me-2"></i>Edit Class
                 </h3>
-                {{-- <a href="{{ route('schools.classes.index', $school->id) }}" class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
-                ← Back
-            </a> --}}
-                <a href="{{ route('schools.edit', $school->id) }}"
+                <a href="{{ route('schools.edit', $school->ulid) }}"
                     class="btn btn-dark px-5 py-3 mb-3 rounded-3 fw-bold shadow-sm">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
-
             </div>
 
-            <!-- Main Bordered Panel -->
+            <!-- Main Panel -->
             <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
-                <form action="{{ route('schools.classes.update', [$school->id, $class->id]) }}" method="POST"
-                    class="row g-3">
+
+                <form action="{{ route('schools.classes.update', [$school, $class->ulid]) }}" method="POST">
                     @csrf
                     @method('PUT')
 
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="name" class="form-label">Class Name <span class="text-danger">*</span></label>
                         <input type="text" name="name" id="name"
                             class="form-control form-control-lg @error('name') is-invalid @enderror"
@@ -45,6 +41,8 @@
                     </div>
                 </form>
 
+
             </div>
         </div>
-    @endsection
+    </div>
+@endsection

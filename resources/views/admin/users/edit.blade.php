@@ -35,7 +35,7 @@
                 @endif
                 <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
 
-                    <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data"
+                    <form action="{{ route('users.update', $user) }}" method="POST" enctype="multipart/form-data"
                         class="needs-validation" novalidate>
                         @csrf
                         @method('PUT')
@@ -43,7 +43,7 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="first_name" class="form-label">First Name</label>
+                                    <label for="first_name" class="form-label fw-bold text-dark">First Name</label>
                                     <input type="text" name="first_name" class="form-control form-control-lg" required
                                         value="{{ $user->first_name }}">
                                 </div>
@@ -51,7 +51,7 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="last_name" class="form-label">Last Name</label>
+                                    <label for="last_name" class="form-label fw-bold text-dark">Last Name</label>
                                     <input type="text" name="last_name" class="form-control form-control-lg" required
                                         value="{{ $user->last_name }}">
                                 </div>
@@ -59,14 +59,15 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="email" class="form-label">Email</label>
+                                    <label for="email" class="form-label fw-bold text-dark">Email</label>
                                     <input type="email" name="email" class="form-control form-control-lg" required
                                         value="{{ $user->email }}">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group"> <label for="phone" class="form-label">Phone</label>
+                                <div class="form-group"> <label for="phone"
+                                        class="form-label fw-bold text-dark">Phone</label>
                                     <div class="input-group"> <select name="phone_code" class="form-select form-select-lg"
                                             style="max-width: 90px;">
                                             <option value="+91">+91</option>
@@ -78,14 +79,14 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="dob" class="form-label">Date of Birth</label>
+                                    <label for="dob" class="form-label fw-bold text-dark">Date of Birth</label>
                                     <input type="date" name="dob" class="form-control form-control-lg"
                                         value="{{ $user->dob }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="avatar" class="form-label fw-semibold">Avatar</label>
+                                    <label for="avatar" class="form-label fw-bold text-dark fw-semibold">Avatar</label>
                                     <input type="file" name="avatar" class="form-control form-control-lg"
                                         accept="image/*">
 
@@ -112,7 +113,7 @@
 
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label for="address" class="form-label">Address</label>
+                                    <label for="address" class="form-label fw-bold text-dark">Address</label>
                                     <input type="text" name="address" class="form-control form-control-lg"
                                         value="{{ $user->address }}">
                                 </div>
@@ -122,7 +123,7 @@
                             <!-- 🆕 New Password -->
                             <div class="col-6">
                                 <div class="form-group">
-                                    <label for="password" class="form-label">New Password</label>
+                                    <label for="password" class="form-label fw-bold text-dark">New Password</label>
                                     <input type="password" name="password" class="form-control form-control-lg"
                                         placeholder="Enter new password">
                                 </div>
@@ -131,7 +132,8 @@
                             <!-- 🔁 Confirm New Password -->
                             <div class="col-6">
                                 <div class="form-group">
-                                    <label for="password_confirmation" class="form-label">Confirm New Password</label>
+                                    <label for="password_confirmation" class="form-label fw-bold text-dark">Confirm New
+                                        Password</label>
                                     <input type="password" name="password_confirmation"
                                         class="form-control form-control-lg" placeholder="Confirm new password">
                                 </div>

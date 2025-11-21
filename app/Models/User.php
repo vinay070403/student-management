@@ -2,22 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'first_name',
         'last_name',
@@ -33,24 +27,14 @@ class User extends Authenticatable
         'password',
         'interest',
         'goal',
-
+        'ulid', // ✅ Add ULID to fillable if you’ll set manually anywhere
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -59,15 +43,37 @@ class User extends Authenticatable
         ];
     }
 
+    // ✅ Automatically generate ULID on create
+    protected static function booted()
+    {
+        static::creating(function ($user) {
+            if (empty($user->ulid)) {
+                $user->ulid = (string) Str::ulid();
+            }
+        });
+    }
+
+    // ✅ Tell Laravel to use ULID for route model binding
+    public function getRouteKeyName()
+    {
+        return 'ulid';
+    }
+
+    
+
+    // ✅ Accessor for avatar URL
     public function getAvatarUrlAttribute()
     {
-        return $this->avatar ? asset('storage/avatars/' . $this->avatar) : asset('assets/images/default-avatar.png'); // Fallback image
+        return $this->avatar
+            ? asset('storage/avatars/' . $this->avatar)
+            : asset('assets/images/default-avatar.png');
     }
 
     public function school()
     {
         return $this->belongsTo(School::class);
     }
+
     public function grades()
     {
         return $this->hasMany(StudentGrade::class, 'student_id');

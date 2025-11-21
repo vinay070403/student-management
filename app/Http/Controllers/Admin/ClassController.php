@@ -1,22 +1,54 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Class\StoreClassRequest;
 use App\Http\Requests\Class\UpdateClassRequest;
-use App\Models\ClassModel;
+use App\Models\SchoolClass;
 use App\Models\School;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class ClassController extends Controller
 {
 
-    public function index(School $school)
+    // public function index(School $school)
+    // {
+    //     $classes = $school->classes()->get(); // Use relationship
+    //     return view('admin.schools.classes.index', compact('school', 'classes'));
+    // }
+
+
+    public function index(Request $request, School $school)
     {
-        $classes = $school->classes()->get(); // Use relationship
+        if ($request->ajax()) {
+            $classes = $school->classes()->select('id', 'ulid', 'name', 'created_at');
+
+            return DataTables::of($classes)
+                ->addColumn('actions', function ($class) use ($school) {
+                    return '
+
+                    <a href="' . route('schools.classes.edit', [$school->ulid, $class->ulid]) . '"
+                    class="btn btn-sm btn-primary">
+                    Edit
+                    </a>
+
+                    <button data-id="' . $class->ulid . '"
+                            class="btn btn-sm btn-danger delete-class">
+                        Delete
+                    </button>
+                ';
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
+        }
+
+        $classes = $school->classes()->get(); // fallback for non-AJAX
         return view('admin.schools.classes.index', compact('school', 'classes'));
     }
+
 
     public function create(School $school)
     {
@@ -33,14 +65,15 @@ class ClassController extends Controller
             ->with('success', 'Class added!');
     }
 
-    public function edit(School $school, ClassModel $class)
+    public function edit(School $school, SchoolClass $class)
     {
+        //dd($school, $class); // Make sure both are loaded
         return view('admin.schools.classes.edit', compact('school', 'class'));
         // $schools = School::all();
         // return view('admin.schools.classes.edit', compact('school', 'class', 'schools'));
     }
 
-    public function update(UpdateClassRequest $request, School $school, ClassModel $class)
+    public function update(UpdateClassRequest $request, School $school, SchoolClass $class)
     {
         $class->update($request->validated());
 
@@ -49,7 +82,7 @@ class ClassController extends Controller
             ->with('success', 'Class updated!');
     }
 
-    public function destroy(School $school, ClassModel $class)
+    public function destroy(School $school, SchoolClass $class)
     {
         try {
             // 🟢 Delete all student grades associated with this class
