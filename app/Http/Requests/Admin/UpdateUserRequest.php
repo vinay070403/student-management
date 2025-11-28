@@ -27,9 +27,9 @@ class UpdateUserRequest extends FormRequest
             'first_name' => 'required|string|max:50|min:2',
             'last_name'  => 'required|string|max:50|min:2',
             'email'      => [
-                'required',
-                'string',
-                'email',
+            'required',
+            'string',
+            'email',
                 Rule::unique('users', 'email')->ignore($this->route('user')),
             ],
             'phone'         => 'nullable|string|max:20',

@@ -41,13 +41,17 @@
                                 <div class="form-group">
                                     <label for="name" class="form-label fw-bold text-dark">State Name</label>
                                     <input type="text" name="name" class="form-control form-control-lg"
-                                        placeholder="Enter state name" required>
+                                        placeholder="Enter state name" data-required="true">
+
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="country_id" class="form-label fw-bold text-dark">Country</label>
-                                    <select name="country_id" class="form-control form-control-lg" required>
+
+                                    <select id="country_id" name="country_id"
+                                        class="form-control form-control-lg select2-country" data-required="true">
+                                        <option value="">Please Select Country</option>
                                         @foreach ($countries as $country)
                                             <option value="{{ $country->id }}">{{ $country->name }}</option>
                                         @endforeach
@@ -55,7 +59,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="text-end mt-4">
                             <button type="submit" class="btn btn-dark px-4 py-3 d-inline-flex btn-lg">Add State</button>
                         </div>
@@ -108,4 +111,52 @@
             background-color: #fafafa;
         }
     </style>
+@endpush
+@push('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            // On form submit
+            $('form.needs-validation').on('submit', function(e) {
+                let isValid = true;
+
+                $(this).find('input[data-required], select[data-required], textarea[data-required]').each(
+                    function() {
+                        const value = $(this).val().trim();
+                        if (value === '') {
+                            isValid = false;
+
+                            // Red border
+                            $(this).css('border', '1px solid red');
+
+                            // Show error message below field
+                            if (!$(this).next('.jq-error').length) {
+                                $(this).after(
+                                    '<div class="jq-error text-danger mt-1">Please fill this field</div>'
+                                );
+                            }
+                        } else {
+                            // Remove error
+                            $(this).css('border', '');
+                            $(this).next('.jq-error').remove();
+                        }
+                    });
+
+                if (!isValid) {
+                    e.preventDefault(); // Prevent form submission
+                }
+            });
+
+            // Remove error on input / select change
+            $('input[data-required], select[data-required], textarea[data-required]').on('input change',
+                function() {
+                    if ($(this).val().trim() !== '') {
+                        $(this).css('border', '');
+                        $(this).next('.jq-error').remove();
+                    }
+                });
+
+        });
+    </script>
 @endpush

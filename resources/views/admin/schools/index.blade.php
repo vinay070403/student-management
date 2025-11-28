@@ -117,7 +117,7 @@
                             },
                         ],
                         order: [
-                            [2, 'desc']
+                            [1, 'desc']
                         ],
                         searching: false,
                         responsive: true,
@@ -125,6 +125,10 @@
                         lengthChange: true,
                         pageLength: 10,
                         dom: '<"table-top">rt<"d-flex justify-content-between align-items-center mt-4"lfp>',
+                        createdRow: function(row, data, dataIndex) {
+                            $('td', row).eq(0).addClass('fw-bold text-dark');
+                            $('td', row).eq(1).addClass('fw-bold text-muted');
+                        }
 
                     });
 

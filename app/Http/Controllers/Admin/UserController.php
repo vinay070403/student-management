@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Http\Requests\Admin\StoreUserRequest;
@@ -15,10 +14,26 @@ use SweetAlert2\Laravel\Swal;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
-class UserController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class UserController extends Controller // implements HasMiddleware
 {
     // ----------------------------------------------------------------
-    // ✅ USER MANAGEMENT (Admin Panel)
+    // 🔐 Permission Middleware (Laravel 12)
+    // ----------------------------------------------------------------
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:user-list|user-create|user-edit|user-delete', only: ['index', 'show']),
+            new Middleware('permission:user-create', only: ['create', 'store']),
+            new Middleware('permission:user-edit', only: ['edit', 'update']),
+            new Middleware('permission:user-delete', only: ['destroy', 'bulkDelete']),
+        ];
+    }
+
+    // ----------------------------------------------------------------
+    // 📌 USER MANAGEMENT (Admin Panel)
     // ----------------------------------------------------------------
 
     public function index(Request $request)
@@ -29,13 +44,11 @@ class UserController extends Controller
             })
                 ->select('id', 'ulid', 'first_name', 'last_name', 'email', 'avatar', 'status', 'created_at');
 
-
             $search = $request->input('custom_search');
             if (!empty($search)) {
                 $users->where(function ($q) use ($search) {
                     $q->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('last_name', 'like', "%{$search}%");
                 });
             }
 
@@ -46,44 +59,42 @@ class UserController extends Controller
                 ->addColumn('user', function ($user) {
                     $avatar = $user->avatar ? asset('storage/' . $user->avatar) : asset('assets/images/default-avatar.png');
                     return '
-                <div class="d-flex align-items-center gap-2">
-                    <img src="' . $avatar . '" width="42" height="42" style="object-fit:cover; border-radius:0; border:1px solid #dee2e6;">
-
-                    <div style="line-height: 1.4;">
-                        <div class="fw-bold text-dark" style="font-size: 15px;">' . e($user->first_name . ' ' . $user->last_name) . '</div>
-                       <div class="text-muted" style="font-size: 13px; margin-top: 3px;">' . e($user->email) . '</div>
-                    </div>
-                </div>';
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="' . $avatar . '" width="42" height="42" style="object-fit:cover; border:1px solid #dee2e6;">
+                            <div style="line-height:1.4;">
+                                <div class="fw-bold text-dark" style="font-size:15px;">' . e($user->first_name . ' ' . $user->last_name) . '</div>
+                                <div class="text-muted" style="font-size:13px; margin-top:3px;">' . e($user->email) . '</div>
+                            </div>
+                        </div>';
                 })
                 ->addColumn('status', function ($user) {
                     $checked = $user->status ? 'checked' : '';
                     return '
-    <label class="status-toggle">
-        <span>Inactive</span>
-        <input type="checkbox" class="statusToggle" data-id="' . $user->ulid . '" ' . $checked . '>
-        <span class="slider"></span>
-        <span>Active</span>
-    </label>
-    ';
-                })
+                        <label class="btn btn-sm btn-toggle ' . ($user->status ? 'btn-success' : 'btn-secondary') . '">
 
+                            <span>Active</span>
+                        </label>
+                    ';
+                })
                 ->addColumn('created_at', function ($user) {
                     return $user->created_at ? $user->created_at->format('d M Y, h:i A') : '';
                 })
                 ->addColumn('actions', function ($user) {
                     return '
-                <div class="d-flex justify-content-end gap-2">
-                    <a href="' . route('users.edit', $user->ulid) . '"
-                       class="btn btn-outline-old-dark btn-sm d-flex align-items-center justify-content-center"
-                       style="width:36px; height:36px; border-radius:8px;" title="Edit">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                    </a>
-                    <button type="button"
-                       class="btn btn-outline-old-dark btn-sm d-flex align-items-center justify-content-center delete-user-btn"
-                       style="width:36px; height:36px; border-radius:8px;" data-id="' . $user->ulid . '" title="Delete">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </div>';
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="' . route('users.edit', $user->ulid) . '"
+                                class="btn btn-outline-old-dark btn-sm"
+                                style="width:36px; height:36px; border-radius:8px;" title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+
+                            <button type="button"
+                                class="btn btn-outline-old-dark btn-sm delete-user-btn"
+                                style="width:36px; height:36px; border-radius:8px;"
+                                data-id="' . $user->ulid . '" title="Delete">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>';
                 })
                 ->rawColumns(['checkbox', 'user', 'status', 'actions'])
                 ->make(true);
@@ -92,17 +103,16 @@ class UserController extends Controller
         return view('admin.users.index');
     }
 
-
-    // ------------------------
-    // Create user form
-    // ------------------------
+    // ----------------------------------------------------------------
+    // 🚀 Create User Form
+    // ----------------------------------------------------------------
     public function create()
     {
         return view('admin.users.create');
     }
 
     // ----------------------------------------------------------------
-    // ✅ Store New User
+    // 🧩 Store New User
     // ----------------------------------------------------------------
     public function store(StoreUserRequest $request)
     {
@@ -121,14 +131,14 @@ class UserController extends Controller
 
         $user->save();
 
-        //  Role assign from form input (radio / card / button)
+        // Assign Role
         if ($request->filled('role')) {
             $user->assignRole($request->role);
         } else {
-            $user->assignRole('Admin'); // fallback (optional)
+            $user->assignRole('Admin');
         }
 
-        // Optionally: Give permissions based on role
+        // Optional permissions
         if ($request->role === 'Super Admin') {
             $user->givePermissionTo(\Spatie\Permission\Models\Permission::all());
         } elseif ($request->role === 'Admin') {
@@ -145,7 +155,7 @@ class UserController extends Controller
     }
 
     // ----------------------------------------------------------------
-    // ✅ Edit User
+    // ✏ Edit User
     // ----------------------------------------------------------------
     public function edit(User $user)
     {
@@ -153,7 +163,7 @@ class UserController extends Controller
     }
 
     // ----------------------------------------------------------------
-    // ✅ Update User
+    // 🔄 Update User
     // ----------------------------------------------------------------
     public function update(UpdateUserRequest $request, User $user)
     {
@@ -181,11 +191,11 @@ class UserController extends Controller
 
         Swal::toastSuccess(['title' => 'User updated successfully!']);
 
-        return redirect()->route('users.index', $user->ulid);
+        return redirect()->route('users.index');
     }
 
     // ----------------------------------------------------------------
-    // ✅ Update User Status (Active / Inactive) via AJAX
+    // 🟢 Update User Status (AJAX)
     // ----------------------------------------------------------------
     public function updateStatus(Request $request, $ulid)
     {
@@ -200,12 +210,12 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => "User status updated to {$request->status}.",
-            'status' => $user->status,
+            'status'  => $user->status,
         ]);
     }
 
     // ----------------------------------------------------------------
-    // ✅ Remove User Avatar via AJAX
+    // 🖼 Remove Avatar (AJAX)
     // ----------------------------------------------------------------
     public function removeAvatar(User $user)
     {
@@ -223,7 +233,7 @@ class UserController extends Controller
     }
 
     // ----------------------------------------------------------------
-    // ✅ Delete User
+    // 🗑 Delete User
     // ----------------------------------------------------------------
     public function destroy(User $user)
     {
@@ -237,7 +247,7 @@ class UserController extends Controller
     }
 
     // ----------------------------------------------------------------
-    // ✅ Bulk Delete Users
+    // 🔥 Bulk Delete Users
     // ----------------------------------------------------------------
     public function bulkDelete(BulkDeleteUserRequest $request)
     {

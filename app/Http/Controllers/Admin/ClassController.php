@@ -10,17 +10,24 @@ use App\Models\School;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ClassController extends Controller
+
+class ClassController extends Controller implements HasMiddleware
 {
-
-    // public function index(School $school)
-    // {
-    //     $classes = $school->classes()->get(); // Use relationship
-    //     return view('admin.schools.classes.index', compact('school', 'classes'));
-    // }
-
-
+    /**
+     * Permission middleware for this controller
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:class-list', only: ['index', 'show']),
+            new Middleware('permission:class-create', only: ['create', 'store']),
+            new Middleware('permission:class-edit', only: ['edit', 'update']),
+            new Middleware('permission:class-delete', only: ['destroy', 'bulkDelete']),
+        ];
+    }
     public function index(Request $request, School $school)
     {
         if ($request->ajax()) {
@@ -28,28 +35,34 @@ class ClassController extends Controller
 
             return DataTables::of($classes)
                 ->addColumn('actions', function ($class) use ($school) {
+
+                    $editUrl = route('schools.classes.edit', [$school->ulid, $class->ulid]);
+                    $deleteUrl = route('schools.classes.destroy', [$school->ulid, $class->ulid]);
+
                     return '
+                    <div class="btn-group" role="group">
+                        <a href="' . $editUrl . '"
+                           class="btn btn-sm btn-primary">
+                            Edit
+                        </a>
 
-                    <a href="' . route('schools.classes.edit', [$school->ulid, $class->ulid]) . '"
-                    class="btn btn-sm btn-primary">
-                    Edit
-                    </a>
-
-                    <button data-id="' . $class->ulid . '"
-                            class="btn btn-sm btn-danger delete-class">
-                        Delete
-                    </button>
+                        <button
+                            class="btn btn-sm btn-danger delete-class"
+                            data-url="' . $deleteUrl . '"
+                        >
+                            Delete
+                        </button>
+                    </div>
                 ';
                 })
                 ->rawColumns(['actions'])
                 ->make(true);
         }
 
-        $classes = $school->classes()->get(); // fallback for non-AJAX
+        // fallback (non-AJAX)
+        $classes = $school->classes()->get();
         return view('admin.schools.classes.index', compact('school', 'classes'));
     }
-
-
     public function create(School $school)
     {
         // $schools = School::all();
@@ -61,7 +74,7 @@ class ClassController extends Controller
         $school->classes()->create($request->validated());
 
         return redirect()
-            ->route('schools.classes.index', $school)
+            ->route('schools.edit', $school)
             ->with('success', 'Class added!');
     }
 
@@ -78,7 +91,7 @@ class ClassController extends Controller
         $class->update($request->validated());
 
         return redirect()
-            ->route('schools.classes.index', $school)
+            ->route('schools.edit', $school)
             ->with('success', 'Class updated!');
     }
 

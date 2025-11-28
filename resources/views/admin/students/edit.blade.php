@@ -29,10 +29,13 @@
                         </ul>
                     </div>
                 @endif
+
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
+
                 <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
+
                     {{-- Tabs --}}
                     <ul class="nav nav-tabs mb-5 fw-bold" id="studentTabs" role="tablist style="font-size: 1.1rem;"">
                         <li class="nav-item" role="presentation">
@@ -44,13 +47,10 @@
                                 type="button" role="tab">Grades</button>
                         </li>
                     </ul>
-
-
-
                     <div class="tab-content" id="studentTabContent">
                         {{-- Details Tab --}}
                         <div class="tab-pane fade show active" id="details" role="tabpanel">
-                            <form action="{{ route('students.update', $student->id) }}" method="POST"
+                            <form action="{{ route('students.update', $student->ulid) }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
@@ -61,7 +61,6 @@
                                             class="form-control form-control-lg shadow-sm"
                                             value="{{ $student->first_name }}" required>
                                     </div>
-
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold text-dark">Last Name</label>
                                         <input type="text" name="last_name" class="form-control form-control-lg"
@@ -73,7 +72,8 @@
                                             value="{{ $student->email }}" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-group"> <label for="phone" class="form-label fw-bold text-dark">Phone</label>
+                                        <div class="form-group"> <label for="phone"
+                                                class="form-label fw-bold text-dark">Phone</label>
                                             <div class="input-group"> <select name="phone_code"
                                                     class="form-select form-select-lg" style="max-width: 90px;">
                                                     <option value="+91">+91</option>
@@ -88,15 +88,38 @@
                                         <input type="date" name="dob" class="form-control form-control-lg"
                                             value="{{ $student->dob }}">
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold text-dark">Avatar</label>
-                                        <input type="file" name="avatar" class="form-control form-control-lg">
-                                        @if ($student->avatar)
-                                            <img src="{{ asset('storage/' . $student->avatar) }}" alt="Avatar"
-                                                class="img-thumbnail mt-2" style="max-width: 100px;">
-                                        @endif
 
+                                    <!-- Avatar Upload -->
+
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="avatar"
+                                                class="form-label fw-bold text-dark fw-semibold">Avatar</label>
+                                            <input type="file" name="avatar" class="form-control form-control-lg"
+                                                accept="image/*">
+
+                                            <div id="avatar-wrapper" class="position-relative mt-3 d-inline-block">
+                                                @if (!empty($student->avatar))
+                                                    <img src="{{ Storage::url($student->avatar) }}" id="user-avatar"
+                                                        alt="User Avatar" class="img-thumbnail shadow-sm"
+                                                        style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+
+                                                    <!-- ❌ Remove Button -->
+                                                    <button type="button" id="remove-avatar-btn"
+                                                        class="btn btn-sm btn-danger position-absolute top-0 start-100 translate-middle rounded-circle"
+                                                        style="padding: 2px 6px; font-size: 12px; line-height: 1;">
+                                                        ×
+                                                    </button>
+                                                @else
+                                                    <img src="{{ asset('images/default-avatar1.jpg') }}" id="user-avatar"
+                                                        alt="Default Avatar" class="img-thumbnail shadow-sm"
+                                                        style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
+
                                     <div class="col-md-12">
                                         <label class="form-label fw-bold text-dark">Address</label>
                                         <input type="text" name="address" class="form-control form-control-lg"
@@ -112,18 +135,21 @@
                             </form>
                         </div>
 
-                        {{-- Grades Tab --}}
+                        {{---------------------------------- Grades Tab -------------------------------------- --}}
                         <div class="tab-pane fade" id="grades" role="tabpanel">
-                            <!-- <h5 class="fw-bold fs-5">Assign School</h5> -->
 
-                            @php $hasSchool = (bool) $student->school_id; @endphp
+                            @php
+                                $hasSchool = !empty($student->school_id);
+                            @endphp
 
                             {{-- Country/State/School selects --}}
                             <div id="school-select-area" class="row g-3 mb-4"
                                 @if ($hasSchool) style="display:none;" @endif>
+
                                 <div class="col-md-4">
                                     <label class="form-label">Country</label>
-                                    <select id="select-country" class="form-select">
+                                    <select id="select-country" class="form-select form-select-sm grade-select"
+                                        style="font-weight:700; color:#212529;">
                                         <option value="">Select Country</option>
                                         @foreach ($countries as $country)
                                             <option value="{{ $country->id }}">{{ $country->name }}</option>
@@ -132,13 +158,15 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">State</label>
-                                    <select id="select-state" class="form-select" disabled>
+                                    <select id="select-state" class="form-select form-select-sm grade-select"
+                                        style="font-weight:700; color:#212529;" disabled>
                                         <option value="">Select State</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">School</label>
-                                    <select id="select-school" class="form-select" disabled>
+                                    <select id="select-school" class="form-select form-select-sm grade-select"
+                                        style="font-weight:700; color:#212529;" disabled>
                                         <option value="">Select School</option>
                                     </select>
                                 </div>
@@ -147,25 +175,36 @@
                                 </div>
                             </div>
 
+                            {{-- Debug --}}
+                            {{-- <pre>
+                            School ID: {{ $student->school_id }}
+                            School Rel: {{ $student->school ? $student->school->id : 'NULL' }}
+                            Has School: {{ $hasSchool ? 'YES' : 'NO' }}
+                            </pre> --}}
+
+                            @php
+                                // prefer checking the loaded relation (null if not set)
+                                $hasSchool = (bool) ($student->school?->id ?? false);
+                            @endphp
+
                             {{-- School info + Add Class --}}
-                            <div id="school-actions" class="mb-3 d-flex align-items-center justify-content-between"
-                                @if (!$hasSchool) style="display:none;" @endif>
+                            <div id="school-actions"
+                                class="mb-3 d-flex align-items-center justify-content-between {{ $hasSchool ? '' : 'd-none' }}">
                                 <span class="fw-bold fs-4">
-                                    School : <span id="school-name">
-                                        @if ($student->school)
-                                            {{ $student->school->name }}
-                                        @endif
+                                    <label>School:</label>
+                                    <span id="school-name">
+                                        {{ $student->school ? $student->school->name : '' }}
                                     </span>
                                 </span>
 
-                                <div>
-                                    <button id="btn-add-class"
-                                        class="btn btn-light border py-3 px-3 d-flex align-items-center gap-2 rounded-3">
-                                        <i class="fa-notdog fa-solid fa-plus"></i>
-                                        Class</button>
-                                </div>
+                                <button id="btn-add-class"
+                                    class="btn btn-light border py-3 px-3 d-flex align-items-center gap-2 rounded-3"
+                                    type="button">
+                                    <i class="fa-solid fa-plus"></i> Class
+                                </button>
                             </div>
 
+                            {{-- {{ dd($hasSchool) }} --}}
                             {{-- Grades Sections Container --}}
                             <div id="grades-sections-container"></div>
 
@@ -178,7 +217,8 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <select id="select-new-class" class="form-select">
+                                            <select id="select-new-class" class="form-select form-select-sm grade-select"
+                                                style="font-weight:700; color:#212529;">
                                                 <option value="">Select Class</option>
                                             </select>
                                         </div>
@@ -189,7 +229,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -367,7 +406,7 @@
                             <h5>Class: ${className}</h5>
                         </div>
                         <div class="subjects-container mb-4"></div>
-                        <button class="btn btn-light border py-4 px-3 d-flex align-items-center gap-2 rounded-2 btn-add-subject mb-2">
+                        <button class="btn btn-light border py-2 px-3 d-flex align-items-center gap-2 rounded-2 btn-add-subject mb-2">
                             <i class="fa-jelly fa-regular fa-plus"></i>
                             Subject
                         </button>

@@ -5,13 +5,13 @@
                 <input type="checkbox" id="selectAllUsers">
             </th>
 
-            <th style="min-width: 200px;">User</th>
+            <th>User</th>
 
-            <th class="text-center" style="width: 140px;">Status</th>
+            <th>Status</th>
 
-            <th class="text-center" style="width: 150px;">Created At</th>
+            <th>Created At</th>
 
-            <th class="text-end" style="width: 120px;">Actions</th>
+            <th>Actions</th>
         </tr>
     </thead>
 

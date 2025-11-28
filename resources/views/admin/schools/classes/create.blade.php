@@ -6,10 +6,8 @@
             <div class="p-4 bg-white border-2 rounded-4 shadow-lg mb-5 mb-xl-10" style="border-color: #adb5bd;">
                 <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                     <h4 class="mb-0 fw-semibold text-dark"><i class="bi bi-plus-lg me-2"></i>Add New Class</h4>
-                    {{-- <a href="{{ route('schools.classes.index', $school->id) }}" class="btn btn-dark px-5 py-3 mb-2 rounded-3 fw-bold shadow-sm">
-                    <i class="bi bi-arrow-left"></i> Back
-                </a> --}}
-                    <a href="{{ route('schools.edit', $school->id) }}"
+
+                    <a href="{{ route('schools.edit', $school->ulid) }}"
                         class="btn btn-dark px-5 py-3 mb-3 rounded-3 fw-bold shadow-sm">
                         <i class="bi bi-arrow-left"></i> Back
                     </a>

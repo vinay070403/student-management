@@ -4,7 +4,6 @@
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.bootstrap5.css" />
-    {{-- <link href="{{ asset('assets/plugins/custom/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" /> --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     @section('content')
@@ -25,10 +24,6 @@
                 </div>
                 <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
 
-                    {{-- <div class="col-md-6 mb-3">
-                    <input type="text" id="studentSearch" class="form-control form-control-lg"
-                        placeholder="Search by name or email...">
-                </div> --}}
                     {{-- Search --}}
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div class="input-group" style="max-width: 350px;">
@@ -45,9 +40,8 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>USER</th>
-                                    {{-- <th>SCHOOL</th> --}}
-                                    <th>STATUS</th>
-                                    <th>CREATED AT</th>
+                                    <th style="width: 700px">STATUS</th>
+                                    <th style="width: 400px">CREATED AT</th>
                                     <th class="text-center" style="width: 120px;">ACTIONS</th>
                                 </tr>
                             </thead>
@@ -81,126 +75,131 @@
                 </div>
             </div>
         </div>
+
+
+        @push('scripts')
+            <script src="https://cdn.datatables.net/2.3.5/js/dataTables.js"></script>
+            <script src="https://cdn.datatables.net/2.3.5/js/dataTables.bootstrap5.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const table = $('#studentsTable').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: "{{ route('students.index') }}",
+                            type: 'GET',
+                            data: function(d) {
+                                d.search = $('#studentSearch').val();
+                            }
+                        },
+                        columns: [{
+                                data: 'student',
+                                name: 'student',
+                                orderable: true,
+                                searchable: true
+                            },
+                            {
+                                data: 'status',
+                                name: 'status',
+                                orderable: true,
+                                searchable: false
+                            },
+                            {
+                                data: 'created_at',
+                                name: 'created_at',
+                                orderable: true,
+                                searchable: false
+                            },
+                            {
+                                data: 'actions',
+                                name: 'actions',
+                                orderable: false,
+                                searchable: false,
+                                className: 'text-center'
+                            }
+                        ],
+                        order: [
+                            [0, 'desc']
+                        ],
+                        searching: false,
+                        responsive: true,
+                        paging: true,
+                        lengthChange: true,
+                        pageLength: 10,
+                        dom: '<"table-top">rt<"d-flex justify-content-between align-items-center mt-4"lfp>',
+                        createdRow: function(row, data, dataIndex) {
+                            $('td', row).eq(0).addClass('fw-bold text-dark');
+                            $('td', row).eq(1).addClass('fw-bold text-muted');
+                        }
+
+                    });
+
+                    // Debounced search
+                    const debounce = (fn, delay) => {
+                        let timer;
+                        return function(...args) {
+                            clearTimeout(timer);
+                            timer = setTimeout(() => fn.apply(this, args), delay);
+                        };
+                    };
+
+                    $('#studentSearch').on('keyup', function() {
+                        table.draw();
+                    });
+
+                    // DELETE FUNCTIONALITY
+                    const baseUrl = "{{ url('admin/students') }}";
+                    let currentId = null;
+                    let studentName = '';
+                    let lastActiveElement = null;
+                    const modalEl = document.getElementById('deleteStudentModal');
+                    const deleteModal = new bootstrap.Modal(modalEl, {
+                        backdrop: true
+                    });
+                    const confirmBtn = document.getElementById('confirmStudentDeleteBtn');
+                    const studentNameEl = document.getElementById('studentName');
+
+                    $('#studentsTable').on('click', '.delete-student', function() {
+                        currentId = $(this).data('id');
+                        studentName = $(this).data('name');
+                        studentNameEl.textContent = studentName;
+                        lastActiveElement = this;
+                        deleteModal.show();
+                    });
+
+                    confirmBtn.addEventListener('click', function() {
+                        if (!currentId) return;
+                        confirmBtn.disabled = true;
+
+                        axios.post(`${baseUrl}/${currentId}`, {
+                            _method: 'DELETE'
+                        }, {
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        }).then(response => {
+                            table.ajax.reload(null, false);
+                            deleteModal.hide();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: response.data.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        }).catch(error => {
+                            console.error(error);
+                            deleteModal.hide();
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: error.response?.data?.message || 'Failed to delete student.'
+                            });
+                        }).finally(() => confirmBtn.disabled = false);
+                    });
+                });
+            </script>
+        @endpush
     @endsection
-
-    @push('scripts')
-        <script src="https://cdn.datatables.net/2.3.5/js/dataTables.js"></script>
-        <script src="https://cdn.datatables.net/2.3.5/js/dataTables.bootstrap5.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const table = $('#studentsTable').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: {
-                        url: "{{ route('students.index') }}",
-                        type: 'GET',
-                        data: function(d) {
-                            d.search = $('#studentSearch').val();
-                        }
-                    },
-                    columns: [{
-                            data: 'student',
-                            name: 'student',
-                            orderable: false,
-                            searchable: true
-                        },
-                        // {
-                        //     data: 'school',
-                        //     name: 'school',
-                        //     orderable: false,
-                        //     searchable: false
-                        // },
-                        {
-                            data: 'status',
-                            name: 'status',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'created_at',
-                            name: 'created_at',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'actions',
-                            name: 'actions',
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-center'
-                        }
-                    ],
-                    order: [
-                        [1, 'desc']
-                    ],
-
-                    searching: false,
-                    responsive: true,
-                    paging: true,
-                    lengthChange: true,
-                    pageLength: 10,
-                    dom: '<"table-top">rt<"d-flex justify-content-between align-items-center mt-4"lfp>',
-                    drawCallback: function() {
-                        // bindActions();
-                    }
-                });
-
-                $('#studentSearch').on('keyup', function() {
-                    table.draw();
-                });
-
-                // DELETE FUNCTIONALITY
-                const baseUrl = "{{ url('admin/students') }}";
-                let currentId = null;
-                let studentName = '';
-                let lastActiveElement = null;
-                const modalEl = document.getElementById('deleteStudentModal');
-                const deleteModal = new bootstrap.Modal(modalEl, {
-                    backdrop: true
-                });
-                const confirmBtn = document.getElementById('confirmStudentDeleteBtn');
-                const studentNameEl = document.getElementById('studentName');
-
-                $('#studentsTable').on('click', '.delete-student', function() {
-                    currentId = $(this).data('id');
-                    studentName = $(this).data('name');
-                    studentNameEl.textContent = studentName;
-                    lastActiveElement = this;
-                    deleteModal.show();
-                });
-
-                confirmBtn.addEventListener('click', function() {
-                    if (!currentId) return;
-                    confirmBtn.disabled = true;
-
-                    axios.post(`${baseUrl}/${currentId}`, {
-                        _method: 'DELETE'
-                    }, {
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    }).then(response => {
-                        table.ajax.reload(null, false);
-                        deleteModal.hide();
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Deleted!',
-                            text: response.data.message,
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                    }).catch(error => {
-                        console.error(error);
-                        deleteModal.hide();
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: error.response?.data?.message || 'Failed to delete student.'
-                        });
-                    }).finally(() => confirmBtn.disabled = false);
-                });
-            });
-        </script>
-    @endpush

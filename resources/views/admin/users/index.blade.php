@@ -4,81 +4,69 @@
 @push('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.bootstrap5.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
 
 
-    @section('content')
-        <div class="app-wrapper flex-column flex-row-fluid">
-            <div class="p-4 bg-white border-2 rounded-2 mb-5 mb-xl-10" style="border-color: #adb5bd;">
+@section('content')
+    <div class="app-wrapper flex-column flex-row-fluid">
+        <div class="p-4 bg-white border-2 rounded-2 mb-5 mb-xl-10" style="border-color: #adb5bd;">
 
-                {{-- Header --}}
+            {{-- Header --}}
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-semibold mb-0 text-dark">
+                    <i class="fa-solid fa-user-group"></i> Users
+                </h3>
+                <button id="bulkActionBtn"
+                    class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
+                    <i class="fa-solid fa-user-plus"></i> Add User
+                </button>
+            </div>
+
+            <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
+
+                {{-- Search --}}
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="fw-semibold mb-0 text-dark">
-                        <i class="fa-solid fa-user-group"></i> Users
-                    </h3>
-                    <button id="bulkActionBtn"
-                        class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg shadow-sm">
-                        <i class="fa-solid fa-user-plus"></i> Add User
-                    </button>
+                    <div class="input-group" style="max-width: 350px;">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="mdi mdi-magnify text-muted"></i>
+                        </span>
+                        <input type="text" id="customSearchInput" class="form-control border-start-0 ps-0"
+                            placeholder="Search users...">
+                    </div>
                 </div>
-                <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
 
-                    {{-- Search --}}
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="input-group" style="max-width: 350px;">
-                            <span class="input-group-text bg-white border-end-0">
-                                <i class="mdi mdi-magnify text-muted"></i>
-                            </span>
-                            <input type="text" id="customSearchInput" class="form-control border-start-0 ps-0"
-                                placeholder="Search users...">
-                        </div>
-                    </div>
+                {{-- Users Table Partial --}}
+                <div id="usersTableContainer">
+                    @include('admin.users.partials.users_table')
+                </div>
 
-                    {{-- <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="custom-search-wrapper">
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="mdi mdi-magnify text-muted"></i>
-                                </span>
-                                <input type="text" id="customSearchInput" class="form-control" placeholder="Search users...">
-                            </div>
-                        </div>
-                    </div> --}}
+            </div>
+        </div>
+    </div>
 
-
-                    {{-- Users Table Partial --}}
-                    <div id="usersTableContainer">
-                        @include('admin.users.partials.users_table')
-                    </div>
-
+    {{-- Delete Confirmation Modal --}}
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-semibold">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-4"><b>Are you sure you want to delete this user?</b></p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button id="confirmDeleteBtn" type="button" class="btn btn-danger">Delete</button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            {{-- Delete Confirmation Modal --}}
-            <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content border-0 shadow-lg rounded-4">
-                        <div class="modal-header border-0">
-                            <h5 class="modal-title fw-semibold">Confirm Deletion</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p class="text-muted mb-4"><b>Are you sure you want to delete this user?</b></p>
-                        </div>
-                        <div class="modal-footer border-0">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button id="confirmDeleteBtn" type="button" class="btn btn-danger">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endsection
-
-
-
-        @push('scripts')
-            <script src="https://cdn.datatables.net/2.3.5/js/dataTables.js"></script>
-            <script src="https://cdn.datatables.net/2.3.5/js/dataTables.bootstrap5.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @push('scripts')
+        <script src="https://cdn.datatables.net/2.3.5/js/dataTables.js"></script>
+        <script src="https://cdn.datatables.net/2.3.5/js/dataTables.bootstrap5.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 let userId = null;
@@ -114,7 +102,8 @@
                             data: 'checkbox',
                             name: 'checkbox',
                             orderable: false,
-                            searchable: false
+                            searchable: false,
+
                         },
                         {
                             data: 'user',
@@ -138,24 +127,18 @@
                             className: 'text-end'
                         }
                     ],
-                    columnDefs: [{
 
-                            targets: 0,
-                            width: "10px"
-                        },
-                        {
-                            targets: 1,
-                            width: "280px"
-                        }, // USER
-
-                    ],
                     order: [
-                        [3, 'desc']
+                        [1, 'desc']
                     ],
                     searching: false,
                     paging: true,
                     lengthChange: true,
                     dom: '<"table-top">rt<"d-flex justify-content-between align-items-center mt-4"lfp>',
+                    createdRow: function(row, data, dataIndex) {
+                        $('td', row).eq(0).addClass('fw-bold text-dark');
+                        $('td', row).eq(1).addClass('fw-bold text-muted');
+                    },
                     drawCallback: function() {
                         bindActions();
                     }
@@ -313,4 +296,6 @@
                     });
                 }
             });
-        </script>@endpush
+        </script>
+    @endpush
+@endsection

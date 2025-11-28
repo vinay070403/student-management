@@ -118,8 +118,6 @@
                                         value="{{ $user->address }}">
                                 </div>
                             </div>
-
-
                             <!-- 🆕 New Password -->
                             <div class="col-6">
                                 <div class="form-group">
@@ -138,17 +136,13 @@
                                         class="form-control form-control-lg" placeholder="Confirm new password">
                                 </div>
                             </div>
-
-
                         </div>
-
                         <div class="d-flex justify-content-end gap-2 mt-4">
                             <button type="submit"
                                 class="btn btn-dark py-3 px-3 d-flex align-items-center gap-2 rounded-3 btn-lg">Save
                                 Changes</button>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>

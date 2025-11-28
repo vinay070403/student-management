@@ -39,36 +39,27 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name" class="form-label fw-bold text-dark">School Name</label>
-                                    <input type="text" name="name" class="form-control form-control-lg" required>
+                                    <input type="text" name="name" class="form-control form-control-lg"
+                                        placeholder="Enter school name" data-required="true">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="state_id" class="form-label fw-bold text-dark">State</label>
-                                    <select name="state_id" class="form-control form-control-lg" required>
+                                    <select id="state_id" name="state_id"
+                                        class="form-control form-control-lg select2-state" data-required="true">
+                                        <option value="">Please Select State</option>
                                         @foreach ($states as $state)
                                             <option value="{{ $state->id }}">{{ $state->name }}</option>
                                         @endforeach
                                     </select>
+
                                 </div>
                             </div>
-                            <!-- <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="address" class="form-label fw-bold text-dark">Address</label>
-                                                            <input type="text" name="address" class="form-control form-control-lg">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="zipcode" class="form-label fw-bold text-dark">Zipcode</label>
-                                                            <input type="text" name="zipcode" class="form-control form-control-lg">
-                                                        </div>
-                                                    </div> -->
                         </div>
-
                         <div class="text-end mt-4">
                             <button type="submit" class="btn btn-dark px-4 py-3  gap-2 rounded-3 btn-lg">
-                                Add School
+                                Submit
                             </button>
                         </div>
                     </form>
@@ -133,4 +124,51 @@
             transform: scale(1.03);
         }
     </style>
+@endpush
+@push('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            $('form').on('submit', function(e) {
+                let isValid = true;
+
+                $(this).find('input[data-required], select[data-required], textarea[data-required]').each(
+                    function() {
+                        const value = $(this).val().trim();
+                        if (value === '') {
+                            isValid = false;
+
+                            // Red border
+                            $(this).css('border', '1px solid red');
+
+                            // Error message below input
+                            if (!$(this).next('.jq-error').length) {
+                                $(this).after(
+                                    '<div class="jq-error text-danger mt-1">Please fill this field</div>'
+                                );
+                            }
+                        } else {
+                            // Remove error
+                            $(this).css('border', '');
+                            $(this).next('.jq-error').remove();
+                        }
+                    });
+
+                if (!isValid) {
+                    e.preventDefault(); // Prevent form submission
+                }
+            });
+
+            // Remove error as user types/selects
+            $('input[data-required], select[data-required], textarea[data-required]').on('input change',
+                function() {
+                    if ($(this).val().trim() !== '') {
+                        $(this).css('border', '');
+                        $(this).next('.jq-error').remove();
+                    }
+                });
+
+        });
+    </script>
 @endpush

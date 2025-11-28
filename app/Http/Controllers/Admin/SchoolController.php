@@ -9,9 +9,24 @@ use App\Models\GradeScale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class SchoolController extends Controller
+class SchoolController extends Controller implements HasMiddleware
 {
+    /**
+     * Permission middleware for this controller
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:school-list', only: ['index', 'show']),
+            new Middleware('permission:school-create', only: ['create', 'store']),
+            new Middleware('permission:school-edit', only: ['edit', 'update']),
+            new Middleware('permission:school-delete', only: ['destroy', 'bulkDelete']),
+        ];
+    }
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -64,9 +79,6 @@ class SchoolController extends Controller
 
         return view('admin.schools.index');
     }
-
-
-
     public function create()
     {
         $states = State::all();
@@ -136,7 +148,6 @@ class SchoolController extends Controller
             return back()->with('error', 'Failed to create school.')->withInput();
         }
     }
-
     public function edit(School $school)
     {
         $states = State::all();
@@ -150,8 +161,6 @@ class SchoolController extends Controller
 
         return view('admin.schools.edit', compact('school', 'states'));
     }
-
-
     public function update(Request $request, School $school)
     {
         $request->validate([
@@ -215,13 +224,20 @@ class SchoolController extends Controller
             return back()->with('error', 'Failed to update school.')->withInput();
         }
     }
-
     public function destroy(School $school)
     {
         DB::beginTransaction();
+
         try {
+            // Set school_id = NULL for users of this school
+            DB::table('users')
+                ->where('school_id', $school->id)
+                ->update(['school_id' => null]);
+
+            // Load relations
             $school->load('classes', 'subjects', 'gradeScales');
 
+            // Delete related records
             if ($school->classes()->exists()) {
                 $school->classes()->delete();
             }
@@ -234,27 +250,23 @@ class SchoolController extends Controller
                 $school->gradeScales()->delete();
             }
 
+            // 🔥 Step 2: Delete the school
             $school->delete();
 
             DB::commit();
+
             return redirect()
                 ->route('schools.index')
                 ->with('success', 'School and related data deleted successfully.');
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('School delete error: ' . $e->getMessage());
+
             return redirect()
                 ->route('schools.index')
                 ->with('error', 'Error deleting school.');
         }
     }
-
-    // public function getByState($stateId)
-    // {
-    //     $schools = School::where('state_id', $stateId)->get(['id', 'name']);
-    //     return response()->json(['schools' => $schools]);
-    // }
-
     public function getByState($stateUlid)
     {
         $state = State::where('ulid', $stateUlid)->first();

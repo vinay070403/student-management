@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
 use App\Models\Country;
 use App\Models\Schoolclass;
 use App\Models\School;
@@ -14,9 +17,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Storage;
 
-class StudentController extends Controller
+class StudentController extends Controller // implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:student-list|student-create|student-edit|student-delete', only: ['index', 'show']),
+            new Middleware('permission:student-create', only: ['create', 'store']),
+            new Middleware('permission:student-edit', only: ['edit', 'update']),
+            new Middleware('permission:student-delete', only: ['destroy', 'bulkDelete']),
+        ];
+    }
     // ------------------------
     // CRUD: Students
     // ------------------------
@@ -90,7 +103,6 @@ class StudentController extends Controller
         return view('admin.students.index');
     }
 
-
     // ------------------------
     // Create Student
     // ------------------------
@@ -118,7 +130,7 @@ class StudentController extends Controller
 
         $data = $request->all();
         if ($request->hasFile('avatar')) {
-            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar'] = $request->file('avatar')->store('avatar', 'public');
         }
         $data['password'] = Hash::make($request->password);
         $student = User::create($data);
@@ -153,11 +165,18 @@ class StudentController extends Controller
             'phone'      => 'nullable|string',
             'dob'        => 'nullable|date',
             'avatar'     => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048',
-            // 'password'   => 'nullable|min:8',
         ]);
 
         if ($request->hasFile('avatar')) {
-            $validated['avatar'] = $request->file('avatar')->store('avatars', 'public');
+            // Delete old avatar if exists
+            if ($student->avatar && Storage::disk('public')->exists($student->avatar)) {
+                Storage::disk('public')->delete($student->avatar);
+            }
+
+            // Store new avatar in "avatar" folder
+            $file = $request->file('avatar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $validated['avatar'] = $file->storeAs('avatar', $filename, 'public'); // <-- avatar folder
         }
 
         if (!empty($validated['password'])) {
@@ -383,7 +402,6 @@ class StudentController extends Controller
         return response()->json(['success' => true]);
     }
 
-
     // ------------------------
     // Load saved grades for student (AJAX)
     // ------------------------
@@ -423,8 +441,6 @@ class StudentController extends Controller
 
         return response()->json(['success' => true]);
     }
-
-
     // ------------------------
     // Delete Subject (AJAX)
     // ------------------------
@@ -444,7 +460,6 @@ class StudentController extends Controller
 
         return response()->json(['success' => true]);
     }
-
 
     // ------------------------
     // Delete Grade (AJAX)

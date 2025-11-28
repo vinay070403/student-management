@@ -67,15 +67,8 @@
                                 class="btn btn-dark px-3 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">
                                 Save Changes
                             </button>
-
-                            <!-- Delete Button triggers dialog -->
-                            <!-- <button type="button" class="btn btn-danger px-4 py-2 d-flex align-items-center gap-2 rounded-3 btn-lg"
-                                                onclick="document.getElementById('delete-state-dialog-{{ $state->id }}').showModal()">
-                                                Delete State
-                                            </button> -->
                         </div>
                     </form>
-
                     <!-- Delete Confirmation Dialog -->
                     <dialog id="delete-state-dialog-{{ $state->id }}"
                         style="border:none; border-radius:12px; padding:25px; max-width:400px; width:90%;">

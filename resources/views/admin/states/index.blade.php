@@ -52,114 +52,118 @@
                 </div>
             </div>
         </div>
-    @endsection
 
-    @push('scripts')
-        <script src="https://cdn.datatables.net/2.3.5/js/dataTables.js"></script>
-        <script src="https://cdn.datatables.net/2.3.5/js/dataTables.bootstrap5.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
+        @push('scripts')
+            <script src="https://cdn.datatables.net/2.3.5/js/dataTables.js"></script>
+            <script src="https://cdn.datatables.net/2.3.5/js/dataTables.bootstrap5.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                const baseUrl = "{{ url('admin/states') }}";
-                let deleteUlid = null;
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
 
-                const table = $('#states-table').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: {
-                        url: "{{ route('states.index') }}",
-                        data: function(d) {
-                            d.custom_search = $('#custom-search').val();
-                        }
-                    },
-                    columns: [{
-                            data: 'state_name',
-                            name: 'state_name',
+                    const baseUrl = "{{ url('admin/states') }}";
+                    let deleteUlid = null;
 
+                    const table = $('#states-table').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: "{{ route('states.index') }}",
+                            data: function(d) {
+                                d.custom_search = $('#custom-search').val();
+                            }
                         },
-                        {
-                            data: 'country',
-                            name: 'country.name'
-                        },
-                        {
-                            data: 'actions',
-                            name: 'actions',
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-end'
-                        },
-                    ],
-
-                    searching: false,
-                    responsive: true,
-                    paging: true,
-                    lengthChange: true,
-                    pageLength: 10,
-                    dom: '<"table-top">rt<"d-flex justify-content-between align-items-center mt-4"lfp>',
-                    /* Move pagination into our custom container */
-                    drawCallback: function() {
-                        // bindActions();
-                    }
-                });
-
-                /* live search */
-                $('#custom-search').on('keyup', function() {
-                    table.ajax.reload();
-                });
-
-                /* Delete handler */
-                $(document).on('click', '.delete-state-btn', function(e) {
-                    e.preventDefault();
-
-                    deleteUlid = $(this).data('id');
-
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "This will delete the state and related data.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Yes, delete it'
-                    }).then((result) => {
-
-                        if (result.isConfirmed) {
-                            axios.post(`${baseUrl}/${deleteUlid}`, {
-                                _method: 'DELETE'
-                            }, {
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                }
-                            }).then(response => {
-
-                                table.ajax.reload(null, false);
-
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Deleted!',
-                                    text: response.data.message ??
-                                        'State deleted successfully.',
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-
-                            }).catch(error => {
-
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Delete failed',
-                                    text: error.response?.data?.message ??
-                                        'Failed to delete state.'
-                                });
-
-                            }).finally(() => deleteUlid = null);
+                        columns: [{
+                                data: 'name',
+                                name: 'name'
+                            }, // <-- use actual column name
+                            {
+                                data: 'country',
+                                name: 'country.name',
+                                orderable: false,
+                                searchable: false
+                            },
+                            {
+                                data: 'actions',
+                                name: 'actions',
+                                orderable: false,
+                                searchable: false,
+                                className: 'text-end'
+                            },
+                        ],
+                        order: [
+                            [0, 'desc']
+                        ],
+                        lengthMenu: [10, 25, 50, 100],
+                        searching: false,
+                        responsive: true,
+                        paging: true,
+                        lengthChange: true,
+                        pageLength: 10,
+                        dom: '<"table-top">rt<"d-flex justify-content-between align-items-center mt-4"lfp>',
+                        createdRow: function(row, data, dataIndex) {
+                            $('td', row).eq(0).addClass('fw-bold text-dark');
+                            $('td', row).eq(1).addClass('fw-bold text-muted');
                         }
                     });
-                });
 
-            });
-        </script>
-    @endpush
+                    /* live search */
+                    $('#custom-search').on('keyup', function() {
+                        table.ajax.reload();
+                    });
+
+                    /* Delete handler */
+                    $(document).on('click', '.delete-state-btn', function(e) {
+                        e.preventDefault();
+
+                        deleteUlid = $(this).data('id');
+
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "This will delete the state and related data.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Yes, delete it'
+                        }).then((result) => {
+
+                            if (result.isConfirmed) {
+                                axios.post(`${baseUrl}/${deleteUlid}`, {
+                                    _method: 'DELETE'
+                                }, {
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    }
+                                }).then(response => {
+
+                                    table.ajax.reload(null, false);
+
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Deleted!',
+                                        text: response.data.message ??
+                                            'State deleted successfully.',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+
+                                }).catch(error => {
+
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Delete failed',
+                                        text: error.response?.data?.message ??
+                                            'Failed to delete state.'
+                                    });
+
+                                }).finally(() => deleteUlid = null);
+                            }
+                        });
+                    });
+                });
+            </script>
+        @endpush
+    @endsection

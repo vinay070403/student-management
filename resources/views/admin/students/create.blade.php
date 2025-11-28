@@ -23,7 +23,8 @@
                     </div>
                 @endif
                 <div class="p-4 bg-white border rounded-3 mb-5" style="border-color: #dee2e6;">
-                    <form action="{{ route('students.store') }}" method="POST" class="needs-validation" novalidate>
+                    <form action="{{ route('students.store') }}" method="POST" class="needs-validation" novalidate
+                        enctype="multipart/form-data">
                         @csrf
                         <div class="row g-3">
                             <!-- First Name -->
@@ -139,19 +140,7 @@
                                     @enderror
                                 </div>
                             </div>
-
-                            <!-- Password -->
-                            <!-- <div class="col-6">
-                                <div class="form-group">
-                                    <label for="password" class="form-label fw-bold text-dark">Password <span class="text-danger">*</span></label>
-                                    <input type="password" name="password" class="form-control form-control-lg rounded-3 shadow-sm @error('password') is-invalid @enderror" required placeholder="********">
-                                    @error('password')
-        <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-                                </div>
-                            </div> -->
                         </div>
-
                         <div class="d-flex justify-content-end mt-4">
                             <button type="submit"
                                 class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">

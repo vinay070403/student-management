@@ -23,16 +23,19 @@
                     <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data"
                         class="needs-validation" novalidate>
                         @csrf
-                        <div class="form-group p-4 mb-2" style="background-color: #f8f9fa; border-radius: 8px;">
-                            <label class="form-label fw-bold text-dark d-block">Select Role</label>
-                            <div class="form-check form-check-inline mb-2">
-                                <input class="form-check-input" type="radio" name="role" id="super_admin"
-                                    value="Super Admin" required>
-                                <label class="form-check-label" for="super_admin">Super Admin</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="role" id="admin" value="Admin">
-                                <label class="form-check-label" for="admin">Admin</label>
+                        <div class="form-group p-4 mb-3 role-box">
+                            <label class="form-label fw-bold text-dark d-block mb-2">Select Role</label>
+
+                            <div class="d-flex align-items-center gap-4 flex-wrap">
+                                <label class="role-option">
+                                    <input type="radio" name="role" value="Super Admin" required>
+                                    <span>Super Admin</span>
+                                </label>
+
+                                <label class="role-option">
+                                    <input type="radio" name="role" value="Admin">
+                                    <span>Admin</span>
+                                </label>
                             </div>
                         </div>
 
@@ -116,27 +119,25 @@
                             </div>
 
                             <!-- Avatar -->
+                            <!-- Avatar Upload -->
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="avatar" class="form-label fw-bold text-dark">Avatar (optional)</label>
+                                    <label for="avatar" class="form-label fw-bold text-dark">Avatar (optional) </label>
                                     <input type="file" name="avatar"
-                                        class="form-control form-control-lg @error('avatar') is-invalid @enderror"
+                                        class="form-control form-control-lg rounded-3 shadow-sm" id="avatarInput"
                                         accept="image/*">
-                                    @isset($user->avatar_url)
-                                        <div class="mt-2">
-                                            <img src="{{ $user->avatar_url }}" alt="Avatar" class="img-thumbnail"
-                                                style="max-width: 100px;">
-                                            <div class="form-check mt-2">
-                                                <input type="checkbox" name="remove_avatar" value="1"
-                                                    id="remove_avatar" class="form-check-input">
-                                                <label for="remove_avatar" class="form-check-label">Remove current
-                                                    avatar</label>
-                                            </div>
-                                        </div>
-                                    @endisset
-                                    @error('avatar')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+
+                                    <div id="avatar-wrapper" class="position-relative mt-2 d-inline-block">
+                                        <img id="user-avatar" src="{{ asset('assets/images/default-avatar1.jpg') }}"
+                                            alt="Avatar" class="img-thumbnail" style="max-width: 100px;">
+
+                                        <!-- ❌ Remove button -->
+                                        <button type="button" id="remove-avatar-btn"
+                                            class="btn btn-sm btn-danger position-absolute top-0 end-0 translate-middle rounded-circle"
+                                            style="padding:3px 6px;font-size:12px;line-height:1; display:none;">
+                                            ×
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -184,8 +185,7 @@
 
                         <div class="d-flex justify-content-end mt-4">
                             <button type="submit"
-                                class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">Add
-                                User</button>
+                                class="btn btn-dark px-4 py-3 d-flex align-items-center gap-2 rounded-3 btn-lg">Submit</button>
                         </div>
                     </form>
                 </div>

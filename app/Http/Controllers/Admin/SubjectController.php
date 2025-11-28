@@ -7,9 +7,23 @@ use App\Models\Subject;
 use App\Models\School;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class SubjectController extends Controller
+class SubjectController extends Controller implements HasMiddleware
 {
+    /**
+     * Permission middleware for this controller
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:subject-list', only: ['index', 'show']),
+            new Middleware('permission:subject-create', only: ['create', 'store']),
+            new Middleware('permission:subject-edit', only: ['edit', 'update']),
+            new Middleware('permission:subject-delete', only: ['destroy', 'bulkDelete']),
+        ];
+    }
     public function index(School $school, Request $request)
     {
         if ($request->ajax()) {
@@ -18,14 +32,20 @@ class SubjectController extends Controller
             return DataTables::of($subjects)
                 ->addIndexColumn() // Adds DT_RowIndex
                 ->addColumn('action', function ($subject) use ($school) {
-                    $editUrl = route('schools.subjects.edit', [$school, $subject]);
-                    $deleteUrl = route('schools.subjects.destroy', [$school, $subject]);
+                    // $editUrl = route('schools.subjects.edit', [$school, $subject]);
+                    // $deleteUrl = route('schools.subjects.destroy', [$school, $subject]);
                     return '
-                        <a href="' . $editUrl . '" class="btn btn-sm btn-primary">Edit</a>
-                        <form action="' . $deleteUrl . '" method="POST" style="display:inline;">
-                            ' . csrf_field() . method_field('DELETE') . '
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Are you sure?\')">Delete</button>
-                        </form>
+
+                     <a href="' . route('schools.subjects.edit', [$school->ulid, $subject->ulid]) . '"
+                    class="btn btn-sm btn-primary">
+                    Edit
+                    </a>
+
+                    <button data-id="' . $subject->ulid . '"
+                            class="btn btn-sm btn-danger delete-subject">
+                        Delete
+                    </button>
+
                     ';
                 })
                 ->rawColumns(['action'])
@@ -48,7 +68,7 @@ class SubjectController extends Controller
 
         $school->subjects()->create($request->all());
 
-        return redirect()->route('schools.subjects.index', $school)->with('success', 'Subject added!');
+        return redirect()->route('schools.edit', $school)->with('success', 'Subject added!');
     }
 
     public function edit(School $school, Subject $subject)
@@ -64,13 +84,13 @@ class SubjectController extends Controller
 
         $subject->update($request->all());
 
-        return redirect()->route('schools.subjects.index', $school)->with('success', 'Subject updated!');
+        return redirect()->route('schools.edit', $school)->with('success', 'Subject updated!');
     }
 
     public function destroy(School $school, Subject $subject)
     {
         $subject->delete();
 
-        return redirect()->route('schools.subjects.index', $school)->with('success', 'Subject deleted!');
+        return redirect()->route('schools.edit', $school)->with('success', 'Subject deleted!');
     }
 }

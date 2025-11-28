@@ -167,21 +167,13 @@
     @include('layouts.partials.footer')
 
     <!-- JS Dependencies -->
-    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"
-        onerror="this.src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'"></script>
-
-    <script src="{{ asset('assets/js/off-canvas.js') }}"
-        onerror="this.src='https://demo.bootstrapdash.com/skydash-free/js/off-canvas.js'"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Select2 -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <!-- Tingle -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js"></script>
-
+    @yield('scripts')
     @stack('scripts')
-
-    @include('sweetalert2::index')
+        @include('sweetalert2::index')
 
 </body>
 

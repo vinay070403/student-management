@@ -42,13 +42,14 @@
                                 <div class="form-group">
                                     <label for="name" class="form-label fw-bold text-dark">Country Name</label>
                                     <input type="text" name="name" class="form-control form-control-lg"
-                                        placeholder="Enter country name" required>
+                                        placeholder="Enter country name" data-required="true">
+
                                 </div>
                             </div>
                         </div>
 
                         <div class="text-end mt-4">
-                            <button type="submit" class="btn btn-dark btn-lg">Add Country</button>
+                            <button type="submit" class="btn btn-dark btn-lg">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -108,4 +109,52 @@
             background-color: #0056b3;
         }
     </style>
+@endpush
+@push('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            // On form submit
+            $('form.needs-validation').on('submit', function(e) {
+                let isValid = true;
+
+                $(this).find('input[data-required], select[data-required], textarea[data-required]').each(
+                    function() {
+                        const value = $(this).val().trim();
+                        if (value === '') {
+                            isValid = false;
+
+                            // Add red border
+                            $(this).css('border', '1px solid red');
+
+                            // Show error message if not already present
+                            if (!$(this).next('.jq-error').length) {
+                                $(this).after(
+                                    '<div class="jq-error text-danger mt-1">Please fill this field</div>'
+                                );
+                            }
+                        } else {
+                            // Remove error
+                            $(this).css('border', '');
+                            $(this).next('.jq-error').remove();
+                        }
+                    });
+
+                if (!isValid) {
+                    e.preventDefault(); // Prevent form submission
+                }
+            });
+
+            // Remove error on input
+            $('input[data-required], select[data-required], textarea[data-required]').on('input change',
+                function() {
+                    if ($(this).val().trim() !== '') {
+                        $(this).css('border', '');
+                        $(this).next('.jq-error').remove();
+                    }
+                });
+
+        });
+    </script>
 @endpush

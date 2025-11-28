@@ -7,6 +7,15 @@
             </a>
         </li>
 
+        @can('role-list')
+            <li class="nav-item {{ Str::startsWith(request()->route()->getName(), 'rolesPermission') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center" href="{{ route('rolesPermission.index') }}">
+                    <i class="mdi mdi-shield-key menu-icon me-2"></i>
+                    <span class="menu-title">Roles & Permissions</span>
+                </a>
+            </li>
+        @endcan
+
         @can('user-list')
             <li class="nav-item {{ Str::startsWith(request()->route()->getName(), 'users') ? 'active' : '' }}">
                 <a class="nav-link d-flex align-items-center" href="{{ route('users.index') }}">
@@ -43,16 +52,17 @@
             </li>
         @endcan
 
-        @can('user-list')
+        {{-- @can('student-list') --}}
             <li class="nav-item {{ Str::startsWith(request()->route()->getName(), 'students') ? 'active' : '' }}">
                 <a class="nav-link d-flex align-items-center" href="{{ route('students.index') }}">
                     <i class="mdi mdi-account-group menu-icon me-2"></i>
                     <span class="menu-title">Students</span>
                 </a>
             </li>
-        @endcan
+        {{-- @endcan --}}
     </ul>
 </nav>
+
 
 @push('styles')
     <style>

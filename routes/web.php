@@ -10,6 +10,10 @@ use App\Http\Controllers\Admin\ClassController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PermissionGroupController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\RolePermissionViewController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -48,7 +52,6 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // STATUS TOGGLE (THIS ONE)
     Route::post('/users/change-status/{id}', [UserController::class, 'updateStatus'])
         ->name('users.change-status');
-
 
     // custom route for status update
     Route::post('users/update-status', [UserController::class, 'updateStatus'])->name('admin.users.updateStatus');
@@ -90,9 +93,24 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('schools.classes', ClassController::class)->scoped([
         'class' => 'ulid'
     ]);
+    Route::delete('schools/{school}/classes/{class}', [ClassController::class, 'destroy'])
+        ->name('schools.classes.destroy');
 
 
     Route::resource('schools.subjects', SubjectController::class)->parameters([
         'subjects' => 'subject:ulid',
     ]);
+
+    // Roles & Permissions Main Index (3 Tabs)
+    Route::get('roles-permission', [RolePermissionViewController::class, 'index'])
+        ->name('rolesPermission.index');
+
+    // Roles CRUD
+    Route::resource('roles', RoleController::class);
+
+    // Permission Groups CRUD
+    Route::resource('permission-groups', PermissionGroupController::class);
+
+    // Permissions CRUD
+    Route::resource('permissions', PermissionController::class);
 });
