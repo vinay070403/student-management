@@ -123,53 +123,59 @@ class CountryController extends Controller implements HasMiddleware
             ->with('success', 'Country updated!');
     }
 
+    public function show(Country $country)
+    {
+        return response()->json($country);
+    }
     public function destroy(Country $country)
     {
         try {
-            // Load all nested relationships
-            $country->load('states.school.classes', 'states.school.subjects', 'states.school.grades');
+            // Load only valid relationships!
+            $country->load('states.schools.classes', 'states.schools.subjects', 'states.schools.gradeScales');
 
             foreach ($country->states as $state) {
-                foreach ($state->school as $school) {
 
-                    // 🟢 Delete all related grades first
-                    if ($school->grades()->exists()) {
-                        $school->grades()->delete();
+                foreach ($state->schools as $school) {
+
+                    // Delete grade scales
+                    if ($school->gradeScales()->exists()) {
+                        $school->gradeScales()->delete();
                     }
 
-                    // 🟢 Delete classes and subjects
+                    // Delete classes
                     if ($school->classes()->exists()) {
                         $school->classes()->delete();
                     }
+
+                    // Delete subjects
                     if ($school->subjects()->exists()) {
                         $school->subjects()->delete();
                     }
 
-                    // 🟢 Finally delete the school
+                    // Delete school
                     $school->delete();
                 }
 
-                // 🟢 Delete the state after its schools are gone
+                // Delete state
                 $state->delete();
             }
 
-            // 🟢 Finally delete the country
+            // Delete country
             $country->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Country and all related states, schools, classes, subjects, and grades deleted successfully.'
-            ], 200);
+                'message' => 'Country and all related data deleted successfully.'
+            ]);
         } catch (\Throwable $e) {
-            Log::error('Country destroy error: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
+            Log::error('Country delete error: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'message' => 'Server error while deleting country.'
+                'message' => 'Error deleting country.'
             ], 500);
         }
     }
-
     public function bulkDelete(Request $request)
     {
         $request->validate([
@@ -184,7 +190,7 @@ class CountryController extends Controller implements HasMiddleware
                 $country->load('states.school.classes', 'states.school.subjects', 'states.school.gradeScales');
 
                 foreach ($country->states as $state) {
-                    foreach ($state->school as $school) {
+                    foreach ($state->schools as $school) {
                         $school->gradeScales()->delete();
                         $school->classes()->delete();
                         $school->subjects()->delete();

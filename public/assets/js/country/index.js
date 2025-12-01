@@ -81,44 +81,45 @@ $(function () {
     // ----------------------
     // SINGLE DELETE
     // ----------------------
-    $(document).on('click', '.delete-country-btn', function (e) {
+    $(document).on('click', '.delete-country-btn', function(e) {
         e.preventDefault();
-        currentId = $(this).data('id');
+
+        let deleteUlid = $(this).data('id');
         const countryName = $(this).closest('tr').find('td:nth-child(2)').text();
 
         Swal.fire({
-            text: `Are you sure you want to delete ${countryName}?`,
+            title: 'Are you sure?',
+            text: `This will delete ${countryName} and all related states, schools, student grades, and grade scales.`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Yes, delete!',
-            cancelButtonText: 'No, cancel',
-            customClass: {
-                confirmButton: 'btn fw-bold btn-danger',
-                cancelButton: 'btn fw-bold btn-light-primary'
-            }
-        }).then(result => {
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it'
+        }).then((result) => {
             if (result.isConfirmed) {
-                axios.delete(`/admin/countries/${currentId}`, {
-                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
-                })
-                .then(response => {
+                axios.delete(`/admin/countries/${deleteUlid}`, {
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                }).then(response => {
                     table.ajax.reload(null, false);
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Deleted!',
-                        text: response.data.message || 'Country deleted successfully.',
+                        text: response.data.message ?? 'Country deleted successfully.',
                         timer: 1500,
                         showConfirmButton: false
                     });
-                })
-                .catch(err => {
+
+                }).catch(error => {
                     Swal.fire({
                         icon: 'error',
                         title: 'Delete failed',
-                        text: err.response?.data?.message || 'Failed to delete country.'
+                        text: error.response?.data?.message ?? 'Failed to delete country.'
                     });
-                })
-                .finally(() => currentId = null);
+
+                }).finally(() => deleteUlid = null);
             }
         });
     });
